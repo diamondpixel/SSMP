@@ -9,12 +9,11 @@ namespace SSMP.Networking;
 /// Abstract base class of the client and server datagram transports for DTLS over UDP.
 /// </summary>
 internal abstract class UdpDatagramTransport : DatagramTransport {
-
     /// <summary>
     /// Token source for cancelling the blocking call on the received data collection.
     /// </summary>
     private readonly CancellationTokenSource _cancellationTokenSource;
-    
+
     /// <summary>
     /// A thread-safe blocking collection storing received data that is used to handle the "Receive" calls from the
     /// DTLS transport.
@@ -26,7 +25,7 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
 
         ReceivedDataCollection = new BlockingCollection<ReceivedData>();
     }
-    
+
     /// <summary>
     /// This method is called whenever the corresponding DtlsTransport's Receive is called. The implementation
     /// obtains data from the blocking collection and store it in the given buffer. If no data is present in the
@@ -44,10 +43,16 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
 
         bool tryTakeSuccess;
         ReceivedData data;
-        
+
         try {
             tryTakeSuccess = ReceivedDataCollection.TryTake(out data, waitMillis, _cancellationTokenSource.Token);
         } catch (OperationCanceledException) {
+            return -1;
+        } catch (ArgumentNullException) {
+            // Mono bug: BlockingCollection can throw ArgumentNullException instead of ObjectDisposedException
+            // when disposed during TryTake
+            return -1;
+        } catch (ObjectDisposedException) {
             return -1;
         }
 
@@ -89,7 +94,7 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
 
         return data.Length;
     }
-    
+
     /// <summary>
     /// The maximum number of bytes to receive in a single call to <see cref="Receive"/>.
     /// </summary>
@@ -116,7 +121,7 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
     public void Close() {
         _cancellationTokenSource.Cancel();
     }
-    
+
     /// <summary>
     /// Dispose of the underlying unmanaged resources.
     /// </summary>
@@ -124,7 +129,7 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
         _cancellationTokenSource.Dispose();
         ReceivedDataCollection.Dispose();
     }
-    
+
     /// <summary>
     /// Data class containing a buffer and the corresponding length of bytes stored in that buffer. Not necessarily
     /// the length of the buffer.
@@ -134,6 +139,7 @@ internal abstract class UdpDatagramTransport : DatagramTransport {
         /// Byte array containing the data.
         /// </summary>
         public required byte[] Buffer { get; set; }
+
         /// <summary>
         /// The number of bytes in the buffer.
         /// </summary>

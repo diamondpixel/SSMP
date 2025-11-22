@@ -64,7 +64,7 @@ internal class ServerConnectionManager : ConnectionManager {
     /// Start accepting connections, which will start the timeout timer.
     /// </summary>
     public void StartAcceptingConnection() {
-        Logger.Debug("StartAcceptingConnection");
+        // Logger.Debug("StartAcceptingConnection");
         
         _timeoutTimer.Start();
     }
@@ -73,7 +73,7 @@ internal class ServerConnectionManager : ConnectionManager {
     /// Stop accepting connections, which will stop the timeout timer.
     /// </summary>
     public void StopAcceptingConnection() {
-        Logger.Debug("StopAcceptingConnection");
+        // Logger.Debug("StopAcceptingConnection");
         
         _timeoutTimer.Stop();
     }
@@ -91,8 +91,8 @@ internal class ServerConnectionManager : ConnectionManager {
     /// communicate the resulting server info back to the client.
     /// </summary>
     /// <param name="clientInfo"></param>
-    public void ProcessClientInfo(ClientInfo clientInfo) {
-        Logger.Debug($"Received client info from client with ID: {_clientId}");
+    public ServerInfo ProcessClientInfo(ClientInfo clientInfo) {
+        // Logger.Debug($"Received client info from client with ID: {_clientId}");
 
         var serverInfo = new ServerInfo();
 
@@ -102,6 +102,15 @@ internal class ServerConnectionManager : ConnectionManager {
             Logger.Error($"Exception occurred while executing the connection request event:\n{e}");
         }
 
+        SendServerInfo(serverInfo);
+        
+        return serverInfo;
+    }
+
+    /// <summary>
+    /// Sends the ServerInfo packet to the client.
+    /// </summary>
+    public void SendServerInfo(ServerInfo serverInfo) {
         var connectionPacket = new ClientConnectionPacket();
         connectionPacket.SetSendingPacketData(ClientConnectionPacketId.ServerInfo, serverInfo);
 
@@ -119,7 +128,7 @@ internal class ServerConnectionManager : ConnectionManager {
     private void OnChunkReceived(Packet.Packet packet) {
         var connectionPacket = new ServerConnectionPacket();
         if (!connectionPacket.ReadPacket(packet)) {
-            Logger.Debug($"Received malformed connection packet chunk from client: {_clientId}");
+            // Logger.Debug($"Received malformed connection packet chunk from client: {_clientId}");
             return;
         }
 

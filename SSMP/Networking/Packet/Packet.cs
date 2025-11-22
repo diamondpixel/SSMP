@@ -164,6 +164,9 @@ internal class Packet : IPacket {
 
     /// <inheritdoc />
     public void Write(string value) {
+        // If the value is null, we write an empty string
+        value ??= "";
+        
         // Encode the string into a byte array with UTF-8
         var byteEncodedString = Encoding.UTF8.GetBytes(value);
 
