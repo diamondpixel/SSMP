@@ -35,6 +35,9 @@ public partial class SSMPPlugin : BaseUnityPlugin {
         // Add the MonoBehaviourUtil to the game object associated with this plugin
         gameObject.AddComponent<MonoBehaviourUtil>();
         
+        // Initialize the ThreadUtil dispatcher
+        ThreadUtil.Instantiate();
+        
         new Game.GameManager().Initialize();
     }
 }

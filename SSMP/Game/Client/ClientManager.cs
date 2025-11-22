@@ -585,6 +585,10 @@ internal class ClientManager : IClientManager {
                     UiManager.InternalChatBox.AddMessage($"  {addonData.Identifier} v{addonData.Version}");
                 }
             }
+        } else if (result.Reason == ConnectionFailedReason.Other) {
+            // Display the rejection message from the server
+            var messageResult = (ConnectionFailedMessageResult) result;
+            UiManager.InternalChatBox.AddMessage($"Connection rejected: {messageResult.Message}");
         }
     }
 

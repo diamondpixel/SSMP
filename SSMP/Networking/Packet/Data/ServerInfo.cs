@@ -22,7 +22,7 @@ internal class ServerInfo : IPacketData {
     /// <summary>
     /// The message detailing why the connection was rejected if it was.
     /// </summary>
-    public string ConnectionRejectedMessage { get; set; } = null!;
+    public string ConnectionRejectedMessage { get; set; } = "";
 
     /// <summary>
     /// List of addon data that the server uses.

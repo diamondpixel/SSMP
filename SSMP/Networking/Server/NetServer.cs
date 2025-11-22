@@ -11,6 +11,7 @@ using SSMP.Networking.Packet;
 using SSMP.Networking.Packet.Connection;
 using SSMP.Networking.Packet.Data;
 using SSMP.Networking.Packet.Update;
+using SSMP.Util;
 
 namespace SSMP.Networking.Server;
 
@@ -90,21 +91,13 @@ internal class NetServer : INetServer {
 
     public NetServer(PacketManager packetManager) {
         _packetManager = packetManager;
-
         _dtlsServer = new DtlsServer();
-
         _clientsByEndPoint = new ConcurrentDictionary<IPEndPoint, NetServerClient>();
         _clientsById = new ConcurrentDictionary<ushort, NetServerClient>();
         _throttledClients = new ConcurrentDictionary<IPAddress, Stopwatch>();
-
         _receivedQueue = new ConcurrentQueue<ReceivedData>();
-        
         _processingWaitHandle = new AutoResetEvent(false);
-        
-        _packetManager.RegisterServerConnectionPacketHandler<ClientInfo>(
-            ServerConnectionPacketId.ClientInfo, 
-            OnClientInfoReceived
-        );
+        _packetManager.RegisterServerConnectionPacketHandler<ClientInfo>(ServerConnectionPacketId.ClientInfo, OnClientInfoReceived);
     }
 
     /// <summary>
@@ -112,21 +105,13 @@ internal class NetServer : INetServer {
     /// </summary>
     /// <param name="port">The networking port.</param>
     public void Start(int port) {
-        if (IsStarted) {
-            Stop();
-        }
+        if (IsStarted) Stop();
         
         Logger.Info($"Starting NetServer on port {port}");
         IsStarted = true;
-        
         _dtlsServer.Start(port);
-
-        // Create a cancellation token source for the tasks that we are creating
         _taskTokenSource = new CancellationTokenSource();
-
-        // Start a thread for handling the processing of received data
         new Thread(() => StartProcessing(_taskTokenSource.Token)).Start();
-
         _dtlsServer.DataReceivedEvent += OnDataReceived;
     }
 
@@ -156,37 +141,27 @@ internal class NetServer : INetServer {
             WaitHandle.WaitAny(waitHandles);
 
             while (!token.IsCancellationRequested && _receivedQueue.TryDequeue(out var receivedData)) {
-                var packets = PacketManager.HandleReceivedData(
-                    receivedData.Buffer,
-                    receivedData.NumReceived,
-                    ref _leftoverData
-                );
+                ThreadUtil.Try(() => {
+                    var packets = PacketManager.HandleReceivedData(receivedData.Buffer, receivedData.NumReceived, ref _leftoverData);
+                    var dtlsServerClient = receivedData.DtlsServerClient;
+                    var endPoint = dtlsServerClient.EndPoint;
 
-                var dtlsServerClient = receivedData.DtlsServerClient;
-                var endPoint = dtlsServerClient.EndPoint;
-
-                if (!_clientsByEndPoint.TryGetValue(endPoint, out var client)) {
-                    // If the client is throttled, check their stopwatch for how long still
-                    if (_throttledClients.TryGetValue(endPoint.Address, out var clientStopwatch)) {
-                        if (clientStopwatch.ElapsedMilliseconds < ThrottleTime) {
-                            // Reset stopwatch and ignore packets so the client times out
-                            clientStopwatch.Restart();
-                            continue;
+                    if (!_clientsByEndPoint.TryGetValue(endPoint, out var client)) {
+                        // If the client is throttled, check their stopwatch for how long still
+                        if (_throttledClients.TryGetValue(endPoint.Address, out var clientStopwatch)) {
+                            if (clientStopwatch.ElapsedMilliseconds < ThrottleTime) {
+                                clientStopwatch.Restart(); // Reset stopwatch and ignore packets so the client times out
+                                return;
+                            }
+                            _throttledClients.TryRemove(endPoint.Address, out _); // Stopwatch exceeds max throttle time so we remove the client from the dict
                         }
 
-                        // Stopwatch exceeds max throttle time so we remove the client from the dict
-                        _throttledClients.TryRemove(endPoint.Address, out _);
+                        Logger.Info($"Received packet from unknown client with address: {endPoint.Address}:{endPoint.Port}, creating new client");
+                        client = CreateNewClient(dtlsServerClient); // We didn't find a client with the given address, so we assume it is a new client that wants to connect
                     }
 
-                    Logger.Info(
-                        $"Received packet from unknown client with address: {endPoint.Address}:{endPoint.Port}, creating new client");
-
-                    // We didn't find a client with the given address, so we assume it is a new client
-                    // that wants to connect
-                    client = CreateNewClient(dtlsServerClient);
-                }
-
-                HandleClientPackets(client, packets);
+                    HandleClientPackets(client, packets);
+                }, "NetServer.StartProcessing");
             }
         }
     }
@@ -200,11 +175,9 @@ internal class NetServer : INetServer {
         var netServerClient = new NetServerClient(dtlsServerClient.DtlsTransport, _packetManager, dtlsServerClient.EndPoint);
         
         netServerClient.ChunkSender.Start();
-
         netServerClient.ConnectionManager.ConnectionRequestEvent += OnConnectionRequest;
         netServerClient.ConnectionManager.ConnectionTimeoutEvent += () => HandleClientTimeout(netServerClient);
         netServerClient.ConnectionManager.StartAcceptingConnection();
-
         netServerClient.UpdateManager.TimeoutEvent += () => HandleClientTimeout(netServerClient);
         netServerClient.UpdateManager.StartUpdates();
 
@@ -224,7 +197,7 @@ internal class NetServer : INetServer {
 
         // Only execute the client timeout callback if the client is registered and thus has an ID
         if (client.IsRegistered) {
-            ClientTimeoutEvent?.Invoke(id);
+            ThreadUtil.InvokeSafe(ClientTimeoutEvent, id, "NetServer.ClientTimeoutEvent");
         }
 
         client.Disconnect();
@@ -259,7 +232,6 @@ internal class NetServer : INetServer {
                 // We throttle the client, because chances are that they are using an outdated version of the
                 // networking protocol, and keeping connection will potentially never time them out
                 _throttledClients[client.EndPoint.Address] = Stopwatch.StartNew();
-
                 continue;
             }
 
@@ -269,18 +241,17 @@ internal class NetServer : INetServer {
             var packetData = serverUpdatePacket.GetPacketData();
             if (packetData.TryGetValue(ServerUpdatePacketId.Slice, out var sliceData)) {
                 packetData.Remove(ServerUpdatePacketId.Slice);
-                client.ChunkReceiver.ProcessReceivedData((SliceData) sliceData);
+                ThreadUtil.Try(() => client.ChunkReceiver.ProcessReceivedData((SliceData) sliceData), "NetServer.HandleClientPackets - ProcessSlice");
             }
 
             if (packetData.TryGetValue(ServerUpdatePacketId.SliceAck, out var sliceAckData)) {
                 packetData.Remove(ServerUpdatePacketId.SliceAck);
-                client.ChunkSender.ProcessReceivedData((SliceAckData) sliceAckData);
+                ThreadUtil.Try(() => client.ChunkSender.ProcessReceivedData((SliceAckData) sliceAckData), "NetServer.HandleClientPackets - ProcessSliceAck");
             }
             
             // Then, if the client is registered, we let the packet manager handle the rest of the data
             if (client.IsRegistered) {
-                // Let the packet manager handle the received data
-                _packetManager.HandleServerUpdatePacket(id, serverUpdatePacket);
+                ThreadUtil.Try(() => _packetManager.HandleServerUpdatePacket(id, serverUpdatePacket), "NetServer.HandleClientPackets - HandleServerUpdatePacket");
             }
         }
     }
@@ -297,32 +268,19 @@ internal class NetServer : INetServer {
             Logger.Error($"Connection request for client without known ID: {clientId}");
             serverInfo.ConnectionResult = ServerConnectionResult.RejectedOther;
             serverInfo.ConnectionRejectedMessage = "Unknown client";
-
             return;
         }
         
         // Invoke the connection request event ourselves first, then check the result
-        ConnectionRequestEvent?.Invoke(client, clientInfo, serverInfo);
+        ThreadUtil.Try(() => ConnectionRequestEvent?.Invoke(client, clientInfo, serverInfo), "NetServer.ConnectionRequestEvent");
 
         if (serverInfo.ConnectionResult == ServerConnectionResult.Accepted) {
-            Logger.Debug($"Connection request for client ID {clientId} was accepted, finishing connection sends, then registering client");
-
             client.ConnectionManager.FinishConnection(() => {
-                Logger.Debug("Connection has finished sending data, registering client");
-                
                 client.IsRegistered = true;
                 client.ConnectionManager.StopAcceptingConnection();
             });
         } else {
-            Logger.Debug($"Connection request for client ID {clientId} was rejected, finishing connections sends, then throttling connection");
-
-            client.ConnectionManager.FinishConnection(() => {
-                Logger.Debug("Connection has finished sending data, disconnecting client and throttling");
-
-                OnClientDisconnect(clientId);
-
-                _throttledClients[client.EndPoint.Address] = Stopwatch.StartNew();
-            });
+            client.ConnectionManager.StopAcceptingConnection();
         }
     }
 
@@ -337,7 +295,13 @@ internal class NetServer : INetServer {
             return;
         }
         
-        client.ConnectionManager.ProcessClientInfo(clientInfo);
+        var serverInfo = client.ConnectionManager.ProcessClientInfo(clientInfo);
+        
+        if (serverInfo.ConnectionResult != ServerConnectionResult.Accepted) {
+            client.ConnectionManager.FinishConnection(() => {
+                ThreadUtil.Try(() => OnClientDisconnect(clientId), "NetServer.OnClientInfoReceived - DisconnectRejectedClient");
+            });
+        }
     }
 
     /// <summary>
@@ -359,15 +323,14 @@ internal class NetServer : INetServer {
         _dtlsServer.DataReceivedEvent -= OnDataReceived;
 
         _leftoverData = null;
-
         IsStarted = false;
 
         // Request cancellation for the tasks that are still running
-        _taskTokenSource?.Cancel();
-        _taskTokenSource?.Dispose();
+        ThreadUtil.Try(() => _taskTokenSource?.Cancel(), "NetServer.Stop - Cancel");
+        ThreadUtil.Try(() => _taskTokenSource?.Dispose(), "NetServer.Stop - Dispose");
 
         // Invoke the shutdown event to notify all registered parties of the shutdown
-        ShutdownEvent?.Invoke();
+        ThreadUtil.InvokeSafe(ShutdownEvent, "NetServer.ShutdownEvent");
     }
 
     /// <summary>
@@ -395,10 +358,7 @@ internal class NetServer : INetServer {
     /// <returns>The update manager for the client, or null if there does not exist a client with the
     /// given ID.</returns>
     public ServerUpdateManager? GetUpdateManagerForClient(ushort id) {
-        if (!_clientsById.TryGetValue(id, out var netServerClient)) {
-            return null;
-        }
-
+        if (!_clientsById.TryGetValue(id, out var netServerClient)) return null;
         return netServerClient.UpdateManager;
     }
 
@@ -413,58 +373,36 @@ internal class NetServer : INetServer {
     }
 
     /// <inheritdoc />
-    public IServerAddonNetworkSender<TPacketId> GetNetworkSender<TPacketId>(
-        ServerAddon addon
-    ) where TPacketId : Enum {
-        if (addon == null) {
-            throw new ArgumentException("Parameter 'addon' cannot be null");
-        }
+    public IServerAddonNetworkSender<TPacketId> GetNetworkSender<TPacketId>(ServerAddon addon) where TPacketId : Enum {
+        if (addon == null) throw new ArgumentException("Parameter 'addon' cannot be null");
 
         // Check whether this addon has actually requested network access through their property
         // We check this otherwise an ID has not been assigned and it can't send network data
-        if (!addon.NeedsNetwork) {
-            throw new InvalidOperationException("Addon has not requested network access through property");
-        }
+        if (!addon.NeedsNetwork) throw new InvalidOperationException("Addon has not requested network access through property");
 
         // Check whether there already is a network sender for the given addon
         if (addon.NetworkSender != null) {
             if (!(addon.NetworkSender is IServerAddonNetworkSender<TPacketId> addonNetworkSender)) {
-                throw new InvalidOperationException(
-                    "Cannot request network senders with differing generic parameters");
+                throw new InvalidOperationException("Cannot request network senders with differing generic parameters");
             }
-
             return addonNetworkSender;
         }
 
         // Otherwise create one, store it and return it
         var newAddonNetworkSender = new ServerAddonNetworkSender<TPacketId>(this, addon);
         addon.NetworkSender = newAddonNetworkSender;
-
         return newAddonNetworkSender;
     }
 
     /// <inheritdoc />
-    public IServerAddonNetworkReceiver<TPacketId> GetNetworkReceiver<TPacketId>(
-        ServerAddon addon,
-        Func<TPacketId, IPacketData> packetInstantiator
-    ) where TPacketId : Enum {
-        if (addon == null) {
-            throw new ArgumentException("Parameter 'addon' cannot be null");
-        }
-
-        if (packetInstantiator == null) {
-            throw new ArgumentException("Parameter 'packetInstantiator' cannot be null");
-        }
+    public IServerAddonNetworkReceiver<TPacketId> GetNetworkReceiver<TPacketId>(ServerAddon addon, Func<TPacketId, IPacketData> packetInstantiator) where TPacketId : Enum {
+        if (addon == null) throw new ArgumentException("Parameter 'addon' cannot be null");
+        if (packetInstantiator == null) throw new ArgumentException("Parameter 'packetInstantiator' cannot be null");
 
         // Check whether this addon has actually requested network access through their property
         // We check this otherwise an ID has not been assigned and it can't send network data
-        if (!addon.NeedsNetwork) {
-            throw new InvalidOperationException("Addon has not requested network access through property");
-        }
-
-        if (!addon.Id.HasValue) {
-            throw new InvalidOperationException("Addon has no ID assigned");
-        }
+        if (!addon.NeedsNetwork) throw new InvalidOperationException("Addon has not requested network access through property");
+        if (!addon.Id.HasValue) throw new InvalidOperationException("Addon has no ID assigned");
 
         ServerAddonNetworkReceiver<TPacketId>? networkReceiver = null;
 
@@ -473,8 +411,7 @@ internal class NetServer : INetServer {
             networkReceiver = new ServerAddonNetworkReceiver<TPacketId>(addon, _packetManager);
             addon.NetworkReceiver = networkReceiver;
         } else if (addon.NetworkReceiver is not IServerAddonNetworkReceiver<TPacketId>) {
-            throw new InvalidOperationException(
-                "Cannot request network receivers with differing generic parameters");
+            throw new InvalidOperationException("Cannot request network receivers with differing generic parameters");
         }
 
         // After we know that this call did not use a different generic, we can update packet info

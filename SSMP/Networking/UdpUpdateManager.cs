@@ -6,6 +6,7 @@ using SSMP.Logging;
 using SSMP.Networking.Packet;
 using SSMP.Networking.Packet.Data;
 using SSMP.Networking.Packet.Update;
+using SSMP.Util;
 using Timer = System.Timers.Timer;
 
 namespace SSMP.Networking;
@@ -273,12 +274,14 @@ internal abstract class UdpUpdateManager<TOutgoing, TPacketId> : UdpUpdateManage
     /// timer interval in case the send rate changes.
     /// </summary>
     private void OnSendTimerElapsed(object sender, ElapsedEventArgs elapsedEventArgs) {
-        CreateAndSendUpdatePacket();
+        ThreadUtil.Try(() => {
+            CreateAndSendUpdatePacket();
 
-        if (_lastSendRate != CurrentSendRate) {
-            _sendTimer.Interval = CurrentSendRate;
-            _lastSendRate = CurrentSendRate;
-        }
+            if (_lastSendRate != CurrentSendRate) {
+                _sendTimer.Interval = CurrentSendRate;
+                _lastSendRate = CurrentSendRate;
+            }
+        }, "UdpUpdateManager.OnSendTimerElapsed");
     }
 
     /// <summary>
@@ -315,8 +318,14 @@ internal abstract class UdpUpdateManager<TOutgoing, TPacketId> : UdpUpdateManage
     /// <param name="packet">The raw packet instance.</param>
     private void SendPacket(Packet.Packet packet) {
         var buffer = packet.ToArray();
-        
-        DtlsTransport?.Send(buffer, 0, buffer.Length);
+
+        try {
+            DtlsTransport?.Send(buffer, 0, buffer.Length);
+        } catch (ObjectDisposedException) {
+            // Ignore, as this can happen when the connection is closed
+        } catch (Exception e) {
+            Logger.Warn($"Exception when sending packet in UdpUpdateManager:\n{e}");
+        }
     }
 
     /// <summary>
