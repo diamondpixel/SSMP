@@ -162,7 +162,7 @@ internal abstract class UdpUpdateManager<TOutgoing, TPacketId> : UdpUpdateManage
 
         _isUpdating = false;
         
-        Logger.Debug("Stopping UDP updates, sending last packet");
+        // Logger.Debug("Stopping UDP updates, sending last packet");
         
         // Send the last packet
         CreateAndSendUpdatePacket();

@@ -64,7 +64,7 @@ internal class ServerConnectionManager : ConnectionManager {
     /// Start accepting connections, which will start the timeout timer.
     /// </summary>
     public void StartAcceptingConnection() {
-        Logger.Debug("StartAcceptingConnection");
+        // Logger.Debug("StartAcceptingConnection");
         
         _timeoutTimer.Start();
     }
@@ -73,7 +73,7 @@ internal class ServerConnectionManager : ConnectionManager {
     /// Stop accepting connections, which will stop the timeout timer.
     /// </summary>
     public void StopAcceptingConnection() {
-        Logger.Debug("StopAcceptingConnection");
+        // Logger.Debug("StopAcceptingConnection");
         
         _timeoutTimer.Stop();
     }
@@ -92,7 +92,7 @@ internal class ServerConnectionManager : ConnectionManager {
     /// </summary>
     /// <param name="clientInfo"></param>
     public ServerInfo ProcessClientInfo(ClientInfo clientInfo) {
-        Logger.Debug($"Received client info from client with ID: {_clientId}");
+        // Logger.Debug($"Received client info from client with ID: {_clientId}");
 
         var serverInfo = new ServerInfo();
 
@@ -128,7 +128,7 @@ internal class ServerConnectionManager : ConnectionManager {
     private void OnChunkReceived(Packet.Packet packet) {
         var connectionPacket = new ServerConnectionPacket();
         if (!connectionPacket.ReadPacket(packet)) {
-            Logger.Debug($"Received malformed connection packet chunk from client: {_clientId}");
+            // Logger.Debug($"Received malformed connection packet chunk from client: {_clientId}");
             return;
         }
 

@@ -598,7 +598,7 @@ internal class ClientManager : IClientManager {
     /// <param name="message">The message that was submitted by the user.</param>
     private void OnChatInput(string message) {
         if (_commandManager.ProcessCommand(message)) {
-            Logger.Debug("Chat input was processed as command");
+            // Logger.Debug("Chat input was processed as command");
             return;
         }
 
@@ -687,7 +687,7 @@ internal class ClientManager : IClientManager {
     /// Callback method for when the HeroController is started so we can add the username to the player object.
     /// </summary>
     private void OnHeroControllerStart() {
-        Logger.Debug($"OnHeroControllerStart called, netclient connected: {_netClient.IsConnected}");
+        // Logger.Debug($"OnHeroControllerStart called, netclient connected: {_netClient.IsConnected}");
         
         if (_netClient.IsConnected) {
             _playerManager.AddNameToPlayer(
@@ -1113,7 +1113,7 @@ internal class ClientManager : IClientManager {
     /// <param name="newScene">The new scene instance.</param>
     private void OnSceneChange(Scene oldScene, Scene newScene) {
         Logger.Info($"Scene changed from {oldScene.name} to {newScene.name}");
-        Logger.Debug($"  Current scene: {SceneManager.GetActiveScene().name}");
+        // Logger.Debug($"  Current scene: {SceneManager.GetActiveScene().name}");
 
         // Always recycle existing players, because we changed scenes
         _playerManager.RecycleAllPlayers();
@@ -1133,7 +1133,7 @@ internal class ClientManager : IClientManager {
 
         // If the old scene is a gameplay scene, we need to notify the server that we left
         if (!SceneUtil.IsNonGameplayScene(oldScene.name) && oldScene.name == _lastScene) {
-            Logger.Debug("Left scene, sending to server");
+            // Logger.Debug("Left scene, sending to server");
             _netClient.UpdateManager.SetLeftScene(oldScene.name);
         }
     }
@@ -1181,7 +1181,7 @@ internal class ClientManager : IClientManager {
     private void OnEnterScene() {
         var sceneName = SceneManager.GetActiveScene().name;
 
-        Logger.Debug($"OnEnterScene, scene: {sceneName}");
+        // Logger.Debug($"OnEnterScene, scene: {sceneName}");
 
         _lastScene = sceneName;
 
@@ -1201,7 +1201,7 @@ internal class ClientManager : IClientManager {
             animationClipId = (ushort) AnimationManager.GetCurrentAnimationClip();
         }
 
-        Logger.Debug($"Sending EnterScene packet");
+        // Logger.Debug($"Sending EnterScene packet");
 
         _netClient.UpdateManager.SetEnterSceneData(
             SceneUtil.GetCurrentSceneName(),

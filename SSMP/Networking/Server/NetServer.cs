@@ -227,7 +227,7 @@ internal class NetServer : INetServer {
                 }
 
                 // If the client is not yet registered, we log the malformed packet, and throttle the client
-                Logger.Debug($"Received malformed packet from client with IP: {client.EndPoint}");
+                // Logger.Debug($"Received malformed packet from client with IP: {client.EndPoint}");
 
                 // We throttle the client, because chances are that they are using an outdated version of the
                 // networking protocol, and keeping connection will potentially never time them out

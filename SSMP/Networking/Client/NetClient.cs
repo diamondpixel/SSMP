@@ -71,7 +71,7 @@ internal class NetClient : INetClient {
             ConnectionStatus = ClientConnectionStatus.Connecting;
         }
 
-        Logger.Debug($"Trying to connect NetClient to '{address}:{port}'");
+        // Logger.Debug($"Trying to connect NetClient to '{address}:{port}'");
 
         // Use Task instead of Thread for better resource management
         Task.Run(() => {
@@ -100,7 +100,7 @@ internal class NetClient : INetClient {
             UpdateManager.TimeoutEvent += OnConnectTimedOut;
             UpdateManager.StartUpdates();
 
-            Logger.Debug("Starting connection with connection manager");
+            // Logger.Debug("Starting connection with connection manager");
             _chunkSender.Start();
             _connectionManager.StartConnection(username, authKey, addonData);
 
@@ -150,7 +150,7 @@ internal class NetClient : INetClient {
     private void OnReceiveData(byte[] buffer, int length) {
         // Early exit if not connected
         if (ConnectionStatus == ClientConnectionStatus.NotConnected) {
-            Logger.Debug("Client is not connected to a server, but received data, ignoring");
+            // Logger.Debug("Client is not connected to a server, but received data, ignoring");
             return;
         }
 
@@ -166,8 +166,8 @@ internal class NetClient : INetClient {
             // Create a ClientUpdatePacket from the raw packet instance, and read the values into it
             var clientUpdatePacket = new ClientUpdatePacket();
             if (!clientUpdatePacket.ReadPacket(packet)) {
-                Logger.Debug(
-                    "Received malformed packet, ignoring"); // If ReadPacket returns false, we received a malformed packet, which we simply ignore for now
+                // Logger.Debug(
+                //     "Received malformed packet, ignoring"); // If ReadPacket returns false, we received a malformed packet, which we simply ignore for now
                 continue;
             }
 
@@ -203,7 +203,7 @@ internal class NetClient : INetClient {
     /// </summary>
     private void OnServerInfoReceived(ServerInfo serverInfo) {
         if (serverInfo.ConnectionResult == ServerConnectionResult.Accepted) {
-            Logger.Debug("Connection to server accepted");
+            // Logger.Debug("Connection to server accepted");
 
             // De-register the "connect failed" and register the actual timeout handler if we time out
             UpdateManager.TimeoutEvent -= OnConnectTimedOut;
