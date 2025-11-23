@@ -18,7 +18,7 @@ internal class DtlsServer {
     /// The maximum packet size for sending and receiving DTLS packets.
     /// </summary>
     public const int MaxPacketSize = 1400;
-    
+
     /// <summary>
     /// The socket instance for the underlying networking.
     /// The server only uses a single socket for all connections given that with UDP, we cannot create more than one
@@ -99,6 +99,7 @@ internal class DtlsServer {
         if (_socketReceiveThread != null && _socketReceiveThread.IsAlive) {
             _socketReceiveThread.Join(TimeSpan.FromSeconds(5));
         }
+
         _socketReceiveThread = null;
 
         _tlsServer?.Cancel();
@@ -209,7 +210,7 @@ internal class DtlsServer {
             if (numReceived < 0) break;
             if (numReceived == 0 || cancellationToken.IsCancellationRequested) continue;
 
-            var ipEndPoint = (IPEndPoint)endPoint;
+            var ipEndPoint = (IPEndPoint) endPoint;
 
             // Create a precise copy of the buffer for this packet
             var packetBuffer = new byte[numReceived];
@@ -228,7 +229,8 @@ internal class DtlsServer {
     /// <param name="buffer">The buffer containing the packet data.</param>
     /// <param name="numReceived">The number of bytes received.</param>
     /// <param name="cancellationToken">The cancellation token for checking whether this task is requested to cancel.</param>
-    private void ProcessReceivedPacket(IPEndPoint ipEndPoint, byte[] buffer, int numReceived, CancellationToken cancellationToken) {
+    private void ProcessReceivedPacket(IPEndPoint ipEndPoint, byte[] buffer, int numReceived,
+        CancellationToken cancellationToken) {
         // 1. Attempt to route to an existing connection
         if (_connections.TryGetValue(ipEndPoint, out var connInfo)) {
             bool shouldRemove;
@@ -250,6 +252,7 @@ internal class DtlsServer {
                     } catch (Exception) {
                         // Silently ignore
                     }
+
                     return; // Successfully routed or ignored
                 } else {
                     // Disconnecting or Disconnected
@@ -259,12 +262,12 @@ internal class DtlsServer {
 
             // Handle removal if the state was invalid
             if (!shouldRemove) return;
-            
+
             _connections.TryRemove(ipEndPoint, out _);
             if (clientToDisconnect != null) {
                 Task.Run(() => InternalDisconnectClient(clientToDisconnect));
             }
-            
+
             // Fall through: We removed the bad connection, now treat this as a new connection attempt
         }
 
@@ -345,7 +348,8 @@ internal class DtlsServer {
         bool handshakeSucceeded = false;
 
         try {
-            var handshakeTask = Task.Run(() => _serverProtocol.Accept(_tlsServer, connInfo.DatagramTransport), cancellationToken);
+            var handshakeTask = Task.Run(() => _serverProtocol.Accept(_tlsServer, connInfo.DatagramTransport),
+                cancellationToken);
 
             try {
                 handshakeTask.Wait(cancellationToken);
@@ -357,18 +361,17 @@ internal class DtlsServer {
 
             if (handshakeSucceeded) Logger.Info($"Handshake successful for {endPoint}");
             else Logger.Warn($"Handshake failed (or returned null) for {endPoint}");
-
         } catch (TlsFatalAlert e) {
             Logger.Warn($"TLS Fatal Alert during handshake with {endPoint}: {e.AlertDescription}");
         } catch (AggregateException ae) {
-             // Unwrap AggregateException to check for TLS specific alerts
-             foreach (var inner in ae.InnerExceptions) {
-                 if (inner is TlsFatalAlert tfa) {
-                     Logger.Warn($"TLS Fatal Alert during handshake with {endPoint}: {tfa.AlertDescription}");
-                 } else {
-                     Logger.Error($"Exception during handshake with {endPoint}: {inner.Message}");
-                 }
-             }
+            // Unwrap AggregateException to check for TLS specific alerts
+            foreach (var inner in ae.InnerExceptions) {
+                if (inner is TlsFatalAlert tfa) {
+                    Logger.Warn($"TLS Fatal Alert during handshake with {endPoint}: {tfa.AlertDescription}");
+                } else {
+                    Logger.Error($"Exception during handshake with {endPoint}: {inner.Message}");
+                }
+            }
         } catch (Exception e) {
             Logger.Error($"Exception during handshake with {endPoint}: {e.Message}");
         }
@@ -398,10 +401,11 @@ internal class DtlsServer {
             connInfo.State = ConnectionState.Connected;
             connInfo.StateVersion++;
 
-            var receiveThread = new Thread(() => ClientReceiveLoop(dtlsServerClient, dtlsServerClient.ReceiveLoopTokenSource.Token)) {
+            var receiveThread = new Thread(() =>
+                ClientReceiveLoop(dtlsServerClient, dtlsServerClient.ReceiveLoopTokenSource.Token)) {
                 IsBackground = true
             };
-            
+
             connInfo.ReceiveThread = receiveThread;
             receiveThread.Start();
         }
@@ -446,44 +450,44 @@ internal class DtlsServer {
             }
         }
     }
+}
+
+/// <summary>
+/// Connection states for tracking client lifecycle.
+/// </summary>
+internal enum ConnectionState {
+    Handshaking,
+    Connected,
+    Disconnecting,
+    Disconnected
+}
+
+/// <summary>
+/// Wrapper for connection state management.
+/// </summary>
+internal class ConnectionInfo {
+    /// <summary>
+    /// The datagram transport for this connection.
+    /// </summary>
+    public ServerDatagramTransport DatagramTransport { get; set; }
 
     /// <summary>
-    /// Connection states for tracking client lifecycle.
+    /// The current state of the connection.
     /// </summary>
-    private enum ConnectionState {
-        Handshaking,
-        Connected,
-        Disconnecting,
-        Disconnected
-    }
+    public ConnectionState State { get; set; }
 
     /// <summary>
-    /// Wrapper for connection state management.
+    /// Increment on each state change for tracking state transitions.
     /// </summary>
-    private class ConnectionInfo {
-        /// <summary>
-        /// The datagram transport for this connection.
-        /// </summary>
-        public ServerDatagramTransport DatagramTransport { get; set; }
+    public long StateVersion { get; set; }
 
-        /// <summary>
-        /// The current state of the connection.
-        /// </summary>
-        public ConnectionState State { get; set; }
+    /// <summary>
+    /// The DTLS server client instance once the connection is established.
+    /// </summary>
+    public DtlsServerClient? Client { get; set; }
 
-        /// <summary>
-        /// Increment on each state change for tracking state transitions.
-        /// </summary>
-        public long StateVersion { get; set; }
-
-        /// <summary>
-        /// The DTLS server client instance once the connection is established.
-        /// </summary>
-        public DtlsServerClient? Client { get; set; }
-
-        /// <summary>
-        /// The client receive loop thread.
-        /// </summary>
-        public Thread? ReceiveThread { get; set; }
-    }
+    /// <summary>
+    /// The client receive loop thread.
+    /// </summary>
+    public Thread? ReceiveThread { get; set; }
 }
