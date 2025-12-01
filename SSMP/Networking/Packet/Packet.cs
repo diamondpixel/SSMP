@@ -28,6 +28,11 @@ internal class Packet : IPacket {
     public int Length => _buffer.Count;
 
     /// <summary>
+    /// Whether this packet contains data that needs to be reliable.
+    /// </summary>
+    public bool ContainsReliableData { get; protected set; }
+    
+    /// <summary>
     /// Creates a packet with the given byte array of data. Used when receiving packets to read data from.
     /// </summary>
     /// <param name="data"></param>
