@@ -114,7 +114,8 @@ internal class UiManager : IUiManager {
     /// Event raised when text is submitted in the chat box.
     /// Subscribers process the message for network transmission.
     /// </summary>
-    internal static event Action<string>? ChatInputEvent;
+    /// <remarks>Parameters: message, targetId (null for public)</remarks>
+    internal static event Action<string, ushort?>? ChatInputEvent;
 
     #endregion
 
@@ -472,7 +473,7 @@ internal class UiManager : IUiManager {
 
         var infoBoxGroup = new ComponentGroup(parent: _inGameGroup);
         InternalChatBox = new ChatBox(infoBoxGroup, _modSettings);
-        InternalChatBox.ChatInputEvent += input => ChatInputEvent?.Invoke(input);
+        InternalChatBox.ChatInputEvent += (input, targetId) => ChatInputEvent?.Invoke(input, targetId);
 
         var pingGroup = new ComponentGroup(parent: _inGameGroup);
         _pingInterface = new PingInterface(pingGroup, _modSettings, _netClient);

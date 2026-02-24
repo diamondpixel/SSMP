@@ -101,6 +101,25 @@ public static class ColorCodeParser {
 
             // Try to parse as a color/style code
             var code = char.ToLower(next);
+
+            // Handle hex colors (&#RRGGBB) - we don't have true color ANSI in this basic mapping, so just strip it
+            if (code == '#' && i + 7 < message.Length) {
+                var hex = message.Substring(i + 2, 6);
+                var isValidHex = true;
+                foreach (var c in hex) {
+                    var lowerC = char.ToLower(c);
+                    if (!((lowerC >= '0' && lowerC <= '9') || (lowerC >= 'a' && lowerC <= 'f'))) {
+                        isValidHex = false;
+                        break;
+                    }
+                }
+
+                if (isValidHex) {
+                    i += 7; // Skip '#' and 6 hex digits, acting as if we applied standard ANSI reset or nearest color (we'll just drop it for console)
+                    continue;
+                }
+            }
+
             if (AnsiCodes.TryGetValue(code, out var ansi)) {
                 sb.Append(ansi);
                 i++; // Skip the code character
@@ -181,6 +200,31 @@ public static class ColorCodeParser {
             }
 
             var code = char.ToLower(next);
+
+            // Handle hex colors (&#RRGGBB)
+            if (code == '#' && i + 7 < message.Length) {
+                var hex = message.Substring(i + 2, 6);
+                
+                // Check if all 6 characters are valid hex
+                var isValidHex = true;
+                foreach (var c in hex) {
+                    var lowerC = char.ToLower(c);
+                    if (!((lowerC >= '0' && lowerC <= '9') || (lowerC >= 'a' && lowerC <= 'f'))) {
+                        isValidHex = false;
+                        break;
+                    }
+                }
+
+                if (isValidHex) {
+                    if (activeColor != null)
+                        sb.Append("</color>");
+
+                    activeColor = hex;
+                    sb.Append($"<color=#{activeColor}>");
+                    i += 7; // Skip '#' and 6 hex digits
+                    continue;
+                }
+            }
 
             // Handle color codes (0-9, a-f)
             if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f')) {
@@ -323,6 +367,25 @@ public static class ColorCodeParser {
 
             // Check if this is a recognized code
             var code = char.ToLower(next);
+
+            // Handle hex colors (&#RRGGBB)
+            if (code == '#' && i + 7 < message.Length) {
+                var hex = message.Substring(i + 2, 6);
+                var isValidHex = true;
+                foreach (var c in hex) {
+                    var lowerC = char.ToLower(c);
+                    if (!((lowerC >= '0' && lowerC <= '9') || (lowerC >= 'a' && lowerC <= 'f'))) {
+                        isValidHex = false;
+                        break;
+                    }
+                }
+
+                if (isValidHex) {
+                    i += 7; // Skip '#' and 6 hex digits
+                    continue;
+                }
+            }
+
             if (AnsiCodes.ContainsKey(code)) {
                 // Recognized code: skip both '&' and the code character
                 i++;

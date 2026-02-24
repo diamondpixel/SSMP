@@ -225,4 +225,9 @@ internal class InputComponent : Component, IInputComponent {
     public void SetOnChange(Action<string> onChange) {
         _onChange = onChange;
     }
+
+    /// <summary>
+    /// Gets whether the input field is currently focused.
+    /// </summary>
+    public bool IsFocused => InputField.isFocused;
 }

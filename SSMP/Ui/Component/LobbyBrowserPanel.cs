@@ -324,11 +324,6 @@ internal class LobbyBrowserPanel : IComponent {
     /// </summary>
     public void Hide() => GameObject.SetActive(false);
 
-    /// <summary>
-    /// Gets whether the panel is currently visible.
-    /// </summary>
-    public bool IsVisible => GameObject.activeSelf;
-
     /// <inheritdoc />
     public void SetGroupActive(bool groupActive) {
         if (GameObject == null) return;
@@ -354,8 +349,9 @@ internal class LobbyBrowserPanel : IComponent {
         rectTransform.anchorMin = rectTransform.anchorMax = new Vector2(position.x / 1920f, position.y / 1080f);
     }
 
-    /// <inheritdoc />
-    public Vector2 GetSize() => GameObject.GetComponent<RectTransform>().sizeDelta;
+    public void Destroy() {
+        Object.Destroy(GameObject);
+    }
 
     /// <summary>
     /// Breaks the given string by inserting a newline character just before the next uppercase character after a

@@ -41,7 +41,7 @@ internal class ChatBox : IChatBox {
     /// <summary>
     /// The spacing between the channel input and the chat input components.
     /// </summary>
-    private const float InputSpacing = -20f;
+    private const float InputSpacing = 0f;
 
     /// <summary>
     /// The width of the chat input and chat box component.
@@ -72,11 +72,6 @@ internal class ChatBox : IChatBox {
     /// The margin of the chat with the left side of the screen.
     /// </summary>
     private const float MarginLeft = 25f;
-
-    /// <summary>
-    /// The margin of a chat message within the chat.
-    /// </summary>
-    private const float TextMargin = 10f;
 
     /// <summary>
     /// The maximum number of passes to wrap a single text message.
@@ -543,11 +538,9 @@ internal class ChatBox : IChatBox {
                     var clientManager = Game.GameManager.Instance.ClientManager;
                     var match = clientManager.Players.FirstOrDefault(p => 
                         p.Username.StartsWith(inputText, StringComparison.OrdinalIgnoreCase));
-                    if (match != null) {
-                        _chatInput.SetPlaceholder($"(Tab to select {match.Username})...");
-                    } else {
-                        _chatInput.SetPlaceholder("Player not found...");
-                    }
+                    _chatInput.SetPlaceholder(
+                        match != null ? $"(Tab to select {match.Username})..." : "Player not found..."
+                    );
                 } else {
                     _channelInput.SetText("");
                     _channelInput.SetPlaceholder("Whisper");

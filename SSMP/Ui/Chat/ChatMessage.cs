@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using SSMP.Ui.Component;
 using SSMP.Util;
 using UnityEngine;
@@ -22,7 +23,7 @@ internal class ChatMessage {
     /// <summary>
     /// The text component belonging to this chat message.
     /// </summary>
-    private readonly TextComponent _textComponent;
+    private readonly ITextComponent _textComponent;
 
     /// <summary>
     /// The current coroutine responsible for fading out the message after a delay.
@@ -50,14 +51,20 @@ internal class ChatMessage {
     /// <param name="componentGroup">The UI component group this message belongs to.</param>
     /// <param name="position">The screen position of the message.</param>
     /// <param name="text">The message text content (supports Unity rich text).</param>
-    public ChatMessage(ComponentGroup componentGroup, Vector2 position, string text) {
+    /// <param name="emojiPositions">Pre-calculated emoji positions for overlay rendering.</param>
+    public ChatMessage(ComponentGroup componentGroup, Vector2 position, string text, List<(int charIndex, int emojiId)>? emojiPositions = null) {
         _textComponent = new TextComponent(
             componentGroup,
             position,
             ChatBox.MessageSize,
+            new Vector2(0.5f, 0.5f),
             text,
             UiManager.ChatFontSize,
-            alignment: TextAnchor.LowerLeft
+            fontStyle: FontStyle.Normal,
+            alignment: TextAnchor.LowerLeft,
+            useEmojiFont: false,
+            useSystemFont: true,
+            emojiPositions: emojiPositions
         );
         _textComponent.SetActive(false);
     }

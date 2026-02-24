@@ -148,6 +148,14 @@ internal abstract class ServerManager : IServerManager {
     /// The skin command.
     /// </summary>
     private readonly IServerCommand _skinCommand;
+    /// <summary>
+    /// The spy command for admins to view private messages.
+    /// </summary>
+    private readonly IServerCommand _spyCommand;
+    /// <summary>
+    /// Set of player IDs currently spying on private messages.
+    /// </summary>
+    private readonly HashSet<ushort> _spyingPlayers;
     // /// <summary>
     // /// The copy save command.
     // /// </summary>
@@ -222,6 +230,8 @@ internal abstract class ServerManager : IServerManager {
         _teamCommand = new TeamCommand(this);
         _skinCommand = new SkinCommand(this);
         _helpCommand = new HelpCommand(this);
+        _spyingPlayers = new HashSet<ushort>();
+        _spyCommand = new SpyCommand(_spyingPlayers);
         // _copySaveCommand = new CopySaveCommand(this, ServerSaveData);
     }
 
@@ -254,6 +264,7 @@ internal abstract class ServerManager : IServerManager {
         CommandManager.RegisterCommand(_teamCommand);
         CommandManager.RegisterCommand(_skinCommand);
         CommandManager.RegisterCommand(_helpCommand);
+        CommandManager.RegisterCommand(_spyCommand);
 
         // if (FullSynchronisation) {
         //     CommandManager.RegisterCommand(_copySaveCommand);
@@ -1532,7 +1543,8 @@ internal abstract class ServerManager : IServerManager {
             return;
         }
 
-        Logger.Info($"Chat from ({id}, {playerData.Username}): \"{chatMessage.Message}\"");
+        Logger.Info($"Chat from ({id}, {playerData.Username}): \"{chatMessage.Message}\"" +
+                    (chatMessage.TargetId.HasValue ? $" [Private to {chatMessage.TargetId.Value}]" : ""));
 
         if (TryProcessCommand(
                 new PlayerCommandSender(
@@ -1560,6 +1572,42 @@ internal abstract class ServerManager : IServerManager {
         }
 
         var messages = playerChatEvent.Message.Split('\n');
+        
+        // Handle private messages
+        if (chatMessage.TargetId.HasValue) {
+            var targetId = chatMessage.TargetId.Value;
+            
+            // Check if target exists
+            if (!_playerData.TryGetValue(targetId, out var targetPlayer)) {
+                SendMessage(id, "Player not found.");
+                return;
+            }
+            
+            foreach (var message in messages) {
+                var privateMsg = $"&#FF69B4[From {playerData.Username}]: {message}&r";
+                var sentMsg = $"&#FF69B4[To {targetPlayer.Username}]: {message}&r";
+                var spyMsg = $"&e[SPY] [{playerData.Username} -> {targetPlayer.Username}]: {message}&r";
+                
+                // Send to recipient
+                _netServer.GetUpdateManagerForClient(targetId)?.AddChatMessage(privateMsg);
+                
+                // Send confirmation to sender (if not self-messaging)
+                if (targetId != id) {
+                    _netServer.GetUpdateManagerForClient(id)?.AddChatMessage(sentMsg);
+                }
+                
+                // Send to spying admins
+                foreach (var spyId in _spyingPlayers) {
+                    // Don't send duplicate to sender or recipient
+                    if (spyId != id && spyId != targetId) {
+                        _netServer.GetUpdateManagerForClient(spyId)?.AddChatMessage(spyMsg);
+                    }
+                }
+            }
+            return;
+        }
+        
+        // Handle public messages
         foreach (var message in messages) {
             var formattedMsg = $"[{playerData.Username}]: {message}";
 

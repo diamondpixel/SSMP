@@ -49,6 +49,7 @@
         <EmbeddedResource Include="Resource\save-data-godseeker.json"/>
         <EmbeddedResource Include="Resource\string-data.json"/>
         <EmbeddedResource Include="Resource\music-data.json"/>
+        <EmbeddedResource Include="Resource\emojis.json"/>
     </ItemGroup>
 
     <ItemGroup>

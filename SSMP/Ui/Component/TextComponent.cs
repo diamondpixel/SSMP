@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,8 +18,11 @@ internal class TextComponent : Component, ITextComponent {
         string text,
         int fontSize,
         FontStyle fontStyle = FontStyle.Normal,
-        TextAnchor alignment = TextAnchor.MiddleCenter
-    ) : this(componentGroup, position, size, new Vector2(0.5f, 0.5f), text, fontSize, fontStyle, alignment) {
+        TextAnchor alignment = TextAnchor.MiddleCenter,
+        bool useEmojiFont = false,
+        bool useSystemFont = false,
+        List<(int charIndex, int emojiId)>? emojiPositions = null
+    ) : this(componentGroup, position, size, new Vector2(0.5f, 0.5f), text, fontSize, fontStyle, alignment, useEmojiFont, useSystemFont, emojiPositions) {
     }
 
     public TextComponent(
@@ -29,11 +33,20 @@ internal class TextComponent : Component, ITextComponent {
         string text,
         int fontSize,
         FontStyle fontStyle = FontStyle.Normal,
-        TextAnchor alignment = TextAnchor.MiddleCenter
+        TextAnchor alignment = TextAnchor.MiddleCenter,
+        bool useEmojiFont = false,
+        bool useSystemFont = false,
+        List<(int charIndex, int emojiId)>? emojiPositions = null
     ) : base(componentGroup, position, size) {
-        _textObject = CreateTextObject(text, fontSize, fontStyle, alignment, pivot);
+        _textObject = CreateTextObject(text, fontSize, fontStyle, alignment, pivot, useEmojiFont, useSystemFont);
         AddSizeFitter();
         AddOutline();
+        
+        // Attach emoji overlay controller if positions are provided
+        if (emojiPositions != null && emojiPositions.Count > 0) {
+            var controller = GameObject.AddComponent<UnityTextEmojiController>();
+            controller.Initialize(_textObject, emojiPositions);
+        }
     }
 
     /// <inheritdoc />
@@ -75,29 +88,35 @@ internal class TextComponent : Component, ITextComponent {
     /// </list>
     /// </para>
     /// </remarks>
-    public float GetPreferredWidth() {
-        var textGen = new TextGenerator();
-        var settings = _textObject.GetGenerationSettings(_textObject.rectTransform.rect.size);
-        return textGen.GetPreferredWidth(_textObject.text, settings);
-    }
 
     /// <summary>
     /// Create the Unity Text object with all the parameters.
     /// </summary>
     /// <returns>The Unity <see cref="Text"/> object.</returns>
-    private Text CreateTextObject(string text, int fontSize, FontStyle fontStyle, TextAnchor alignment, Vector2 pivot) {
+    private Text CreateTextObject(string text, int fontSize, FontStyle fontStyle, TextAnchor alignment, Vector2 pivot, bool useEmojiFont, bool useSystemFont) {
         var textObj = GameObject.AddComponent<Text>();
         
         textObj.supportRichText = true;
         textObj.text = text;
-        textObj.font = Resources.FontManager.UIFontRegular;
+        
+        // Use emoji font if requested and available, otherwise fallback to UI font
+        if (useSystemFont) {
+            // Force system font (lazy loaded). If unavailable, null defaults to built-in Arial.
+            textObj.font = Resources.FontManager.SystemFont;
+        } else if (useEmojiFont && Resources.FontManager.EmojiFont != null) {
+            textObj.font = Resources.FontManager.EmojiFont;
+        } else {
+            // Default to Game Font (Perpetua)
+            textObj.font = Resources.FontManager.UIFontRegular;
+        }
+        
         textObj.fontSize = fontSize;
         textObj.fontStyle = fontStyle;
         textObj.alignment = alignment;
         textObj.horizontalOverflow = HorizontalWrapMode.Overflow;
         textObj.verticalOverflow = VerticalWrapMode.Overflow;
         textObj.rectTransform.pivot = pivot;
-        textObj.raycastTarget = false; // do not block input
+        textObj.raycastTarget = false;
         
         return textObj;
     }

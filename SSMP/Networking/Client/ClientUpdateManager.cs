@@ -361,8 +361,12 @@ internal class ClientUpdateManager : UpdateManager<ServerUpdatePacket, ServerUpd
     /// Set a chat message in the current packet.
     /// </summary>
     /// <param name="message">The string message.</param>
-    public void SetChatMessage(string message) {
-        var chatMessage = new ChatMessage { Message = message };
+    /// <param name="targetId">The target player ID for private messages.</param>
+    public void SetChatMessage(string message, ushort? targetId = null) {
+        var chatMessage = new ChatMessage { 
+            Message = message, 
+            TargetId = targetId 
+        };
 
         lock (Lock) {
             CurrentUpdatePacket.SetSendingPacketData(ServerUpdatePacketId.ChatMessage, chatMessage);

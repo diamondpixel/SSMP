@@ -25,6 +25,7 @@ internal class ThreadUtil : MonoBehaviour {
         var threadUtilObject = new GameObject();
         threadUtilObject.AddComponent<ThreadUtil>();
         DontDestroyOnLoad(threadUtilObject);
+        Networking.Packet.PacketManager.MainThreadDispatcher = RunActionOnMainThread;
     }
 
     /// <summary>

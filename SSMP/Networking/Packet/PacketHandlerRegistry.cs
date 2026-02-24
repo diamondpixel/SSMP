@@ -77,8 +77,8 @@ internal class PacketHandlerRegistry<TPacketId, THandler>
             return;
         }
 
-        if (_dispatchToMainThread) {
-            ThreadUtil.RunActionOnMainThread(() => SafeInvoke(packetId, handler, invoker));
+        if (_dispatchToMainThread && PacketManager.MainThreadDispatcher != null) {
+            PacketManager.MainThreadDispatcher(() => SafeInvoke(packetId, handler, invoker));
         } else {
             SafeInvoke(packetId, handler, invoker);
         }

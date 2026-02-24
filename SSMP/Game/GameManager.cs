@@ -15,6 +15,11 @@ namespace SSMP.Game;
 /// </summary>
 internal class GameManager {
     /// <summary>
+    /// The GameManager instance for the mod.
+    /// </summary>
+    public static GameManager Instance { get; private set; } = null!;
+
+    /// <summary>
     /// The UI manager instance for the mod.
     /// </summary>
     private readonly UiManager _uiManager;
@@ -22,17 +27,18 @@ internal class GameManager {
     /// <summary>
     /// The client manager instance for the mod.
     /// </summary>
-    private readonly ClientManager _clientManager;
+    public ClientManager ClientManager { get; }
 
     /// <summary>
     /// The server manager instance for the mod.
     /// </summary>
     private readonly ModServerManager _serverManager;
-    
+
     /// <summary>
     /// Constructs this GameManager instance by instantiating all other necessary classes.
     /// </summary>
     public GameManager() {
+        Instance = this;
         var modSettings = ModSettings.Load();
 
         var packetManager = new PacketManager();
@@ -44,6 +50,7 @@ internal class GameManager {
         if (modSettings.ServerSettings == null) {
             modSettings.ServerSettings = new ServerSettings();
         }
+
         var serverServerSettings = modSettings.ServerSettings;
 
         _uiManager = new UiManager(
@@ -59,7 +66,7 @@ internal class GameManager {
             modSettings
         );
 
-        _clientManager = new ClientManager(
+        ClientManager = new ClientManager(
             netClient,
             packetManager,
             _uiManager,
@@ -89,7 +96,7 @@ internal class GameManager {
 
         _uiManager.Initialize();
         _serverManager.Initialize();
-        _clientManager.Initialize(_serverManager);
+        ClientManager.Initialize(_serverManager);
     }
 
     /// <summary>
@@ -99,11 +106,11 @@ internal class GameManager {
         Logging.Logger.Info("GameManager: Shutting down...");
 
         // Stop client first to disconnect from any server
-        _clientManager.Disconnect();
+        ClientManager.Disconnect();
 
         // Stop server if hosting
         _serverManager.Stop();
-        
+
         // Clean up Steam if initialized
         if (SteamManager.IsInitialized) {
             SteamManager.Shutdown();

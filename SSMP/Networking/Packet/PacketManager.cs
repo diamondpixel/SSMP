@@ -39,7 +39,12 @@ public delegate void GenericServerPacketHandler<in TPacketData>(ushort id, TPack
 /// Manages packets that are received by the given NetClient.
 /// </summary>
 internal class PacketManager {
-    
+    /// <summary>
+    /// Action used to dispatch a packet handler to the main thread.
+    /// This should be configured by contexts where multithreading requires main thread dispatching (e.g. Unity).
+    /// </summary>
+    public static Action<Action>? MainThreadDispatcher { get; set; }
+
     #region Standard Packet Registries
 
     private readonly PacketHandlerRegistry<ClientUpdatePacketId, ClientPacketHandler> _clientUpdateRegistry = new(

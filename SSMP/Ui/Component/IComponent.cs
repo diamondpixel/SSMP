@@ -31,8 +31,7 @@ public interface IComponent {
     void SetPosition(Vector2 position);
 
     /// <summary>
-    /// Get the size of this component.
+    /// Destroys the component.
     /// </summary>
-    /// <returns>Vector2 representing the size.</returns>
-    Vector2 GetSize();
+    void Destroy();
 }

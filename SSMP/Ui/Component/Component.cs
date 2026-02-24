@@ -94,11 +94,6 @@ internal abstract class Component : IComponent {
         );
     }
 
-    /// <inheritdoc />
-    public Vector2 GetSize() {
-        return _transform.sizeDelta;
-    }
-
     /// <summary>
     /// Destroys the component.
     /// </summary>

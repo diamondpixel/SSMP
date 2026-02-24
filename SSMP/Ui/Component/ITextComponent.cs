@@ -17,4 +17,9 @@ internal interface ITextComponent : IComponent {
     /// </summary>
     /// <param name="color">The color.</param>
     void SetColor(Color color);
+
+    /// <summary>
+    /// Get the current color of the text.
+    /// </summary>
+    Color GetColor();
 }

@@ -1,0 +1,7634 @@
+{
+  ":hash:": {
+    "x": 0,
+    "y": 0
+  },
+  ":keycap_star:": {
+    "x": 0,
+    "y": 1
+  },
+  ":zero:": {
+    "x": 0,
+    "y": 2
+  },
+  ":one:": {
+    "x": 0,
+    "y": 3
+  },
+  ":two:": {
+    "x": 0,
+    "y": 4
+  },
+  ":three:": {
+    "x": 0,
+    "y": 5
+  },
+  ":four:": {
+    "x": 0,
+    "y": 6
+  },
+  ":five:": {
+    "x": 0,
+    "y": 7
+  },
+  ":six:": {
+    "x": 0,
+    "y": 8
+  },
+  ":seven:": {
+    "x": 0,
+    "y": 9
+  },
+  ":eight:": {
+    "x": 0,
+    "y": 10
+  },
+  ":nine:": {
+    "x": 0,
+    "y": 11
+  },
+  ":copyright:": {
+    "x": 0,
+    "y": 12
+  },
+  ":registered:": {
+    "x": 0,
+    "y": 13
+  },
+  ":mahjong:": {
+    "x": 0,
+    "y": 14
+  },
+  ":black_joker:": {
+    "x": 0,
+    "y": 15
+  },
+  ":a:": {
+    "x": 0,
+    "y": 16
+  },
+  ":b:": {
+    "x": 0,
+    "y": 17
+  },
+  ":o2:": {
+    "x": 0,
+    "y": 18
+  },
+  ":parking:": {
+    "x": 0,
+    "y": 19
+  },
+  ":ab:": {
+    "x": 0,
+    "y": 20
+  },
+  ":cl:": {
+    "x": 0,
+    "y": 21
+  },
+  ":cool:": {
+    "x": 0,
+    "y": 22
+  },
+  ":free:": {
+    "x": 0,
+    "y": 23
+  },
+  ":id:": {
+    "x": 0,
+    "y": 24
+  },
+  ":new:": {
+    "x": 0,
+    "y": 25
+  },
+  ":ng:": {
+    "x": 0,
+    "y": 26
+  },
+  ":ok:": {
+    "x": 0,
+    "y": 27
+  },
+  ":sos:": {
+    "x": 0,
+    "y": 28
+  },
+  ":up:": {
+    "x": 0,
+    "y": 29
+  },
+  ":vs:": {
+    "x": 0,
+    "y": 30
+  },
+  ":flag-ac:": {
+    "x": 0,
+    "y": 31
+  },
+  ":flag-ad:": {
+    "x": 0,
+    "y": 32
+  },
+  ":flag-ae:": {
+    "x": 0,
+    "y": 33
+  },
+  ":flag-af:": {
+    "x": 0,
+    "y": 34
+  },
+  ":flag-ag:": {
+    "x": 0,
+    "y": 35
+  },
+  ":flag-ai:": {
+    "x": 0,
+    "y": 36
+  },
+  ":flag-al:": {
+    "x": 0,
+    "y": 37
+  },
+  ":flag-am:": {
+    "x": 0,
+    "y": 38
+  },
+  ":flag-ao:": {
+    "x": 0,
+    "y": 39
+  },
+  ":flag-aq:": {
+    "x": 0,
+    "y": 40
+  },
+  ":flag-ar:": {
+    "x": 0,
+    "y": 41
+  },
+  ":flag-as:": {
+    "x": 0,
+    "y": 42
+  },
+  ":flag-at:": {
+    "x": 0,
+    "y": 43
+  },
+  ":flag-au:": {
+    "x": 0,
+    "y": 44
+  },
+  ":flag-aw:": {
+    "x": 0,
+    "y": 45
+  },
+  ":flag-ax:": {
+    "x": 0,
+    "y": 46
+  },
+  ":flag-az:": {
+    "x": 0,
+    "y": 47
+  },
+  ":flag-ba:": {
+    "x": 0,
+    "y": 48
+  },
+  ":flag-bb:": {
+    "x": 0,
+    "y": 49
+  },
+  ":flag-bd:": {
+    "x": 0,
+    "y": 50
+  },
+  ":flag-be:": {
+    "x": 0,
+    "y": 51
+  },
+  ":flag-bf:": {
+    "x": 0,
+    "y": 52
+  },
+  ":flag-bg:": {
+    "x": 0,
+    "y": 53
+  },
+  ":flag-bh:": {
+    "x": 0,
+    "y": 54
+  },
+  ":flag-bi:": {
+    "x": 0,
+    "y": 55
+  },
+  ":flag-bj:": {
+    "x": 0,
+    "y": 56
+  },
+  ":flag-bl:": {
+    "x": 0,
+    "y": 57
+  },
+  ":flag-bm:": {
+    "x": 0,
+    "y": 58
+  },
+  ":flag-bn:": {
+    "x": 0,
+    "y": 59
+  },
+  ":flag-bo:": {
+    "x": 0,
+    "y": 60
+  },
+  ":flag-bq:": {
+    "x": 0,
+    "y": 61
+  },
+  ":flag-br:": {
+    "x": 1,
+    "y": 0
+  },
+  ":flag-bs:": {
+    "x": 1,
+    "y": 1
+  },
+  ":flag-bt:": {
+    "x": 1,
+    "y": 2
+  },
+  ":flag-bv:": {
+    "x": 1,
+    "y": 3
+  },
+  ":flag-bw:": {
+    "x": 1,
+    "y": 4
+  },
+  ":flag-by:": {
+    "x": 1,
+    "y": 5
+  },
+  ":flag-bz:": {
+    "x": 1,
+    "y": 6
+  },
+  ":flag-ca:": {
+    "x": 1,
+    "y": 7
+  },
+  ":flag-cc:": {
+    "x": 1,
+    "y": 8
+  },
+  ":flag-cd:": {
+    "x": 1,
+    "y": 9
+  },
+  ":flag-cf:": {
+    "x": 1,
+    "y": 10
+  },
+  ":flag-cg:": {
+    "x": 1,
+    "y": 11
+  },
+  ":flag-ch:": {
+    "x": 1,
+    "y": 12
+  },
+  ":flag-ci:": {
+    "x": 1,
+    "y": 13
+  },
+  ":flag-ck:": {
+    "x": 1,
+    "y": 14
+  },
+  ":flag-cl:": {
+    "x": 1,
+    "y": 15
+  },
+  ":flag-cm:": {
+    "x": 1,
+    "y": 16
+  },
+  ":cn:": {
+    "x": 1,
+    "y": 17
+  },
+  ":flag-co:": {
+    "x": 1,
+    "y": 18
+  },
+  ":flag-cp:": {
+    "x": 1,
+    "y": 19
+  },
+  ":flag-sark:": {
+    "x": 1,
+    "y": 20
+  },
+  ":flag-cr:": {
+    "x": 1,
+    "y": 21
+  },
+  ":flag-cu:": {
+    "x": 1,
+    "y": 22
+  },
+  ":flag-cv:": {
+    "x": 1,
+    "y": 23
+  },
+  ":flag-cw:": {
+    "x": 1,
+    "y": 24
+  },
+  ":flag-cx:": {
+    "x": 1,
+    "y": 25
+  },
+  ":flag-cy:": {
+    "x": 1,
+    "y": 26
+  },
+  ":flag-cz:": {
+    "x": 1,
+    "y": 27
+  },
+  ":de:": {
+    "x": 1,
+    "y": 28
+  },
+  ":flag-dg:": {
+    "x": 1,
+    "y": 29
+  },
+  ":flag-dj:": {
+    "x": 1,
+    "y": 30
+  },
+  ":flag-dk:": {
+    "x": 1,
+    "y": 31
+  },
+  ":flag-dm:": {
+    "x": 1,
+    "y": 32
+  },
+  ":flag-do:": {
+    "x": 1,
+    "y": 33
+  },
+  ":flag-dz:": {
+    "x": 1,
+    "y": 34
+  },
+  ":flag-ea:": {
+    "x": 1,
+    "y": 35
+  },
+  ":flag-ec:": {
+    "x": 1,
+    "y": 36
+  },
+  ":flag-ee:": {
+    "x": 1,
+    "y": 37
+  },
+  ":flag-eg:": {
+    "x": 1,
+    "y": 38
+  },
+  ":flag-eh:": {
+    "x": 1,
+    "y": 39
+  },
+  ":flag-er:": {
+    "x": 1,
+    "y": 40
+  },
+  ":es:": {
+    "x": 1,
+    "y": 41
+  },
+  ":flag-et:": {
+    "x": 1,
+    "y": 42
+  },
+  ":flag-eu:": {
+    "x": 1,
+    "y": 43
+  },
+  ":flag-fi:": {
+    "x": 1,
+    "y": 44
+  },
+  ":flag-fj:": {
+    "x": 1,
+    "y": 45
+  },
+  ":flag-fk:": {
+    "x": 1,
+    "y": 46
+  },
+  ":flag-fm:": {
+    "x": 1,
+    "y": 47
+  },
+  ":flag-fo:": {
+    "x": 1,
+    "y": 48
+  },
+  ":fr:": {
+    "x": 1,
+    "y": 49
+  },
+  ":flag-ga:": {
+    "x": 1,
+    "y": 50
+  },
+  ":gb:": {
+    "x": 1,
+    "y": 51
+  },
+  ":flag-gd:": {
+    "x": 1,
+    "y": 52
+  },
+  ":flag-ge:": {
+    "x": 1,
+    "y": 53
+  },
+  ":flag-gf:": {
+    "x": 1,
+    "y": 54
+  },
+  ":flag-gg:": {
+    "x": 1,
+    "y": 55
+  },
+  ":flag-gh:": {
+    "x": 1,
+    "y": 56
+  },
+  ":flag-gi:": {
+    "x": 1,
+    "y": 57
+  },
+  ":flag-gl:": {
+    "x": 1,
+    "y": 58
+  },
+  ":flag-gm:": {
+    "x": 1,
+    "y": 59
+  },
+  ":flag-gn:": {
+    "x": 1,
+    "y": 60
+  },
+  ":flag-gp:": {
+    "x": 1,
+    "y": 61
+  },
+  ":flag-gq:": {
+    "x": 2,
+    "y": 0
+  },
+  ":flag-gr:": {
+    "x": 2,
+    "y": 1
+  },
+  ":flag-gs:": {
+    "x": 2,
+    "y": 2
+  },
+  ":flag-gt:": {
+    "x": 2,
+    "y": 3
+  },
+  ":flag-gu:": {
+    "x": 2,
+    "y": 4
+  },
+  ":flag-gw:": {
+    "x": 2,
+    "y": 5
+  },
+  ":flag-gy:": {
+    "x": 2,
+    "y": 6
+  },
+  ":flag-hk:": {
+    "x": 2,
+    "y": 7
+  },
+  ":flag-hm:": {
+    "x": 2,
+    "y": 8
+  },
+  ":flag-hn:": {
+    "x": 2,
+    "y": 9
+  },
+  ":flag-hr:": {
+    "x": 2,
+    "y": 10
+  },
+  ":flag-ht:": {
+    "x": 2,
+    "y": 11
+  },
+  ":flag-hu:": {
+    "x": 2,
+    "y": 12
+  },
+  ":flag-ic:": {
+    "x": 2,
+    "y": 13
+  },
+  ":flag-id:": {
+    "x": 2,
+    "y": 14
+  },
+  ":flag-ie:": {
+    "x": 2,
+    "y": 15
+  },
+  ":flag-il:": {
+    "x": 2,
+    "y": 16
+  },
+  ":flag-im:": {
+    "x": 2,
+    "y": 17
+  },
+  ":flag-in:": {
+    "x": 2,
+    "y": 18
+  },
+  ":flag-io:": {
+    "x": 2,
+    "y": 19
+  },
+  ":flag-iq:": {
+    "x": 2,
+    "y": 20
+  },
+  ":flag-ir:": {
+    "x": 2,
+    "y": 21
+  },
+  ":flag-is:": {
+    "x": 2,
+    "y": 22
+  },
+  ":it:": {
+    "x": 2,
+    "y": 23
+  },
+  ":flag-je:": {
+    "x": 2,
+    "y": 24
+  },
+  ":flag-jm:": {
+    "x": 2,
+    "y": 25
+  },
+  ":flag-jo:": {
+    "x": 2,
+    "y": 26
+  },
+  ":jp:": {
+    "x": 2,
+    "y": 27
+  },
+  ":flag-ke:": {
+    "x": 2,
+    "y": 28
+  },
+  ":flag-kg:": {
+    "x": 2,
+    "y": 29
+  },
+  ":flag-kh:": {
+    "x": 2,
+    "y": 30
+  },
+  ":flag-ki:": {
+    "x": 2,
+    "y": 31
+  },
+  ":flag-km:": {
+    "x": 2,
+    "y": 32
+  },
+  ":flag-kn:": {
+    "x": 2,
+    "y": 33
+  },
+  ":flag-kp:": {
+    "x": 2,
+    "y": 34
+  },
+  ":kr:": {
+    "x": 2,
+    "y": 35
+  },
+  ":flag-kw:": {
+    "x": 2,
+    "y": 36
+  },
+  ":flag-ky:": {
+    "x": 2,
+    "y": 37
+  },
+  ":flag-kz:": {
+    "x": 2,
+    "y": 38
+  },
+  ":flag-la:": {
+    "x": 2,
+    "y": 39
+  },
+  ":flag-lb:": {
+    "x": 2,
+    "y": 40
+  },
+  ":flag-lc:": {
+    "x": 2,
+    "y": 41
+  },
+  ":flag-li:": {
+    "x": 2,
+    "y": 42
+  },
+  ":flag-lk:": {
+    "x": 2,
+    "y": 43
+  },
+  ":flag-lr:": {
+    "x": 2,
+    "y": 44
+  },
+  ":flag-ls:": {
+    "x": 2,
+    "y": 45
+  },
+  ":flag-lt:": {
+    "x": 2,
+    "y": 46
+  },
+  ":flag-lu:": {
+    "x": 2,
+    "y": 47
+  },
+  ":flag-lv:": {
+    "x": 2,
+    "y": 48
+  },
+  ":flag-ly:": {
+    "x": 2,
+    "y": 49
+  },
+  ":flag-ma:": {
+    "x": 2,
+    "y": 50
+  },
+  ":flag-mc:": {
+    "x": 2,
+    "y": 51
+  },
+  ":flag-md:": {
+    "x": 2,
+    "y": 52
+  },
+  ":flag-me:": {
+    "x": 2,
+    "y": 53
+  },
+  ":flag-mf:": {
+    "x": 2,
+    "y": 54
+  },
+  ":flag-mg:": {
+    "x": 2,
+    "y": 55
+  },
+  ":flag-mh:": {
+    "x": 2,
+    "y": 56
+  },
+  ":flag-mk:": {
+    "x": 2,
+    "y": 57
+  },
+  ":flag-ml:": {
+    "x": 2,
+    "y": 58
+  },
+  ":flag-mm:": {
+    "x": 2,
+    "y": 59
+  },
+  ":flag-mn:": {
+    "x": 2,
+    "y": 60
+  },
+  ":flag-mo:": {
+    "x": 2,
+    "y": 61
+  },
+  ":flag-mp:": {
+    "x": 3,
+    "y": 0
+  },
+  ":flag-mq:": {
+    "x": 3,
+    "y": 1
+  },
+  ":flag-mr:": {
+    "x": 3,
+    "y": 2
+  },
+  ":flag-ms:": {
+    "x": 3,
+    "y": 3
+  },
+  ":flag-mt:": {
+    "x": 3,
+    "y": 4
+  },
+  ":flag-mu:": {
+    "x": 3,
+    "y": 5
+  },
+  ":flag-mv:": {
+    "x": 3,
+    "y": 6
+  },
+  ":flag-mw:": {
+    "x": 3,
+    "y": 7
+  },
+  ":flag-mx:": {
+    "x": 3,
+    "y": 8
+  },
+  ":flag-my:": {
+    "x": 3,
+    "y": 9
+  },
+  ":flag-mz:": {
+    "x": 3,
+    "y": 10
+  },
+  ":flag-na:": {
+    "x": 3,
+    "y": 11
+  },
+  ":flag-nc:": {
+    "x": 3,
+    "y": 12
+  },
+  ":flag-ne:": {
+    "x": 3,
+    "y": 13
+  },
+  ":flag-nf:": {
+    "x": 3,
+    "y": 14
+  },
+  ":flag-ng:": {
+    "x": 3,
+    "y": 15
+  },
+  ":flag-ni:": {
+    "x": 3,
+    "y": 16
+  },
+  ":flag-nl:": {
+    "x": 3,
+    "y": 17
+  },
+  ":flag-no:": {
+    "x": 3,
+    "y": 18
+  },
+  ":flag-np:": {
+    "x": 3,
+    "y": 19
+  },
+  ":flag-nr:": {
+    "x": 3,
+    "y": 20
+  },
+  ":flag-nu:": {
+    "x": 3,
+    "y": 21
+  },
+  ":flag-nz:": {
+    "x": 3,
+    "y": 22
+  },
+  ":flag-om:": {
+    "x": 3,
+    "y": 23
+  },
+  ":flag-pa:": {
+    "x": 3,
+    "y": 24
+  },
+  ":flag-pe:": {
+    "x": 3,
+    "y": 25
+  },
+  ":flag-pf:": {
+    "x": 3,
+    "y": 26
+  },
+  ":flag-pg:": {
+    "x": 3,
+    "y": 27
+  },
+  ":flag-ph:": {
+    "x": 3,
+    "y": 28
+  },
+  ":flag-pk:": {
+    "x": 3,
+    "y": 29
+  },
+  ":flag-pl:": {
+    "x": 3,
+    "y": 30
+  },
+  ":flag-pm:": {
+    "x": 3,
+    "y": 31
+  },
+  ":flag-pn:": {
+    "x": 3,
+    "y": 32
+  },
+  ":flag-pr:": {
+    "x": 3,
+    "y": 33
+  },
+  ":flag-ps:": {
+    "x": 3,
+    "y": 34
+  },
+  ":flag-pt:": {
+    "x": 3,
+    "y": 35
+  },
+  ":flag-pw:": {
+    "x": 3,
+    "y": 36
+  },
+  ":flag-py:": {
+    "x": 3,
+    "y": 37
+  },
+  ":flag-qa:": {
+    "x": 3,
+    "y": 38
+  },
+  ":flag-re:": {
+    "x": 3,
+    "y": 39
+  },
+  ":flag-ro:": {
+    "x": 3,
+    "y": 40
+  },
+  ":flag-rs:": {
+    "x": 3,
+    "y": 41
+  },
+  ":ru:": {
+    "x": 3,
+    "y": 42
+  },
+  ":flag-rw:": {
+    "x": 3,
+    "y": 43
+  },
+  ":flag-sa:": {
+    "x": 3,
+    "y": 44
+  },
+  ":flag-sb:": {
+    "x": 3,
+    "y": 45
+  },
+  ":flag-sc:": {
+    "x": 3,
+    "y": 46
+  },
+  ":flag-sd:": {
+    "x": 3,
+    "y": 47
+  },
+  ":flag-se:": {
+    "x": 3,
+    "y": 48
+  },
+  ":flag-sg:": {
+    "x": 3,
+    "y": 49
+  },
+  ":flag-sh:": {
+    "x": 3,
+    "y": 50
+  },
+  ":flag-si:": {
+    "x": 3,
+    "y": 51
+  },
+  ":flag-sj:": {
+    "x": 3,
+    "y": 52
+  },
+  ":flag-sk:": {
+    "x": 3,
+    "y": 53
+  },
+  ":flag-sl:": {
+    "x": 3,
+    "y": 54
+  },
+  ":flag-sm:": {
+    "x": 3,
+    "y": 55
+  },
+  ":flag-sn:": {
+    "x": 3,
+    "y": 56
+  },
+  ":flag-so:": {
+    "x": 3,
+    "y": 57
+  },
+  ":flag-sr:": {
+    "x": 3,
+    "y": 58
+  },
+  ":flag-ss:": {
+    "x": 3,
+    "y": 59
+  },
+  ":flag-st:": {
+    "x": 3,
+    "y": 60
+  },
+  ":flag-sv:": {
+    "x": 3,
+    "y": 61
+  },
+  ":flag-sx:": {
+    "x": 4,
+    "y": 0
+  },
+  ":flag-sy:": {
+    "x": 4,
+    "y": 1
+  },
+  ":flag-sz:": {
+    "x": 4,
+    "y": 2
+  },
+  ":flag-ta:": {
+    "x": 4,
+    "y": 3
+  },
+  ":flag-tc:": {
+    "x": 4,
+    "y": 4
+  },
+  ":flag-td:": {
+    "x": 4,
+    "y": 5
+  },
+  ":flag-tf:": {
+    "x": 4,
+    "y": 6
+  },
+  ":flag-tg:": {
+    "x": 4,
+    "y": 7
+  },
+  ":flag-th:": {
+    "x": 4,
+    "y": 8
+  },
+  ":flag-tj:": {
+    "x": 4,
+    "y": 9
+  },
+  ":flag-tk:": {
+    "x": 4,
+    "y": 10
+  },
+  ":flag-tl:": {
+    "x": 4,
+    "y": 11
+  },
+  ":flag-tm:": {
+    "x": 4,
+    "y": 12
+  },
+  ":flag-tn:": {
+    "x": 4,
+    "y": 13
+  },
+  ":flag-to:": {
+    "x": 4,
+    "y": 14
+  },
+  ":flag-tr:": {
+    "x": 4,
+    "y": 15
+  },
+  ":flag-tt:": {
+    "x": 4,
+    "y": 16
+  },
+  ":flag-tv:": {
+    "x": 4,
+    "y": 17
+  },
+  ":flag-tw:": {
+    "x": 4,
+    "y": 18
+  },
+  ":flag-tz:": {
+    "x": 4,
+    "y": 19
+  },
+  ":flag-ua:": {
+    "x": 4,
+    "y": 20
+  },
+  ":flag-ug:": {
+    "x": 4,
+    "y": 21
+  },
+  ":flag-um:": {
+    "x": 4,
+    "y": 22
+  },
+  ":flag-un:": {
+    "x": 4,
+    "y": 23
+  },
+  ":us:": {
+    "x": 4,
+    "y": 24
+  },
+  ":flag-uy:": {
+    "x": 4,
+    "y": 25
+  },
+  ":flag-uz:": {
+    "x": 4,
+    "y": 26
+  },
+  ":flag-va:": {
+    "x": 4,
+    "y": 27
+  },
+  ":flag-vc:": {
+    "x": 4,
+    "y": 28
+  },
+  ":flag-ve:": {
+    "x": 4,
+    "y": 29
+  },
+  ":flag-vg:": {
+    "x": 4,
+    "y": 30
+  },
+  ":flag-vi:": {
+    "x": 4,
+    "y": 31
+  },
+  ":flag-vn:": {
+    "x": 4,
+    "y": 32
+  },
+  ":flag-vu:": {
+    "x": 4,
+    "y": 33
+  },
+  ":flag-wf:": {
+    "x": 4,
+    "y": 34
+  },
+  ":flag-ws:": {
+    "x": 4,
+    "y": 35
+  },
+  ":flag-xk:": {
+    "x": 4,
+    "y": 36
+  },
+  ":flag-ye:": {
+    "x": 4,
+    "y": 37
+  },
+  ":flag-yt:": {
+    "x": 4,
+    "y": 38
+  },
+  ":flag-za:": {
+    "x": 4,
+    "y": 39
+  },
+  ":flag-zm:": {
+    "x": 4,
+    "y": 40
+  },
+  ":flag-zw:": {
+    "x": 4,
+    "y": 41
+  },
+  ":koko:": {
+    "x": 4,
+    "y": 42
+  },
+  ":sa:": {
+    "x": 4,
+    "y": 43
+  },
+  ":u7121:": {
+    "x": 4,
+    "y": 44
+  },
+  ":u6307:": {
+    "x": 4,
+    "y": 45
+  },
+  ":u7981:": {
+    "x": 4,
+    "y": 46
+  },
+  ":u7a7a:": {
+    "x": 4,
+    "y": 47
+  },
+  ":u5408:": {
+    "x": 4,
+    "y": 48
+  },
+  ":u6e80:": {
+    "x": 4,
+    "y": 49
+  },
+  ":u6709:": {
+    "x": 4,
+    "y": 50
+  },
+  ":u6708:": {
+    "x": 4,
+    "y": 51
+  },
+  ":u7533:": {
+    "x": 4,
+    "y": 52
+  },
+  ":u5272:": {
+    "x": 4,
+    "y": 53
+  },
+  ":u55b6:": {
+    "x": 4,
+    "y": 54
+  },
+  ":ideograph_advantage:": {
+    "x": 4,
+    "y": 55
+  },
+  ":accept:": {
+    "x": 4,
+    "y": 56
+  },
+  ":cyclone:": {
+    "x": 4,
+    "y": 57
+  },
+  ":foggy:": {
+    "x": 4,
+    "y": 58
+  },
+  ":closed_umbrella:": {
+    "x": 4,
+    "y": 59
+  },
+  ":night_with_stars:": {
+    "x": 4,
+    "y": 60
+  },
+  ":sunrise_over_mountains:": {
+    "x": 4,
+    "y": 61
+  },
+  ":sunrise:": {
+    "x": 5,
+    "y": 0
+  },
+  ":city_sunset:": {
+    "x": 5,
+    "y": 1
+  },
+  ":city_sunrise:": {
+    "x": 5,
+    "y": 2
+  },
+  ":rainbow:": {
+    "x": 5,
+    "y": 3
+  },
+  ":bridge_at_night:": {
+    "x": 5,
+    "y": 4
+  },
+  ":ocean:": {
+    "x": 5,
+    "y": 5
+  },
+  ":volcano:": {
+    "x": 5,
+    "y": 6
+  },
+  ":milky_way:": {
+    "x": 5,
+    "y": 7
+  },
+  ":earth_africa:": {
+    "x": 5,
+    "y": 8
+  },
+  ":earth_americas:": {
+    "x": 5,
+    "y": 9
+  },
+  ":earth_asia:": {
+    "x": 5,
+    "y": 10
+  },
+  ":globe_with_meridians:": {
+    "x": 5,
+    "y": 11
+  },
+  ":new_moon:": {
+    "x": 5,
+    "y": 12
+  },
+  ":waxing_crescent_moon:": {
+    "x": 5,
+    "y": 13
+  },
+  ":first_quarter_moon:": {
+    "x": 5,
+    "y": 14
+  },
+  ":moon:": {
+    "x": 5,
+    "y": 15
+  },
+  ":full_moon:": {
+    "x": 5,
+    "y": 16
+  },
+  ":waning_gibbous_moon:": {
+    "x": 5,
+    "y": 17
+  },
+  ":last_quarter_moon:": {
+    "x": 5,
+    "y": 18
+  },
+  ":waning_crescent_moon:": {
+    "x": 5,
+    "y": 19
+  },
+  ":crescent_moon:": {
+    "x": 5,
+    "y": 20
+  },
+  ":new_moon_with_face:": {
+    "x": 5,
+    "y": 21
+  },
+  ":first_quarter_moon_with_face:": {
+    "x": 5,
+    "y": 22
+  },
+  ":last_quarter_moon_with_face:": {
+    "x": 5,
+    "y": 23
+  },
+  ":full_moon_with_face:": {
+    "x": 5,
+    "y": 24
+  },
+  ":sun_with_face:": {
+    "x": 5,
+    "y": 25
+  },
+  ":star2:": {
+    "x": 5,
+    "y": 26
+  },
+  ":stars:": {
+    "x": 5,
+    "y": 27
+  },
+  ":thermometer:": {
+    "x": 5,
+    "y": 28
+  },
+  ":mostly_sunny:": {
+    "x": 5,
+    "y": 29
+  },
+  ":barely_sunny:": {
+    "x": 5,
+    "y": 30
+  },
+  ":partly_sunny_rain:": {
+    "x": 5,
+    "y": 31
+  },
+  ":rain_cloud:": {
+    "x": 5,
+    "y": 32
+  },
+  ":snow_cloud:": {
+    "x": 5,
+    "y": 33
+  },
+  ":lightning:": {
+    "x": 5,
+    "y": 34
+  },
+  ":tornado:": {
+    "x": 5,
+    "y": 35
+  },
+  ":fog:": {
+    "x": 5,
+    "y": 36
+  },
+  ":wind_blowing_face:": {
+    "x": 5,
+    "y": 37
+  },
+  ":hotdog:": {
+    "x": 5,
+    "y": 38
+  },
+  ":taco:": {
+    "x": 5,
+    "y": 39
+  },
+  ":burrito:": {
+    "x": 5,
+    "y": 40
+  },
+  ":chestnut:": {
+    "x": 5,
+    "y": 41
+  },
+  ":seedling:": {
+    "x": 5,
+    "y": 42
+  },
+  ":evergreen_tree:": {
+    "x": 5,
+    "y": 43
+  },
+  ":deciduous_tree:": {
+    "x": 5,
+    "y": 44
+  },
+  ":palm_tree:": {
+    "x": 5,
+    "y": 45
+  },
+  ":cactus:": {
+    "x": 5,
+    "y": 46
+  },
+  ":hot_pepper:": {
+    "x": 5,
+    "y": 47
+  },
+  ":tulip:": {
+    "x": 5,
+    "y": 48
+  },
+  ":cherry_blossom:": {
+    "x": 5,
+    "y": 49
+  },
+  ":rose:": {
+    "x": 5,
+    "y": 50
+  },
+  ":hibiscus:": {
+    "x": 5,
+    "y": 51
+  },
+  ":sunflower:": {
+    "x": 5,
+    "y": 52
+  },
+  ":blossom:": {
+    "x": 5,
+    "y": 53
+  },
+  ":corn:": {
+    "x": 5,
+    "y": 54
+  },
+  ":ear_of_rice:": {
+    "x": 5,
+    "y": 55
+  },
+  ":herb:": {
+    "x": 5,
+    "y": 56
+  },
+  ":four_leaf_clover:": {
+    "x": 5,
+    "y": 57
+  },
+  ":maple_leaf:": {
+    "x": 5,
+    "y": 58
+  },
+  ":fallen_leaf:": {
+    "x": 5,
+    "y": 59
+  },
+  ":leaves:": {
+    "x": 5,
+    "y": 60
+  },
+  ":brown_mushroom:": {
+    "x": 5,
+    "y": 61
+  },
+  ":mushroom:": {
+    "x": 6,
+    "y": 0
+  },
+  ":tomato:": {
+    "x": 6,
+    "y": 1
+  },
+  ":eggplant:": {
+    "x": 6,
+    "y": 2
+  },
+  ":grapes:": {
+    "x": 6,
+    "y": 3
+  },
+  ":melon:": {
+    "x": 6,
+    "y": 4
+  },
+  ":watermelon:": {
+    "x": 6,
+    "y": 5
+  },
+  ":tangerine:": {
+    "x": 6,
+    "y": 6
+  },
+  ":lime:": {
+    "x": 6,
+    "y": 7
+  },
+  ":lemon:": {
+    "x": 6,
+    "y": 8
+  },
+  ":banana:": {
+    "x": 6,
+    "y": 9
+  },
+  ":pineapple:": {
+    "x": 6,
+    "y": 10
+  },
+  ":apple:": {
+    "x": 6,
+    "y": 11
+  },
+  ":green_apple:": {
+    "x": 6,
+    "y": 12
+  },
+  ":pear:": {
+    "x": 6,
+    "y": 13
+  },
+  ":peach:": {
+    "x": 6,
+    "y": 14
+  },
+  ":cherries:": {
+    "x": 6,
+    "y": 15
+  },
+  ":strawberry:": {
+    "x": 6,
+    "y": 16
+  },
+  ":hamburger:": {
+    "x": 6,
+    "y": 17
+  },
+  ":pizza:": {
+    "x": 6,
+    "y": 18
+  },
+  ":meat_on_bone:": {
+    "x": 6,
+    "y": 19
+  },
+  ":poultry_leg:": {
+    "x": 6,
+    "y": 20
+  },
+  ":rice_cracker:": {
+    "x": 6,
+    "y": 21
+  },
+  ":rice_ball:": {
+    "x": 6,
+    "y": 22
+  },
+  ":rice:": {
+    "x": 6,
+    "y": 23
+  },
+  ":curry:": {
+    "x": 6,
+    "y": 24
+  },
+  ":ramen:": {
+    "x": 6,
+    "y": 25
+  },
+  ":spaghetti:": {
+    "x": 6,
+    "y": 26
+  },
+  ":bread:": {
+    "x": 6,
+    "y": 27
+  },
+  ":fries:": {
+    "x": 6,
+    "y": 28
+  },
+  ":sweet_potato:": {
+    "x": 6,
+    "y": 29
+  },
+  ":dango:": {
+    "x": 6,
+    "y": 30
+  },
+  ":oden:": {
+    "x": 6,
+    "y": 31
+  },
+  ":sushi:": {
+    "x": 6,
+    "y": 32
+  },
+  ":fried_shrimp:": {
+    "x": 6,
+    "y": 33
+  },
+  ":fish_cake:": {
+    "x": 6,
+    "y": 34
+  },
+  ":icecream:": {
+    "x": 6,
+    "y": 35
+  },
+  ":shaved_ice:": {
+    "x": 6,
+    "y": 36
+  },
+  ":ice_cream:": {
+    "x": 6,
+    "y": 37
+  },
+  ":doughnut:": {
+    "x": 6,
+    "y": 38
+  },
+  ":cookie:": {
+    "x": 6,
+    "y": 39
+  },
+  ":chocolate_bar:": {
+    "x": 6,
+    "y": 40
+  },
+  ":candy:": {
+    "x": 6,
+    "y": 41
+  },
+  ":lollipop:": {
+    "x": 6,
+    "y": 42
+  },
+  ":custard:": {
+    "x": 6,
+    "y": 43
+  },
+  ":honey_pot:": {
+    "x": 6,
+    "y": 44
+  },
+  ":cake:": {
+    "x": 6,
+    "y": 45
+  },
+  ":bento:": {
+    "x": 6,
+    "y": 46
+  },
+  ":stew:": {
+    "x": 6,
+    "y": 47
+  },
+  ":fried_egg:": {
+    "x": 6,
+    "y": 48
+  },
+  ":fork_and_knife:": {
+    "x": 6,
+    "y": 49
+  },
+  ":tea:": {
+    "x": 6,
+    "y": 50
+  },
+  ":sake:": {
+    "x": 6,
+    "y": 51
+  },
+  ":wine_glass:": {
+    "x": 6,
+    "y": 52
+  },
+  ":cocktail:": {
+    "x": 6,
+    "y": 53
+  },
+  ":tropical_drink:": {
+    "x": 6,
+    "y": 54
+  },
+  ":beer:": {
+    "x": 6,
+    "y": 55
+  },
+  ":beers:": {
+    "x": 6,
+    "y": 56
+  },
+  ":baby_bottle:": {
+    "x": 6,
+    "y": 57
+  },
+  ":knife_fork_plate:": {
+    "x": 6,
+    "y": 58
+  },
+  ":champagne:": {
+    "x": 6,
+    "y": 59
+  },
+  ":popcorn:": {
+    "x": 6,
+    "y": 60
+  },
+  ":ribbon:": {
+    "x": 6,
+    "y": 61
+  },
+  ":gift:": {
+    "x": 7,
+    "y": 0
+  },
+  ":birthday:": {
+    "x": 7,
+    "y": 1
+  },
+  ":jack_o_lantern:": {
+    "x": 7,
+    "y": 2
+  },
+  ":christmas_tree:": {
+    "x": 7,
+    "y": 3
+  },
+  ":santa:": {
+    "x": 7,
+    "y": 4
+  },
+  ":fireworks:": {
+    "x": 7,
+    "y": 10
+  },
+  ":sparkler:": {
+    "x": 7,
+    "y": 11
+  },
+  ":balloon:": {
+    "x": 7,
+    "y": 12
+  },
+  ":tada:": {
+    "x": 7,
+    "y": 13
+  },
+  ":confetti_ball:": {
+    "x": 7,
+    "y": 14
+  },
+  ":tanabata_tree:": {
+    "x": 7,
+    "y": 15
+  },
+  ":crossed_flags:": {
+    "x": 7,
+    "y": 16
+  },
+  ":bamboo:": {
+    "x": 7,
+    "y": 17
+  },
+  ":dolls:": {
+    "x": 7,
+    "y": 18
+  },
+  ":flags:": {
+    "x": 7,
+    "y": 19
+  },
+  ":wind_chime:": {
+    "x": 7,
+    "y": 20
+  },
+  ":rice_scene:": {
+    "x": 7,
+    "y": 21
+  },
+  ":school_satchel:": {
+    "x": 7,
+    "y": 22
+  },
+  ":mortar_board:": {
+    "x": 7,
+    "y": 23
+  },
+  ":medal:": {
+    "x": 7,
+    "y": 24
+  },
+  ":reminder_ribbon:": {
+    "x": 7,
+    "y": 25
+  },
+  ":studio_microphone:": {
+    "x": 7,
+    "y": 26
+  },
+  ":level_slider:": {
+    "x": 7,
+    "y": 27
+  },
+  ":control_knobs:": {
+    "x": 7,
+    "y": 28
+  },
+  ":film_frames:": {
+    "x": 7,
+    "y": 29
+  },
+  ":admission_tickets:": {
+    "x": 7,
+    "y": 30
+  },
+  ":carousel_horse:": {
+    "x": 7,
+    "y": 31
+  },
+  ":ferris_wheel:": {
+    "x": 7,
+    "y": 32
+  },
+  ":roller_coaster:": {
+    "x": 7,
+    "y": 33
+  },
+  ":fishing_pole_and_fish:": {
+    "x": 7,
+    "y": 34
+  },
+  ":microphone:": {
+    "x": 7,
+    "y": 35
+  },
+  ":movie_camera:": {
+    "x": 7,
+    "y": 36
+  },
+  ":cinema:": {
+    "x": 7,
+    "y": 37
+  },
+  ":headphones:": {
+    "x": 7,
+    "y": 38
+  },
+  ":art:": {
+    "x": 7,
+    "y": 39
+  },
+  ":tophat:": {
+    "x": 7,
+    "y": 40
+  },
+  ":circus_tent:": {
+    "x": 7,
+    "y": 41
+  },
+  ":ticket:": {
+    "x": 7,
+    "y": 42
+  },
+  ":clapper:": {
+    "x": 7,
+    "y": 43
+  },
+  ":performing_arts:": {
+    "x": 7,
+    "y": 44
+  },
+  ":video_game:": {
+    "x": 7,
+    "y": 45
+  },
+  ":dart:": {
+    "x": 7,
+    "y": 46
+  },
+  ":slot_machine:": {
+    "x": 7,
+    "y": 47
+  },
+  ":8ball:": {
+    "x": 7,
+    "y": 48
+  },
+  ":game_die:": {
+    "x": 7,
+    "y": 49
+  },
+  ":bowling:": {
+    "x": 7,
+    "y": 50
+  },
+  ":flower_playing_cards:": {
+    "x": 7,
+    "y": 51
+  },
+  ":musical_note:": {
+    "x": 7,
+    "y": 52
+  },
+  ":notes:": {
+    "x": 7,
+    "y": 53
+  },
+  ":saxophone:": {
+    "x": 7,
+    "y": 54
+  },
+  ":guitar:": {
+    "x": 7,
+    "y": 55
+  },
+  ":musical_keyboard:": {
+    "x": 7,
+    "y": 56
+  },
+  ":trumpet:": {
+    "x": 7,
+    "y": 57
+  },
+  ":violin:": {
+    "x": 7,
+    "y": 58
+  },
+  ":musical_score:": {
+    "x": 7,
+    "y": 59
+  },
+  ":running_shirt_with_sash:": {
+    "x": 7,
+    "y": 60
+  },
+  ":tennis:": {
+    "x": 7,
+    "y": 61
+  },
+  ":ski:": {
+    "x": 8,
+    "y": 0
+  },
+  ":basketball:": {
+    "x": 8,
+    "y": 1
+  },
+  ":checkered_flag:": {
+    "x": 8,
+    "y": 2
+  },
+  ":snowboarder:": {
+    "x": 8,
+    "y": 3
+  },
+  ":woman-running:": {
+    "x": 8,
+    "y": 9
+  },
+  ":woman_running_facing_right:": {
+    "x": 8,
+    "y": 15
+  },
+  ":man-running:": {
+    "x": 8,
+    "y": 21
+  },
+  ":man_running_facing_right:": {
+    "x": 8,
+    "y": 27
+  },
+  ":person_running_facing_right:": {
+    "x": 8,
+    "y": 33
+  },
+  ":runner:": {
+    "x": 8,
+    "y": 39
+  },
+  ":woman-surfing:": {
+    "x": 8,
+    "y": 45
+  },
+  ":man-surfing:": {
+    "x": 8,
+    "y": 51
+  },
+  ":surfer:": {
+    "x": 8,
+    "y": 57
+  },
+  ":sports_medal:": {
+    "x": 9,
+    "y": 1
+  },
+  ":trophy:": {
+    "x": 9,
+    "y": 2
+  },
+  ":horse_racing:": {
+    "x": 9,
+    "y": 3
+  },
+  ":football:": {
+    "x": 9,
+    "y": 9
+  },
+  ":rugby_football:": {
+    "x": 9,
+    "y": 10
+  },
+  ":woman-swimming:": {
+    "x": 9,
+    "y": 11
+  },
+  ":man-swimming:": {
+    "x": 9,
+    "y": 17
+  },
+  ":swimmer:": {
+    "x": 9,
+    "y": 23
+  },
+  ":woman-lifting-weights:": {
+    "x": 9,
+    "y": 29
+  },
+  ":man-lifting-weights:": {
+    "x": 9,
+    "y": 35
+  },
+  ":weight_lifter:": {
+    "x": 9,
+    "y": 41
+  },
+  ":woman-golfing:": {
+    "x": 9,
+    "y": 47
+  },
+  ":man-golfing:": {
+    "x": 9,
+    "y": 53
+  },
+  ":golfer:": {
+    "x": 9,
+    "y": 59
+  },
+  ":racing_motorcycle:": {
+    "x": 10,
+    "y": 3
+  },
+  ":racing_car:": {
+    "x": 10,
+    "y": 4
+  },
+  ":cricket_bat_and_ball:": {
+    "x": 10,
+    "y": 5
+  },
+  ":volleyball:": {
+    "x": 10,
+    "y": 6
+  },
+  ":field_hockey_stick_and_ball:": {
+    "x": 10,
+    "y": 7
+  },
+  ":ice_hockey_stick_and_puck:": {
+    "x": 10,
+    "y": 8
+  },
+  ":table_tennis_paddle_and_ball:": {
+    "x": 10,
+    "y": 9
+  },
+  ":snow_capped_mountain:": {
+    "x": 10,
+    "y": 10
+  },
+  ":camping:": {
+    "x": 10,
+    "y": 11
+  },
+  ":beach_with_umbrella:": {
+    "x": 10,
+    "y": 12
+  },
+  ":building_construction:": {
+    "x": 10,
+    "y": 13
+  },
+  ":house_buildings:": {
+    "x": 10,
+    "y": 14
+  },
+  ":cityscape:": {
+    "x": 10,
+    "y": 15
+  },
+  ":derelict_house_building:": {
+    "x": 10,
+    "y": 16
+  },
+  ":classical_building:": {
+    "x": 10,
+    "y": 17
+  },
+  ":desert:": {
+    "x": 10,
+    "y": 18
+  },
+  ":desert_island:": {
+    "x": 10,
+    "y": 19
+  },
+  ":national_park:": {
+    "x": 10,
+    "y": 20
+  },
+  ":stadium:": {
+    "x": 10,
+    "y": 21
+  },
+  ":house:": {
+    "x": 10,
+    "y": 22
+  },
+  ":house_with_garden:": {
+    "x": 10,
+    "y": 23
+  },
+  ":office:": {
+    "x": 10,
+    "y": 24
+  },
+  ":post_office:": {
+    "x": 10,
+    "y": 25
+  },
+  ":european_post_office:": {
+    "x": 10,
+    "y": 26
+  },
+  ":hospital:": {
+    "x": 10,
+    "y": 27
+  },
+  ":bank:": {
+    "x": 10,
+    "y": 28
+  },
+  ":atm:": {
+    "x": 10,
+    "y": 29
+  },
+  ":hotel:": {
+    "x": 10,
+    "y": 30
+  },
+  ":love_hotel:": {
+    "x": 10,
+    "y": 31
+  },
+  ":convenience_store:": {
+    "x": 10,
+    "y": 32
+  },
+  ":school:": {
+    "x": 10,
+    "y": 33
+  },
+  ":department_store:": {
+    "x": 10,
+    "y": 34
+  },
+  ":factory:": {
+    "x": 10,
+    "y": 35
+  },
+  ":izakaya_lantern:": {
+    "x": 10,
+    "y": 36
+  },
+  ":japanese_castle:": {
+    "x": 10,
+    "y": 37
+  },
+  ":european_castle:": {
+    "x": 10,
+    "y": 38
+  },
+  ":rainbow-flag:": {
+    "x": 10,
+    "y": 39
+  },
+  ":transgender_flag:": {
+    "x": 10,
+    "y": 40
+  },
+  ":waving_white_flag:": {
+    "x": 10,
+    "y": 41
+  },
+  ":pirate_flag:": {
+    "x": 10,
+    "y": 42
+  },
+  ":flag-england:": {
+    "x": 10,
+    "y": 43
+  },
+  ":flag-scotland:": {
+    "x": 10,
+    "y": 44
+  },
+  ":flag-wales:": {
+    "x": 10,
+    "y": 45
+  },
+  ":waving_black_flag:": {
+    "x": 10,
+    "y": 46
+  },
+  ":rosette:": {
+    "x": 10,
+    "y": 47
+  },
+  ":label:": {
+    "x": 10,
+    "y": 48
+  },
+  ":badminton_racquet_and_shuttlecock:": {
+    "x": 10,
+    "y": 49
+  },
+  ":bow_and_arrow:": {
+    "x": 10,
+    "y": 50
+  },
+  ":amphora:": {
+    "x": 10,
+    "y": 51
+  },
+  ":skin-tone-2:": {
+    "x": 10,
+    "y": 52
+  },
+  ":skin-tone-3:": {
+    "x": 10,
+    "y": 53
+  },
+  ":skin-tone-4:": {
+    "x": 10,
+    "y": 54
+  },
+  ":skin-tone-5:": {
+    "x": 10,
+    "y": 55
+  },
+  ":skin-tone-6:": {
+    "x": 10,
+    "y": 56
+  },
+  ":rat:": {
+    "x": 10,
+    "y": 57
+  },
+  ":mouse2:": {
+    "x": 10,
+    "y": 58
+  },
+  ":ox:": {
+    "x": 10,
+    "y": 59
+  },
+  ":water_buffalo:": {
+    "x": 10,
+    "y": 60
+  },
+  ":cow2:": {
+    "x": 10,
+    "y": 61
+  },
+  ":tiger2:": {
+    "x": 11,
+    "y": 0
+  },
+  ":leopard:": {
+    "x": 11,
+    "y": 1
+  },
+  ":rabbit2:": {
+    "x": 11,
+    "y": 2
+  },
+  ":black_cat:": {
+    "x": 11,
+    "y": 3
+  },
+  ":cat2:": {
+    "x": 11,
+    "y": 4
+  },
+  ":dragon:": {
+    "x": 11,
+    "y": 5
+  },
+  ":crocodile:": {
+    "x": 11,
+    "y": 6
+  },
+  ":whale2:": {
+    "x": 11,
+    "y": 7
+  },
+  ":snail:": {
+    "x": 11,
+    "y": 8
+  },
+  ":snake:": {
+    "x": 11,
+    "y": 9
+  },
+  ":racehorse:": {
+    "x": 11,
+    "y": 10
+  },
+  ":ram:": {
+    "x": 11,
+    "y": 11
+  },
+  ":goat:": {
+    "x": 11,
+    "y": 12
+  },
+  ":sheep:": {
+    "x": 11,
+    "y": 13
+  },
+  ":monkey:": {
+    "x": 11,
+    "y": 14
+  },
+  ":rooster:": {
+    "x": 11,
+    "y": 15
+  },
+  ":chicken:": {
+    "x": 11,
+    "y": 16
+  },
+  ":service_dog:": {
+    "x": 11,
+    "y": 17
+  },
+  ":dog2:": {
+    "x": 11,
+    "y": 18
+  },
+  ":pig2:": {
+    "x": 11,
+    "y": 19
+  },
+  ":boar:": {
+    "x": 11,
+    "y": 20
+  },
+  ":elephant:": {
+    "x": 11,
+    "y": 21
+  },
+  ":octopus:": {
+    "x": 11,
+    "y": 22
+  },
+  ":shell:": {
+    "x": 11,
+    "y": 23
+  },
+  ":bug:": {
+    "x": 11,
+    "y": 24
+  },
+  ":ant:": {
+    "x": 11,
+    "y": 25
+  },
+  ":bee:": {
+    "x": 11,
+    "y": 26
+  },
+  ":ladybug:": {
+    "x": 11,
+    "y": 27
+  },
+  ":fish:": {
+    "x": 11,
+    "y": 28
+  },
+  ":tropical_fish:": {
+    "x": 11,
+    "y": 29
+  },
+  ":blowfish:": {
+    "x": 11,
+    "y": 30
+  },
+  ":turtle:": {
+    "x": 11,
+    "y": 31
+  },
+  ":hatching_chick:": {
+    "x": 11,
+    "y": 32
+  },
+  ":baby_chick:": {
+    "x": 11,
+    "y": 33
+  },
+  ":hatched_chick:": {
+    "x": 11,
+    "y": 34
+  },
+  ":phoenix:": {
+    "x": 11,
+    "y": 35
+  },
+  ":black_bird:": {
+    "x": 11,
+    "y": 36
+  },
+  ":bird:": {
+    "x": 11,
+    "y": 37
+  },
+  ":penguin:": {
+    "x": 11,
+    "y": 38
+  },
+  ":koala:": {
+    "x": 11,
+    "y": 39
+  },
+  ":poodle:": {
+    "x": 11,
+    "y": 40
+  },
+  ":dromedary_camel:": {
+    "x": 11,
+    "y": 41
+  },
+  ":camel:": {
+    "x": 11,
+    "y": 42
+  },
+  ":dolphin:": {
+    "x": 11,
+    "y": 43
+  },
+  ":mouse:": {
+    "x": 11,
+    "y": 44
+  },
+  ":cow:": {
+    "x": 11,
+    "y": 45
+  },
+  ":tiger:": {
+    "x": 11,
+    "y": 46
+  },
+  ":rabbit:": {
+    "x": 11,
+    "y": 47
+  },
+  ":cat:": {
+    "x": 11,
+    "y": 48
+  },
+  ":dragon_face:": {
+    "x": 11,
+    "y": 49
+  },
+  ":whale:": {
+    "x": 11,
+    "y": 50
+  },
+  ":horse:": {
+    "x": 11,
+    "y": 51
+  },
+  ":monkey_face:": {
+    "x": 11,
+    "y": 52
+  },
+  ":dog:": {
+    "x": 11,
+    "y": 53
+  },
+  ":pig:": {
+    "x": 11,
+    "y": 54
+  },
+  ":frog:": {
+    "x": 11,
+    "y": 55
+  },
+  ":hamster:": {
+    "x": 11,
+    "y": 56
+  },
+  ":wolf:": {
+    "x": 11,
+    "y": 57
+  },
+  ":polar_bear:": {
+    "x": 11,
+    "y": 58
+  },
+  ":bear:": {
+    "x": 11,
+    "y": 59
+  },
+  ":panda_face:": {
+    "x": 11,
+    "y": 60
+  },
+  ":pig_nose:": {
+    "x": 11,
+    "y": 61
+  },
+  ":feet:": {
+    "x": 12,
+    "y": 0
+  },
+  ":chipmunk:": {
+    "x": 12,
+    "y": 1
+  },
+  ":eyes:": {
+    "x": 12,
+    "y": 2
+  },
+  ":eye-in-speech-bubble:": {
+    "x": 12,
+    "y": 3
+  },
+  ":eye:": {
+    "x": 12,
+    "y": 4
+  },
+  ":ear:": {
+    "x": 12,
+    "y": 5
+  },
+  ":nose:": {
+    "x": 12,
+    "y": 11
+  },
+  ":lips:": {
+    "x": 12,
+    "y": 17
+  },
+  ":tongue:": {
+    "x": 12,
+    "y": 18
+  },
+  ":point_up_2:": {
+    "x": 12,
+    "y": 19
+  },
+  ":point_down:": {
+    "x": 12,
+    "y": 25
+  },
+  ":point_left:": {
+    "x": 12,
+    "y": 31
+  },
+  ":point_right:": {
+    "x": 12,
+    "y": 37
+  },
+  ":facepunch:": {
+    "x": 12,
+    "y": 43
+  },
+  ":wave:": {
+    "x": 12,
+    "y": 49
+  },
+  ":ok_hand:": {
+    "x": 12,
+    "y": 55
+  },
+  ":+1:": {
+    "x": 12,
+    "y": 61
+  },
+  ":-1:": {
+    "x": 13,
+    "y": 5
+  },
+  ":clap:": {
+    "x": 13,
+    "y": 11
+  },
+  ":open_hands:": {
+    "x": 13,
+    "y": 17
+  },
+  ":crown:": {
+    "x": 13,
+    "y": 23
+  },
+  ":womans_hat:": {
+    "x": 13,
+    "y": 24
+  },
+  ":eyeglasses:": {
+    "x": 13,
+    "y": 25
+  },
+  ":necktie:": {
+    "x": 13,
+    "y": 26
+  },
+  ":shirt:": {
+    "x": 13,
+    "y": 27
+  },
+  ":jeans:": {
+    "x": 13,
+    "y": 28
+  },
+  ":dress:": {
+    "x": 13,
+    "y": 29
+  },
+  ":kimono:": {
+    "x": 13,
+    "y": 30
+  },
+  ":bikini:": {
+    "x": 13,
+    "y": 31
+  },
+  ":womans_clothes:": {
+    "x": 13,
+    "y": 32
+  },
+  ":purse:": {
+    "x": 13,
+    "y": 33
+  },
+  ":handbag:": {
+    "x": 13,
+    "y": 34
+  },
+  ":pouch:": {
+    "x": 13,
+    "y": 35
+  },
+  ":mans_shoe:": {
+    "x": 13,
+    "y": 36
+  },
+  ":athletic_shoe:": {
+    "x": 13,
+    "y": 37
+  },
+  ":high_heel:": {
+    "x": 13,
+    "y": 38
+  },
+  ":sandal:": {
+    "x": 13,
+    "y": 39
+  },
+  ":boot:": {
+    "x": 13,
+    "y": 40
+  },
+  ":footprints:": {
+    "x": 13,
+    "y": 41
+  },
+  ":bust_in_silhouette:": {
+    "x": 13,
+    "y": 42
+  },
+  ":busts_in_silhouette:": {
+    "x": 13,
+    "y": 43
+  },
+  ":boy:": {
+    "x": 13,
+    "y": 44
+  },
+  ":girl:": {
+    "x": 13,
+    "y": 50
+  },
+  ":male-farmer:": {
+    "x": 13,
+    "y": 56
+  },
+  ":male-cook:": {
+    "x": 14,
+    "y": 0
+  },
+  ":man_feeding_baby:": {
+    "x": 14,
+    "y": 6
+  },
+  ":male-student:": {
+    "x": 14,
+    "y": 12
+  },
+  ":male-singer:": {
+    "x": 14,
+    "y": 18
+  },
+  ":male-artist:": {
+    "x": 14,
+    "y": 24
+  },
+  ":male-teacher:": {
+    "x": 14,
+    "y": 30
+  },
+  ":male-factory-worker:": {
+    "x": 14,
+    "y": 36
+  },
+  ":man-boy-boy:": {
+    "x": 14,
+    "y": 42
+  },
+  ":man-boy:": {
+    "x": 14,
+    "y": 43
+  },
+  ":man-girl-boy:": {
+    "x": 14,
+    "y": 44
+  },
+  ":man-girl-girl:": {
+    "x": 14,
+    "y": 45
+  },
+  ":man-girl:": {
+    "x": 14,
+    "y": 46
+  },
+  ":man-man-boy:": {
+    "x": 14,
+    "y": 47
+  },
+  ":man-man-boy-boy:": {
+    "x": 14,
+    "y": 48
+  },
+  ":man-man-girl:": {
+    "x": 14,
+    "y": 49
+  },
+  ":man-man-girl-boy:": {
+    "x": 14,
+    "y": 50
+  },
+  ":man-man-girl-girl:": {
+    "x": 14,
+    "y": 51
+  },
+  ":man-woman-boy:": {
+    "x": 14,
+    "y": 52
+  },
+  ":man-woman-boy-boy:": {
+    "x": 14,
+    "y": 53
+  },
+  ":man-woman-girl:": {
+    "x": 14,
+    "y": 54
+  },
+  ":man-woman-girl-boy:": {
+    "x": 14,
+    "y": 55
+  },
+  ":man-woman-girl-girl:": {
+    "x": 14,
+    "y": 56
+  },
+  ":male-technologist:": {
+    "x": 14,
+    "y": 57
+  },
+  ":male-office-worker:": {
+    "x": 15,
+    "y": 1
+  },
+  ":male-mechanic:": {
+    "x": 15,
+    "y": 7
+  },
+  ":male-scientist:": {
+    "x": 15,
+    "y": 13
+  },
+  ":male-astronaut:": {
+    "x": 15,
+    "y": 19
+  },
+  ":male-firefighter:": {
+    "x": 15,
+    "y": 25
+  },
+  ":man_with_white_cane_facing_right:": {
+    "x": 15,
+    "y": 31
+  },
+  ":man_with_probing_cane:": {
+    "x": 15,
+    "y": 37
+  },
+  ":red_haired_man:": {
+    "x": 15,
+    "y": 43
+  },
+  ":curly_haired_man:": {
+    "x": 15,
+    "y": 49
+  },
+  ":bald_man:": {
+    "x": 15,
+    "y": 55
+  },
+  ":white_haired_man:": {
+    "x": 15,
+    "y": 61
+  },
+  ":man_in_motorized_wheelchair_facing_right:": {
+    "x": 16,
+    "y": 5
+  },
+  ":man_in_motorized_wheelchair:": {
+    "x": 16,
+    "y": 11
+  },
+  ":man_in_manual_wheelchair_facing_right:": {
+    "x": 16,
+    "y": 17
+  },
+  ":man_in_manual_wheelchair:": {
+    "x": 16,
+    "y": 23
+  },
+  ":male-doctor:": {
+    "x": 16,
+    "y": 29
+  },
+  ":male-judge:": {
+    "x": 16,
+    "y": 35
+  },
+  ":male-pilot:": {
+    "x": 16,
+    "y": 41
+  },
+  ":man-heart-man:": {
+    "x": 16,
+    "y": 47
+  },
+  ":man-kiss-man:": {
+    "x": 17,
+    "y": 11
+  },
+  ":man:": {
+    "x": 17,
+    "y": 37
+  },
+  ":female-farmer:": {
+    "x": 17,
+    "y": 43
+  },
+  ":female-cook:": {
+    "x": 17,
+    "y": 49
+  },
+  ":woman_feeding_baby:": {
+    "x": 17,
+    "y": 55
+  },
+  ":female-student:": {
+    "x": 17,
+    "y": 61
+  },
+  ":female-singer:": {
+    "x": 18,
+    "y": 5
+  },
+  ":female-artist:": {
+    "x": 18,
+    "y": 11
+  },
+  ":female-teacher:": {
+    "x": 18,
+    "y": 17
+  },
+  ":female-factory-worker:": {
+    "x": 18,
+    "y": 23
+  },
+  ":woman-boy-boy:": {
+    "x": 18,
+    "y": 29
+  },
+  ":woman-boy:": {
+    "x": 18,
+    "y": 30
+  },
+  ":woman-girl-boy:": {
+    "x": 18,
+    "y": 31
+  },
+  ":woman-girl-girl:": {
+    "x": 18,
+    "y": 32
+  },
+  ":woman-girl:": {
+    "x": 18,
+    "y": 33
+  },
+  ":woman-woman-boy:": {
+    "x": 18,
+    "y": 34
+  },
+  ":woman-woman-boy-boy:": {
+    "x": 18,
+    "y": 35
+  },
+  ":woman-woman-girl:": {
+    "x": 18,
+    "y": 36
+  },
+  ":woman-woman-girl-boy:": {
+    "x": 18,
+    "y": 37
+  },
+  ":woman-woman-girl-girl:": {
+    "x": 18,
+    "y": 38
+  },
+  ":female-technologist:": {
+    "x": 18,
+    "y": 39
+  },
+  ":female-office-worker:": {
+    "x": 18,
+    "y": 45
+  },
+  ":female-mechanic:": {
+    "x": 18,
+    "y": 51
+  },
+  ":female-scientist:": {
+    "x": 18,
+    "y": 57
+  },
+  ":female-astronaut:": {
+    "x": 19,
+    "y": 1
+  },
+  ":female-firefighter:": {
+    "x": 19,
+    "y": 7
+  },
+  ":woman_with_white_cane_facing_right:": {
+    "x": 19,
+    "y": 13
+  },
+  ":woman_with_probing_cane:": {
+    "x": 19,
+    "y": 19
+  },
+  ":red_haired_woman:": {
+    "x": 19,
+    "y": 25
+  },
+  ":curly_haired_woman:": {
+    "x": 19,
+    "y": 31
+  },
+  ":bald_woman:": {
+    "x": 19,
+    "y": 37
+  },
+  ":white_haired_woman:": {
+    "x": 19,
+    "y": 43
+  },
+  ":woman_in_motorized_wheelchair_facing_right:": {
+    "x": 19,
+    "y": 49
+  },
+  ":woman_in_motorized_wheelchair:": {
+    "x": 19,
+    "y": 55
+  },
+  ":woman_in_manual_wheelchair_facing_right:": {
+    "x": 19,
+    "y": 61
+  },
+  ":woman_in_manual_wheelchair:": {
+    "x": 20,
+    "y": 5
+  },
+  ":female-doctor:": {
+    "x": 20,
+    "y": 11
+  },
+  ":female-judge:": {
+    "x": 20,
+    "y": 17
+  },
+  ":female-pilot:": {
+    "x": 20,
+    "y": 23
+  },
+  ":woman-heart-man:": {
+    "x": 20,
+    "y": 29
+  },
+  ":woman-heart-woman:": {
+    "x": 20,
+    "y": 55
+  },
+  ":woman-kiss-man:": {
+    "x": 21,
+    "y": 19
+  },
+  ":woman-kiss-woman:": {
+    "x": 21,
+    "y": 45
+  },
+  ":woman:": {
+    "x": 22,
+    "y": 9
+  },
+  ":family:": {
+    "x": 22,
+    "y": 15
+  },
+  ":man_and_woman_holding_hands:": {
+    "x": 22,
+    "y": 16
+  },
+  ":two_men_holding_hands:": {
+    "x": 22,
+    "y": 42
+  },
+  ":two_women_holding_hands:": {
+    "x": 23,
+    "y": 6
+  },
+  ":female-police-officer:": {
+    "x": 23,
+    "y": 32
+  },
+  ":male-police-officer:": {
+    "x": 23,
+    "y": 38
+  },
+  ":cop:": {
+    "x": 23,
+    "y": 44
+  },
+  ":women-with-bunny-ears-partying:": {
+    "x": 23,
+    "y": 50
+  },
+  ":men-with-bunny-ears-partying:": {
+    "x": 23,
+    "y": 51
+  },
+  ":dancers:": {
+    "x": 23,
+    "y": 52
+  },
+  ":woman_with_veil:": {
+    "x": 23,
+    "y": 53
+  },
+  ":man_with_veil:": {
+    "x": 23,
+    "y": 59
+  },
+  ":bride_with_veil:": {
+    "x": 24,
+    "y": 3
+  },
+  ":blond-haired-woman:": {
+    "x": 24,
+    "y": 9
+  },
+  ":blond-haired-man:": {
+    "x": 24,
+    "y": 15
+  },
+  ":person_with_blond_hair:": {
+    "x": 24,
+    "y": 21
+  },
+  ":man_with_gua_pi_mao:": {
+    "x": 24,
+    "y": 27
+  },
+  ":woman-wearing-turban:": {
+    "x": 24,
+    "y": 33
+  },
+  ":man-wearing-turban:": {
+    "x": 24,
+    "y": 39
+  },
+  ":man_with_turban:": {
+    "x": 24,
+    "y": 45
+  },
+  ":older_man:": {
+    "x": 24,
+    "y": 51
+  },
+  ":older_woman:": {
+    "x": 24,
+    "y": 57
+  },
+  ":baby:": {
+    "x": 25,
+    "y": 1
+  },
+  ":female-construction-worker:": {
+    "x": 25,
+    "y": 7
+  },
+  ":male-construction-worker:": {
+    "x": 25,
+    "y": 13
+  },
+  ":construction_worker:": {
+    "x": 25,
+    "y": 19
+  },
+  ":princess:": {
+    "x": 25,
+    "y": 25
+  },
+  ":japanese_ogre:": {
+    "x": 25,
+    "y": 31
+  },
+  ":japanese_goblin:": {
+    "x": 25,
+    "y": 32
+  },
+  ":ghost:": {
+    "x": 25,
+    "y": 33
+  },
+  ":angel:": {
+    "x": 25,
+    "y": 34
+  },
+  ":alien:": {
+    "x": 25,
+    "y": 40
+  },
+  ":space_invader:": {
+    "x": 25,
+    "y": 41
+  },
+  ":imp:": {
+    "x": 25,
+    "y": 42
+  },
+  ":skull:": {
+    "x": 25,
+    "y": 43
+  },
+  ":woman-tipping-hand:": {
+    "x": 25,
+    "y": 44
+  },
+  ":man-tipping-hand:": {
+    "x": 25,
+    "y": 50
+  },
+  ":information_desk_person:": {
+    "x": 25,
+    "y": 56
+  },
+  ":female-guard:": {
+    "x": 26,
+    "y": 0
+  },
+  ":male-guard:": {
+    "x": 26,
+    "y": 6
+  },
+  ":guardsman:": {
+    "x": 26,
+    "y": 12
+  },
+  ":dancer:": {
+    "x": 26,
+    "y": 18
+  },
+  ":lipstick:": {
+    "x": 26,
+    "y": 24
+  },
+  ":nail_care:": {
+    "x": 26,
+    "y": 25
+  },
+  ":woman-getting-massage:": {
+    "x": 26,
+    "y": 31
+  },
+  ":man-getting-massage:": {
+    "x": 26,
+    "y": 37
+  },
+  ":massage:": {
+    "x": 26,
+    "y": 43
+  },
+  ":woman-getting-haircut:": {
+    "x": 26,
+    "y": 49
+  },
+  ":man-getting-haircut:": {
+    "x": 26,
+    "y": 55
+  },
+  ":haircut:": {
+    "x": 26,
+    "y": 61
+  },
+  ":barber:": {
+    "x": 27,
+    "y": 5
+  },
+  ":syringe:": {
+    "x": 27,
+    "y": 6
+  },
+  ":pill:": {
+    "x": 27,
+    "y": 7
+  },
+  ":kiss:": {
+    "x": 27,
+    "y": 8
+  },
+  ":love_letter:": {
+    "x": 27,
+    "y": 9
+  },
+  ":ring:": {
+    "x": 27,
+    "y": 10
+  },
+  ":gem:": {
+    "x": 27,
+    "y": 11
+  },
+  ":couplekiss:": {
+    "x": 27,
+    "y": 12
+  },
+  ":bouquet:": {
+    "x": 27,
+    "y": 38
+  },
+  ":couple_with_heart:": {
+    "x": 27,
+    "y": 39
+  },
+  ":wedding:": {
+    "x": 28,
+    "y": 3
+  },
+  ":heartbeat:": {
+    "x": 28,
+    "y": 4
+  },
+  ":broken_heart:": {
+    "x": 28,
+    "y": 5
+  },
+  ":two_hearts:": {
+    "x": 28,
+    "y": 6
+  },
+  ":sparkling_heart:": {
+    "x": 28,
+    "y": 7
+  },
+  ":heartpulse:": {
+    "x": 28,
+    "y": 8
+  },
+  ":cupid:": {
+    "x": 28,
+    "y": 9
+  },
+  ":blue_heart:": {
+    "x": 28,
+    "y": 10
+  },
+  ":green_heart:": {
+    "x": 28,
+    "y": 11
+  },
+  ":yellow_heart:": {
+    "x": 28,
+    "y": 12
+  },
+  ":purple_heart:": {
+    "x": 28,
+    "y": 13
+  },
+  ":gift_heart:": {
+    "x": 28,
+    "y": 14
+  },
+  ":revolving_hearts:": {
+    "x": 28,
+    "y": 15
+  },
+  ":heart_decoration:": {
+    "x": 28,
+    "y": 16
+  },
+  ":diamond_shape_with_a_dot_inside:": {
+    "x": 28,
+    "y": 17
+  },
+  ":bulb:": {
+    "x": 28,
+    "y": 18
+  },
+  ":anger:": {
+    "x": 28,
+    "y": 19
+  },
+  ":bomb:": {
+    "x": 28,
+    "y": 20
+  },
+  ":zzz:": {
+    "x": 28,
+    "y": 21
+  },
+  ":boom:": {
+    "x": 28,
+    "y": 22
+  },
+  ":sweat_drops:": {
+    "x": 28,
+    "y": 23
+  },
+  ":droplet:": {
+    "x": 28,
+    "y": 24
+  },
+  ":dash:": {
+    "x": 28,
+    "y": 25
+  },
+  ":hankey:": {
+    "x": 28,
+    "y": 26
+  },
+  ":muscle:": {
+    "x": 28,
+    "y": 27
+  },
+  ":dizzy:": {
+    "x": 28,
+    "y": 33
+  },
+  ":speech_balloon:": {
+    "x": 28,
+    "y": 34
+  },
+  ":thought_balloon:": {
+    "x": 28,
+    "y": 35
+  },
+  ":white_flower:": {
+    "x": 28,
+    "y": 36
+  },
+  ":100:": {
+    "x": 28,
+    "y": 37
+  },
+  ":moneybag:": {
+    "x": 28,
+    "y": 38
+  },
+  ":currency_exchange:": {
+    "x": 28,
+    "y": 39
+  },
+  ":heavy_dollar_sign:": {
+    "x": 28,
+    "y": 40
+  },
+  ":credit_card:": {
+    "x": 28,
+    "y": 41
+  },
+  ":yen:": {
+    "x": 28,
+    "y": 42
+  },
+  ":dollar:": {
+    "x": 28,
+    "y": 43
+  },
+  ":euro:": {
+    "x": 28,
+    "y": 44
+  },
+  ":pound:": {
+    "x": 28,
+    "y": 45
+  },
+  ":money_with_wings:": {
+    "x": 28,
+    "y": 46
+  },
+  ":chart:": {
+    "x": 28,
+    "y": 47
+  },
+  ":seat:": {
+    "x": 28,
+    "y": 48
+  },
+  ":computer:": {
+    "x": 28,
+    "y": 49
+  },
+  ":briefcase:": {
+    "x": 28,
+    "y": 50
+  },
+  ":minidisc:": {
+    "x": 28,
+    "y": 51
+  },
+  ":floppy_disk:": {
+    "x": 28,
+    "y": 52
+  },
+  ":cd:": {
+    "x": 28,
+    "y": 53
+  },
+  ":dvd:": {
+    "x": 28,
+    "y": 54
+  },
+  ":file_folder:": {
+    "x": 28,
+    "y": 55
+  },
+  ":open_file_folder:": {
+    "x": 28,
+    "y": 56
+  },
+  ":page_with_curl:": {
+    "x": 28,
+    "y": 57
+  },
+  ":page_facing_up:": {
+    "x": 28,
+    "y": 58
+  },
+  ":date:": {
+    "x": 28,
+    "y": 59
+  },
+  ":calendar:": {
+    "x": 28,
+    "y": 60
+  },
+  ":card_index:": {
+    "x": 28,
+    "y": 61
+  },
+  ":chart_with_upwards_trend:": {
+    "x": 29,
+    "y": 0
+  },
+  ":chart_with_downwards_trend:": {
+    "x": 29,
+    "y": 1
+  },
+  ":bar_chart:": {
+    "x": 29,
+    "y": 2
+  },
+  ":clipboard:": {
+    "x": 29,
+    "y": 3
+  },
+  ":pushpin:": {
+    "x": 29,
+    "y": 4
+  },
+  ":round_pushpin:": {
+    "x": 29,
+    "y": 5
+  },
+  ":paperclip:": {
+    "x": 29,
+    "y": 6
+  },
+  ":straight_ruler:": {
+    "x": 29,
+    "y": 7
+  },
+  ":triangular_ruler:": {
+    "x": 29,
+    "y": 8
+  },
+  ":bookmark_tabs:": {
+    "x": 29,
+    "y": 9
+  },
+  ":ledger:": {
+    "x": 29,
+    "y": 10
+  },
+  ":notebook:": {
+    "x": 29,
+    "y": 11
+  },
+  ":notebook_with_decorative_cover:": {
+    "x": 29,
+    "y": 12
+  },
+  ":closed_book:": {
+    "x": 29,
+    "y": 13
+  },
+  ":book:": {
+    "x": 29,
+    "y": 14
+  },
+  ":green_book:": {
+    "x": 29,
+    "y": 15
+  },
+  ":blue_book:": {
+    "x": 29,
+    "y": 16
+  },
+  ":orange_book:": {
+    "x": 29,
+    "y": 17
+  },
+  ":books:": {
+    "x": 29,
+    "y": 18
+  },
+  ":name_badge:": {
+    "x": 29,
+    "y": 19
+  },
+  ":scroll:": {
+    "x": 29,
+    "y": 20
+  },
+  ":memo:": {
+    "x": 29,
+    "y": 21
+  },
+  ":telephone_receiver:": {
+    "x": 29,
+    "y": 22
+  },
+  ":pager:": {
+    "x": 29,
+    "y": 23
+  },
+  ":fax:": {
+    "x": 29,
+    "y": 24
+  },
+  ":satellite_antenna:": {
+    "x": 29,
+    "y": 25
+  },
+  ":loudspeaker:": {
+    "x": 29,
+    "y": 26
+  },
+  ":mega:": {
+    "x": 29,
+    "y": 27
+  },
+  ":outbox_tray:": {
+    "x": 29,
+    "y": 28
+  },
+  ":inbox_tray:": {
+    "x": 29,
+    "y": 29
+  },
+  ":package:": {
+    "x": 29,
+    "y": 30
+  },
+  ":e-mail:": {
+    "x": 29,
+    "y": 31
+  },
+  ":incoming_envelope:": {
+    "x": 29,
+    "y": 32
+  },
+  ":envelope_with_arrow:": {
+    "x": 29,
+    "y": 33
+  },
+  ":mailbox_closed:": {
+    "x": 29,
+    "y": 34
+  },
+  ":mailbox:": {
+    "x": 29,
+    "y": 35
+  },
+  ":mailbox_with_mail:": {
+    "x": 29,
+    "y": 36
+  },
+  ":mailbox_with_no_mail:": {
+    "x": 29,
+    "y": 37
+  },
+  ":postbox:": {
+    "x": 29,
+    "y": 38
+  },
+  ":postal_horn:": {
+    "x": 29,
+    "y": 39
+  },
+  ":newspaper:": {
+    "x": 29,
+    "y": 40
+  },
+  ":iphone:": {
+    "x": 29,
+    "y": 41
+  },
+  ":calling:": {
+    "x": 29,
+    "y": 42
+  },
+  ":vibration_mode:": {
+    "x": 29,
+    "y": 43
+  },
+  ":mobile_phone_off:": {
+    "x": 29,
+    "y": 44
+  },
+  ":no_mobile_phones:": {
+    "x": 29,
+    "y": 45
+  },
+  ":signal_strength:": {
+    "x": 29,
+    "y": 46
+  },
+  ":camera:": {
+    "x": 29,
+    "y": 47
+  },
+  ":camera_with_flash:": {
+    "x": 29,
+    "y": 48
+  },
+  ":video_camera:": {
+    "x": 29,
+    "y": 49
+  },
+  ":tv:": {
+    "x": 29,
+    "y": 50
+  },
+  ":radio:": {
+    "x": 29,
+    "y": 51
+  },
+  ":vhs:": {
+    "x": 29,
+    "y": 52
+  },
+  ":film_projector:": {
+    "x": 29,
+    "y": 53
+  },
+  ":prayer_beads:": {
+    "x": 29,
+    "y": 54
+  },
+  ":twisted_rightwards_arrows:": {
+    "x": 29,
+    "y": 55
+  },
+  ":repeat:": {
+    "x": 29,
+    "y": 56
+  },
+  ":repeat_one:": {
+    "x": 29,
+    "y": 57
+  },
+  ":arrows_clockwise:": {
+    "x": 29,
+    "y": 58
+  },
+  ":arrows_counterclockwise:": {
+    "x": 29,
+    "y": 59
+  },
+  ":low_brightness:": {
+    "x": 29,
+    "y": 60
+  },
+  ":high_brightness:": {
+    "x": 29,
+    "y": 61
+  },
+  ":mute:": {
+    "x": 30,
+    "y": 0
+  },
+  ":speaker:": {
+    "x": 30,
+    "y": 1
+  },
+  ":sound:": {
+    "x": 30,
+    "y": 2
+  },
+  ":loud_sound:": {
+    "x": 30,
+    "y": 3
+  },
+  ":battery:": {
+    "x": 30,
+    "y": 4
+  },
+  ":electric_plug:": {
+    "x": 30,
+    "y": 5
+  },
+  ":mag:": {
+    "x": 30,
+    "y": 6
+  },
+  ":mag_right:": {
+    "x": 30,
+    "y": 7
+  },
+  ":lock_with_ink_pen:": {
+    "x": 30,
+    "y": 8
+  },
+  ":closed_lock_with_key:": {
+    "x": 30,
+    "y": 9
+  },
+  ":key:": {
+    "x": 30,
+    "y": 10
+  },
+  ":lock:": {
+    "x": 30,
+    "y": 11
+  },
+  ":unlock:": {
+    "x": 30,
+    "y": 12
+  },
+  ":bell:": {
+    "x": 30,
+    "y": 13
+  },
+  ":no_bell:": {
+    "x": 30,
+    "y": 14
+  },
+  ":bookmark:": {
+    "x": 30,
+    "y": 15
+  },
+  ":link:": {
+    "x": 30,
+    "y": 16
+  },
+  ":radio_button:": {
+    "x": 30,
+    "y": 17
+  },
+  ":back:": {
+    "x": 30,
+    "y": 18
+  },
+  ":end:": {
+    "x": 30,
+    "y": 19
+  },
+  ":on:": {
+    "x": 30,
+    "y": 20
+  },
+  ":soon:": {
+    "x": 30,
+    "y": 21
+  },
+  ":top:": {
+    "x": 30,
+    "y": 22
+  },
+  ":underage:": {
+    "x": 30,
+    "y": 23
+  },
+  ":keycap_ten:": {
+    "x": 30,
+    "y": 24
+  },
+  ":capital_abcd:": {
+    "x": 30,
+    "y": 25
+  },
+  ":abcd:": {
+    "x": 30,
+    "y": 26
+  },
+  ":1234:": {
+    "x": 30,
+    "y": 27
+  },
+  ":symbols:": {
+    "x": 30,
+    "y": 28
+  },
+  ":abc:": {
+    "x": 30,
+    "y": 29
+  },
+  ":fire:": {
+    "x": 30,
+    "y": 30
+  },
+  ":flashlight:": {
+    "x": 30,
+    "y": 31
+  },
+  ":wrench:": {
+    "x": 30,
+    "y": 32
+  },
+  ":hammer:": {
+    "x": 30,
+    "y": 33
+  },
+  ":nut_and_bolt:": {
+    "x": 30,
+    "y": 34
+  },
+  ":hocho:": {
+    "x": 30,
+    "y": 35
+  },
+  ":gun:": {
+    "x": 30,
+    "y": 36
+  },
+  ":microscope:": {
+    "x": 30,
+    "y": 37
+  },
+  ":telescope:": {
+    "x": 30,
+    "y": 38
+  },
+  ":crystal_ball:": {
+    "x": 30,
+    "y": 39
+  },
+  ":six_pointed_star:": {
+    "x": 30,
+    "y": 40
+  },
+  ":beginner:": {
+    "x": 30,
+    "y": 41
+  },
+  ":trident:": {
+    "x": 30,
+    "y": 42
+  },
+  ":black_square_button:": {
+    "x": 30,
+    "y": 43
+  },
+  ":white_square_button:": {
+    "x": 30,
+    "y": 44
+  },
+  ":red_circle:": {
+    "x": 30,
+    "y": 45
+  },
+  ":large_blue_circle:": {
+    "x": 30,
+    "y": 46
+  },
+  ":large_orange_diamond:": {
+    "x": 30,
+    "y": 47
+  },
+  ":large_blue_diamond:": {
+    "x": 30,
+    "y": 48
+  },
+  ":small_orange_diamond:": {
+    "x": 30,
+    "y": 49
+  },
+  ":small_blue_diamond:": {
+    "x": 30,
+    "y": 50
+  },
+  ":small_red_triangle:": {
+    "x": 30,
+    "y": 51
+  },
+  ":small_red_triangle_down:": {
+    "x": 30,
+    "y": 52
+  },
+  ":arrow_up_small:": {
+    "x": 30,
+    "y": 53
+  },
+  ":arrow_down_small:": {
+    "x": 30,
+    "y": 54
+  },
+  ":om_symbol:": {
+    "x": 30,
+    "y": 55
+  },
+  ":dove_of_peace:": {
+    "x": 30,
+    "y": 56
+  },
+  ":kaaba:": {
+    "x": 30,
+    "y": 57
+  },
+  ":mosque:": {
+    "x": 30,
+    "y": 58
+  },
+  ":synagogue:": {
+    "x": 30,
+    "y": 59
+  },
+  ":menorah_with_nine_branches:": {
+    "x": 30,
+    "y": 60
+  },
+  ":clock1:": {
+    "x": 30,
+    "y": 61
+  },
+  ":clock2:": {
+    "x": 31,
+    "y": 0
+  },
+  ":clock3:": {
+    "x": 31,
+    "y": 1
+  },
+  ":clock4:": {
+    "x": 31,
+    "y": 2
+  },
+  ":clock5:": {
+    "x": 31,
+    "y": 3
+  },
+  ":clock6:": {
+    "x": 31,
+    "y": 4
+  },
+  ":clock7:": {
+    "x": 31,
+    "y": 5
+  },
+  ":clock8:": {
+    "x": 31,
+    "y": 6
+  },
+  ":clock9:": {
+    "x": 31,
+    "y": 7
+  },
+  ":clock10:": {
+    "x": 31,
+    "y": 8
+  },
+  ":clock11:": {
+    "x": 31,
+    "y": 9
+  },
+  ":clock12:": {
+    "x": 31,
+    "y": 10
+  },
+  ":clock130:": {
+    "x": 31,
+    "y": 11
+  },
+  ":clock230:": {
+    "x": 31,
+    "y": 12
+  },
+  ":clock330:": {
+    "x": 31,
+    "y": 13
+  },
+  ":clock430:": {
+    "x": 31,
+    "y": 14
+  },
+  ":clock530:": {
+    "x": 31,
+    "y": 15
+  },
+  ":clock630:": {
+    "x": 31,
+    "y": 16
+  },
+  ":clock730:": {
+    "x": 31,
+    "y": 17
+  },
+  ":clock830:": {
+    "x": 31,
+    "y": 18
+  },
+  ":clock930:": {
+    "x": 31,
+    "y": 19
+  },
+  ":clock1030:": {
+    "x": 31,
+    "y": 20
+  },
+  ":clock1130:": {
+    "x": 31,
+    "y": 21
+  },
+  ":clock1230:": {
+    "x": 31,
+    "y": 22
+  },
+  ":candle:": {
+    "x": 31,
+    "y": 23
+  },
+  ":mantelpiece_clock:": {
+    "x": 31,
+    "y": 24
+  },
+  ":hole:": {
+    "x": 31,
+    "y": 25
+  },
+  ":man_in_business_suit_levitating:": {
+    "x": 31,
+    "y": 26
+  },
+  ":female-detective:": {
+    "x": 31,
+    "y": 32
+  },
+  ":male-detective:": {
+    "x": 31,
+    "y": 38
+  },
+  ":sleuth_or_spy:": {
+    "x": 31,
+    "y": 44
+  },
+  ":dark_sunglasses:": {
+    "x": 31,
+    "y": 50
+  },
+  ":spider:": {
+    "x": 31,
+    "y": 51
+  },
+  ":spider_web:": {
+    "x": 31,
+    "y": 52
+  },
+  ":joystick:": {
+    "x": 31,
+    "y": 53
+  },
+  ":man_dancing:": {
+    "x": 31,
+    "y": 54
+  },
+  ":linked_paperclips:": {
+    "x": 31,
+    "y": 60
+  },
+  ":lower_left_ballpoint_pen:": {
+    "x": 31,
+    "y": 61
+  },
+  ":lower_left_fountain_pen:": {
+    "x": 32,
+    "y": 0
+  },
+  ":lower_left_paintbrush:": {
+    "x": 32,
+    "y": 1
+  },
+  ":lower_left_crayon:": {
+    "x": 32,
+    "y": 2
+  },
+  ":raised_hand_with_fingers_splayed:": {
+    "x": 32,
+    "y": 3
+  },
+  ":middle_finger:": {
+    "x": 32,
+    "y": 9
+  },
+  ":spock-hand:": {
+    "x": 32,
+    "y": 15
+  },
+  ":black_heart:": {
+    "x": 32,
+    "y": 21
+  },
+  ":desktop_computer:": {
+    "x": 32,
+    "y": 22
+  },
+  ":printer:": {
+    "x": 32,
+    "y": 23
+  },
+  ":three_button_mouse:": {
+    "x": 32,
+    "y": 24
+  },
+  ":trackball:": {
+    "x": 32,
+    "y": 25
+  },
+  ":frame_with_picture:": {
+    "x": 32,
+    "y": 26
+  },
+  ":card_index_dividers:": {
+    "x": 32,
+    "y": 27
+  },
+  ":card_file_box:": {
+    "x": 32,
+    "y": 28
+  },
+  ":file_cabinet:": {
+    "x": 32,
+    "y": 29
+  },
+  ":wastebasket:": {
+    "x": 32,
+    "y": 30
+  },
+  ":spiral_note_pad:": {
+    "x": 32,
+    "y": 31
+  },
+  ":spiral_calendar_pad:": {
+    "x": 32,
+    "y": 32
+  },
+  ":compression:": {
+    "x": 32,
+    "y": 33
+  },
+  ":old_key:": {
+    "x": 32,
+    "y": 34
+  },
+  ":rolled_up_newspaper:": {
+    "x": 32,
+    "y": 35
+  },
+  ":dagger_knife:": {
+    "x": 32,
+    "y": 36
+  },
+  ":speaking_head_in_silhouette:": {
+    "x": 32,
+    "y": 37
+  },
+  ":left_speech_bubble:": {
+    "x": 32,
+    "y": 38
+  },
+  ":right_anger_bubble:": {
+    "x": 32,
+    "y": 39
+  },
+  ":ballot_box_with_ballot:": {
+    "x": 32,
+    "y": 40
+  },
+  ":world_map:": {
+    "x": 32,
+    "y": 41
+  },
+  ":mount_fuji:": {
+    "x": 32,
+    "y": 42
+  },
+  ":tokyo_tower:": {
+    "x": 32,
+    "y": 43
+  },
+  ":statue_of_liberty:": {
+    "x": 32,
+    "y": 44
+  },
+  ":japan:": {
+    "x": 32,
+    "y": 45
+  },
+  ":moyai:": {
+    "x": 32,
+    "y": 46
+  },
+  ":grinning:": {
+    "x": 32,
+    "y": 47
+  },
+  ":grin:": {
+    "x": 32,
+    "y": 48
+  },
+  ":joy:": {
+    "x": 32,
+    "y": 49
+  },
+  ":smiley:": {
+    "x": 32,
+    "y": 50
+  },
+  ":smile:": {
+    "x": 32,
+    "y": 51
+  },
+  ":sweat_smile:": {
+    "x": 32,
+    "y": 52
+  },
+  ":laughing:": {
+    "x": 32,
+    "y": 53
+  },
+  ":innocent:": {
+    "x": 32,
+    "y": 54
+  },
+  ":smiling_imp:": {
+    "x": 32,
+    "y": 55
+  },
+  ":wink:": {
+    "x": 32,
+    "y": 56
+  },
+  ":blush:": {
+    "x": 32,
+    "y": 57
+  },
+  ":yum:": {
+    "x": 32,
+    "y": 58
+  },
+  ":relieved:": {
+    "x": 32,
+    "y": 59
+  },
+  ":heart_eyes:": {
+    "x": 32,
+    "y": 60
+  },
+  ":sunglasses:": {
+    "x": 32,
+    "y": 61
+  },
+  ":smirk:": {
+    "x": 33,
+    "y": 0
+  },
+  ":neutral_face:": {
+    "x": 33,
+    "y": 1
+  },
+  ":expressionless:": {
+    "x": 33,
+    "y": 2
+  },
+  ":unamused:": {
+    "x": 33,
+    "y": 3
+  },
+  ":sweat:": {
+    "x": 33,
+    "y": 4
+  },
+  ":pensive:": {
+    "x": 33,
+    "y": 5
+  },
+  ":confused:": {
+    "x": 33,
+    "y": 6
+  },
+  ":confounded:": {
+    "x": 33,
+    "y": 7
+  },
+  ":kissing:": {
+    "x": 33,
+    "y": 8
+  },
+  ":kissing_heart:": {
+    "x": 33,
+    "y": 9
+  },
+  ":kissing_smiling_eyes:": {
+    "x": 33,
+    "y": 10
+  },
+  ":kissing_closed_eyes:": {
+    "x": 33,
+    "y": 11
+  },
+  ":stuck_out_tongue:": {
+    "x": 33,
+    "y": 12
+  },
+  ":stuck_out_tongue_winking_eye:": {
+    "x": 33,
+    "y": 13
+  },
+  ":stuck_out_tongue_closed_eyes:": {
+    "x": 33,
+    "y": 14
+  },
+  ":disappointed:": {
+    "x": 33,
+    "y": 15
+  },
+  ":worried:": {
+    "x": 33,
+    "y": 16
+  },
+  ":angry:": {
+    "x": 33,
+    "y": 17
+  },
+  ":rage:": {
+    "x": 33,
+    "y": 18
+  },
+  ":cry:": {
+    "x": 33,
+    "y": 19
+  },
+  ":persevere:": {
+    "x": 33,
+    "y": 20
+  },
+  ":triumph:": {
+    "x": 33,
+    "y": 21
+  },
+  ":disappointed_relieved:": {
+    "x": 33,
+    "y": 22
+  },
+  ":frowning:": {
+    "x": 33,
+    "y": 23
+  },
+  ":anguished:": {
+    "x": 33,
+    "y": 24
+  },
+  ":fearful:": {
+    "x": 33,
+    "y": 25
+  },
+  ":weary:": {
+    "x": 33,
+    "y": 26
+  },
+  ":sleepy:": {
+    "x": 33,
+    "y": 27
+  },
+  ":tired_face:": {
+    "x": 33,
+    "y": 28
+  },
+  ":grimacing:": {
+    "x": 33,
+    "y": 29
+  },
+  ":sob:": {
+    "x": 33,
+    "y": 30
+  },
+  ":face_exhaling:": {
+    "x": 33,
+    "y": 31
+  },
+  ":open_mouth:": {
+    "x": 33,
+    "y": 32
+  },
+  ":hushed:": {
+    "x": 33,
+    "y": 33
+  },
+  ":cold_sweat:": {
+    "x": 33,
+    "y": 34
+  },
+  ":scream:": {
+    "x": 33,
+    "y": 35
+  },
+  ":astonished:": {
+    "x": 33,
+    "y": 36
+  },
+  ":flushed:": {
+    "x": 33,
+    "y": 37
+  },
+  ":sleeping:": {
+    "x": 33,
+    "y": 38
+  },
+  ":face_with_spiral_eyes:": {
+    "x": 33,
+    "y": 39
+  },
+  ":dizzy_face:": {
+    "x": 33,
+    "y": 40
+  },
+  ":face_in_clouds:": {
+    "x": 33,
+    "y": 41
+  },
+  ":no_mouth:": {
+    "x": 33,
+    "y": 42
+  },
+  ":mask:": {
+    "x": 33,
+    "y": 43
+  },
+  ":smile_cat:": {
+    "x": 33,
+    "y": 44
+  },
+  ":joy_cat:": {
+    "x": 33,
+    "y": 45
+  },
+  ":smiley_cat:": {
+    "x": 33,
+    "y": 46
+  },
+  ":heart_eyes_cat:": {
+    "x": 33,
+    "y": 47
+  },
+  ":smirk_cat:": {
+    "x": 33,
+    "y": 48
+  },
+  ":kissing_cat:": {
+    "x": 33,
+    "y": 49
+  },
+  ":pouting_cat:": {
+    "x": 33,
+    "y": 50
+  },
+  ":crying_cat_face:": {
+    "x": 33,
+    "y": 51
+  },
+  ":scream_cat:": {
+    "x": 33,
+    "y": 52
+  },
+  ":slightly_frowning_face:": {
+    "x": 33,
+    "y": 53
+  },
+  ":head_shaking_horizontally:": {
+    "x": 33,
+    "y": 54
+  },
+  ":head_shaking_vertically:": {
+    "x": 33,
+    "y": 55
+  },
+  ":slightly_smiling_face:": {
+    "x": 33,
+    "y": 56
+  },
+  ":upside_down_face:": {
+    "x": 33,
+    "y": 57
+  },
+  ":face_with_rolling_eyes:": {
+    "x": 33,
+    "y": 58
+  },
+  ":woman-gesturing-no:": {
+    "x": 33,
+    "y": 59
+  },
+  ":man-gesturing-no:": {
+    "x": 34,
+    "y": 3
+  },
+  ":no_good:": {
+    "x": 34,
+    "y": 9
+  },
+  ":woman-gesturing-ok:": {
+    "x": 34,
+    "y": 15
+  },
+  ":man-gesturing-ok:": {
+    "x": 34,
+    "y": 21
+  },
+  ":ok_woman:": {
+    "x": 34,
+    "y": 27
+  },
+  ":woman-bowing:": {
+    "x": 34,
+    "y": 33
+  },
+  ":man-bowing:": {
+    "x": 34,
+    "y": 39
+  },
+  ":bow:": {
+    "x": 34,
+    "y": 45
+  },
+  ":see_no_evil:": {
+    "x": 34,
+    "y": 51
+  },
+  ":hear_no_evil:": {
+    "x": 34,
+    "y": 52
+  },
+  ":speak_no_evil:": {
+    "x": 34,
+    "y": 53
+  },
+  ":woman-raising-hand:": {
+    "x": 34,
+    "y": 54
+  },
+  ":man-raising-hand:": {
+    "x": 34,
+    "y": 60
+  },
+  ":raising_hand:": {
+    "x": 35,
+    "y": 4
+  },
+  ":raised_hands:": {
+    "x": 35,
+    "y": 10
+  },
+  ":woman-frowning:": {
+    "x": 35,
+    "y": 16
+  },
+  ":man-frowning:": {
+    "x": 35,
+    "y": 22
+  },
+  ":person_frowning:": {
+    "x": 35,
+    "y": 28
+  },
+  ":woman-pouting:": {
+    "x": 35,
+    "y": 34
+  },
+  ":man-pouting:": {
+    "x": 35,
+    "y": 40
+  },
+  ":person_with_pouting_face:": {
+    "x": 35,
+    "y": 46
+  },
+  ":pray:": {
+    "x": 35,
+    "y": 52
+  },
+  ":rocket:": {
+    "x": 35,
+    "y": 58
+  },
+  ":helicopter:": {
+    "x": 35,
+    "y": 59
+  },
+  ":steam_locomotive:": {
+    "x": 35,
+    "y": 60
+  },
+  ":railway_car:": {
+    "x": 35,
+    "y": 61
+  },
+  ":bullettrain_side:": {
+    "x": 36,
+    "y": 0
+  },
+  ":bullettrain_front:": {
+    "x": 36,
+    "y": 1
+  },
+  ":train2:": {
+    "x": 36,
+    "y": 2
+  },
+  ":metro:": {
+    "x": 36,
+    "y": 3
+  },
+  ":light_rail:": {
+    "x": 36,
+    "y": 4
+  },
+  ":station:": {
+    "x": 36,
+    "y": 5
+  },
+  ":tram:": {
+    "x": 36,
+    "y": 6
+  },
+  ":train:": {
+    "x": 36,
+    "y": 7
+  },
+  ":bus:": {
+    "x": 36,
+    "y": 8
+  },
+  ":oncoming_bus:": {
+    "x": 36,
+    "y": 9
+  },
+  ":trolleybus:": {
+    "x": 36,
+    "y": 10
+  },
+  ":busstop:": {
+    "x": 36,
+    "y": 11
+  },
+  ":minibus:": {
+    "x": 36,
+    "y": 12
+  },
+  ":ambulance:": {
+    "x": 36,
+    "y": 13
+  },
+  ":fire_engine:": {
+    "x": 36,
+    "y": 14
+  },
+  ":police_car:": {
+    "x": 36,
+    "y": 15
+  },
+  ":oncoming_police_car:": {
+    "x": 36,
+    "y": 16
+  },
+  ":taxi:": {
+    "x": 36,
+    "y": 17
+  },
+  ":oncoming_taxi:": {
+    "x": 36,
+    "y": 18
+  },
+  ":car:": {
+    "x": 36,
+    "y": 19
+  },
+  ":oncoming_automobile:": {
+    "x": 36,
+    "y": 20
+  },
+  ":blue_car:": {
+    "x": 36,
+    "y": 21
+  },
+  ":truck:": {
+    "x": 36,
+    "y": 22
+  },
+  ":articulated_lorry:": {
+    "x": 36,
+    "y": 23
+  },
+  ":tractor:": {
+    "x": 36,
+    "y": 24
+  },
+  ":monorail:": {
+    "x": 36,
+    "y": 25
+  },
+  ":mountain_railway:": {
+    "x": 36,
+    "y": 26
+  },
+  ":suspension_railway:": {
+    "x": 36,
+    "y": 27
+  },
+  ":mountain_cableway:": {
+    "x": 36,
+    "y": 28
+  },
+  ":aerial_tramway:": {
+    "x": 36,
+    "y": 29
+  },
+  ":ship:": {
+    "x": 36,
+    "y": 30
+  },
+  ":woman-rowing-boat:": {
+    "x": 36,
+    "y": 31
+  },
+  ":man-rowing-boat:": {
+    "x": 36,
+    "y": 37
+  },
+  ":rowboat:": {
+    "x": 36,
+    "y": 43
+  },
+  ":speedboat:": {
+    "x": 36,
+    "y": 49
+  },
+  ":traffic_light:": {
+    "x": 36,
+    "y": 50
+  },
+  ":vertical_traffic_light:": {
+    "x": 36,
+    "y": 51
+  },
+  ":construction:": {
+    "x": 36,
+    "y": 52
+  },
+  ":rotating_light:": {
+    "x": 36,
+    "y": 53
+  },
+  ":triangular_flag_on_post:": {
+    "x": 36,
+    "y": 54
+  },
+  ":door:": {
+    "x": 36,
+    "y": 55
+  },
+  ":no_entry_sign:": {
+    "x": 36,
+    "y": 56
+  },
+  ":smoking:": {
+    "x": 36,
+    "y": 57
+  },
+  ":no_smoking:": {
+    "x": 36,
+    "y": 58
+  },
+  ":put_litter_in_its_place:": {
+    "x": 36,
+    "y": 59
+  },
+  ":do_not_litter:": {
+    "x": 36,
+    "y": 60
+  },
+  ":potable_water:": {
+    "x": 36,
+    "y": 61
+  },
+  ":non-potable_water:": {
+    "x": 37,
+    "y": 0
+  },
+  ":bike:": {
+    "x": 37,
+    "y": 1
+  },
+  ":no_bicycles:": {
+    "x": 37,
+    "y": 2
+  },
+  ":woman-biking:": {
+    "x": 37,
+    "y": 3
+  },
+  ":man-biking:": {
+    "x": 37,
+    "y": 9
+  },
+  ":bicyclist:": {
+    "x": 37,
+    "y": 15
+  },
+  ":woman-mountain-biking:": {
+    "x": 37,
+    "y": 21
+  },
+  ":man-mountain-biking:": {
+    "x": 37,
+    "y": 27
+  },
+  ":mountain_bicyclist:": {
+    "x": 37,
+    "y": 33
+  },
+  ":woman-walking:": {
+    "x": 37,
+    "y": 39
+  },
+  ":woman_walking_facing_right:": {
+    "x": 37,
+    "y": 45
+  },
+  ":man-walking:": {
+    "x": 37,
+    "y": 51
+  },
+  ":man_walking_facing_right:": {
+    "x": 37,
+    "y": 57
+  },
+  ":person_walking_facing_right:": {
+    "x": 38,
+    "y": 1
+  },
+  ":walking:": {
+    "x": 38,
+    "y": 7
+  },
+  ":no_pedestrians:": {
+    "x": 38,
+    "y": 13
+  },
+  ":children_crossing:": {
+    "x": 38,
+    "y": 14
+  },
+  ":mens:": {
+    "x": 38,
+    "y": 15
+  },
+  ":womens:": {
+    "x": 38,
+    "y": 16
+  },
+  ":restroom:": {
+    "x": 38,
+    "y": 17
+  },
+  ":baby_symbol:": {
+    "x": 38,
+    "y": 18
+  },
+  ":toilet:": {
+    "x": 38,
+    "y": 19
+  },
+  ":wc:": {
+    "x": 38,
+    "y": 20
+  },
+  ":shower:": {
+    "x": 38,
+    "y": 21
+  },
+  ":bath:": {
+    "x": 38,
+    "y": 22
+  },
+  ":bathtub:": {
+    "x": 38,
+    "y": 28
+  },
+  ":passport_control:": {
+    "x": 38,
+    "y": 29
+  },
+  ":customs:": {
+    "x": 38,
+    "y": 30
+  },
+  ":baggage_claim:": {
+    "x": 38,
+    "y": 31
+  },
+  ":left_luggage:": {
+    "x": 38,
+    "y": 32
+  },
+  ":couch_and_lamp:": {
+    "x": 38,
+    "y": 33
+  },
+  ":sleeping_accommodation:": {
+    "x": 38,
+    "y": 34
+  },
+  ":shopping_bags:": {
+    "x": 38,
+    "y": 40
+  },
+  ":bellhop_bell:": {
+    "x": 38,
+    "y": 41
+  },
+  ":bed:": {
+    "x": 38,
+    "y": 42
+  },
+  ":place_of_worship:": {
+    "x": 38,
+    "y": 43
+  },
+  ":octagonal_sign:": {
+    "x": 38,
+    "y": 44
+  },
+  ":shopping_trolley:": {
+    "x": 38,
+    "y": 45
+  },
+  ":hindu_temple:": {
+    "x": 38,
+    "y": 46
+  },
+  ":hut:": {
+    "x": 38,
+    "y": 47
+  },
+  ":elevator:": {
+    "x": 38,
+    "y": 48
+  },
+  ":wireless:": {
+    "x": 38,
+    "y": 49
+  },
+  ":playground_slide:": {
+    "x": 38,
+    "y": 50
+  },
+  ":wheel:": {
+    "x": 38,
+    "y": 51
+  },
+  ":ring_buoy:": {
+    "x": 38,
+    "y": 52
+  },
+  ":hammer_and_wrench:": {
+    "x": 38,
+    "y": 53
+  },
+  ":shield:": {
+    "x": 38,
+    "y": 54
+  },
+  ":oil_drum:": {
+    "x": 38,
+    "y": 55
+  },
+  ":motorway:": {
+    "x": 38,
+    "y": 56
+  },
+  ":railway_track:": {
+    "x": 38,
+    "y": 57
+  },
+  ":motor_boat:": {
+    "x": 38,
+    "y": 58
+  },
+  ":small_airplane:": {
+    "x": 38,
+    "y": 59
+  },
+  ":airplane_departure:": {
+    "x": 38,
+    "y": 60
+  },
+  ":airplane_arriving:": {
+    "x": 38,
+    "y": 61
+  },
+  ":satellite:": {
+    "x": 39,
+    "y": 0
+  },
+  ":passenger_ship:": {
+    "x": 39,
+    "y": 1
+  },
+  ":scooter:": {
+    "x": 39,
+    "y": 2
+  },
+  ":motor_scooter:": {
+    "x": 39,
+    "y": 3
+  },
+  ":canoe:": {
+    "x": 39,
+    "y": 4
+  },
+  ":sled:": {
+    "x": 39,
+    "y": 5
+  },
+  ":flying_saucer:": {
+    "x": 39,
+    "y": 6
+  },
+  ":skateboard:": {
+    "x": 39,
+    "y": 7
+  },
+  ":auto_rickshaw:": {
+    "x": 39,
+    "y": 8
+  },
+  ":pickup_truck:": {
+    "x": 39,
+    "y": 9
+  },
+  ":roller_skate:": {
+    "x": 39,
+    "y": 10
+  },
+  ":large_orange_circle:": {
+    "x": 39,
+    "y": 11
+  },
+  ":large_yellow_circle:": {
+    "x": 39,
+    "y": 12
+  },
+  ":large_green_circle:": {
+    "x": 39,
+    "y": 13
+  },
+  ":large_purple_circle:": {
+    "x": 39,
+    "y": 14
+  },
+  ":large_brown_circle:": {
+    "x": 39,
+    "y": 15
+  },
+  ":large_red_square:": {
+    "x": 39,
+    "y": 16
+  },
+  ":large_blue_square:": {
+    "x": 39,
+    "y": 17
+  },
+  ":large_orange_square:": {
+    "x": 39,
+    "y": 18
+  },
+  ":large_yellow_square:": {
+    "x": 39,
+    "y": 19
+  },
+  ":large_green_square:": {
+    "x": 39,
+    "y": 20
+  },
+  ":large_purple_square:": {
+    "x": 39,
+    "y": 21
+  },
+  ":large_brown_square:": {
+    "x": 39,
+    "y": 22
+  },
+  ":heavy_equals_sign:": {
+    "x": 39,
+    "y": 23
+  },
+  ":pinched_fingers:": {
+    "x": 39,
+    "y": 24
+  },
+  ":white_heart:": {
+    "x": 39,
+    "y": 30
+  },
+  ":brown_heart:": {
+    "x": 39,
+    "y": 31
+  },
+  ":pinching_hand:": {
+    "x": 39,
+    "y": 32
+  },
+  ":zipper_mouth_face:": {
+    "x": 39,
+    "y": 38
+  },
+  ":money_mouth_face:": {
+    "x": 39,
+    "y": 39
+  },
+  ":face_with_thermometer:": {
+    "x": 39,
+    "y": 40
+  },
+  ":nerd_face:": {
+    "x": 39,
+    "y": 41
+  },
+  ":thinking_face:": {
+    "x": 39,
+    "y": 42
+  },
+  ":face_with_head_bandage:": {
+    "x": 39,
+    "y": 43
+  },
+  ":robot_face:": {
+    "x": 39,
+    "y": 44
+  },
+  ":hugging_face:": {
+    "x": 39,
+    "y": 45
+  },
+  ":the_horns:": {
+    "x": 39,
+    "y": 46
+  },
+  ":call_me_hand:": {
+    "x": 39,
+    "y": 52
+  },
+  ":raised_back_of_hand:": {
+    "x": 39,
+    "y": 58
+  },
+  ":left-facing_fist:": {
+    "x": 40,
+    "y": 2
+  },
+  ":right-facing_fist:": {
+    "x": 40,
+    "y": 8
+  },
+  ":handshake:": {
+    "x": 40,
+    "y": 14
+  },
+  ":crossed_fingers:": {
+    "x": 40,
+    "y": 40
+  },
+  ":i_love_you_hand_sign:": {
+    "x": 40,
+    "y": 46
+  },
+  ":face_with_cowboy_hat:": {
+    "x": 40,
+    "y": 52
+  },
+  ":clown_face:": {
+    "x": 40,
+    "y": 53
+  },
+  ":nauseated_face:": {
+    "x": 40,
+    "y": 54
+  },
+  ":rolling_on_the_floor_laughing:": {
+    "x": 40,
+    "y": 55
+  },
+  ":drooling_face:": {
+    "x": 40,
+    "y": 56
+  },
+  ":lying_face:": {
+    "x": 40,
+    "y": 57
+  },
+  ":woman-facepalming:": {
+    "x": 40,
+    "y": 58
+  },
+  ":man-facepalming:": {
+    "x": 41,
+    "y": 2
+  },
+  ":face_palm:": {
+    "x": 41,
+    "y": 8
+  },
+  ":sneezing_face:": {
+    "x": 41,
+    "y": 14
+  },
+  ":face_with_raised_eyebrow:": {
+    "x": 41,
+    "y": 15
+  },
+  ":star-struck:": {
+    "x": 41,
+    "y": 16
+  },
+  ":zany_face:": {
+    "x": 41,
+    "y": 17
+  },
+  ":shushing_face:": {
+    "x": 41,
+    "y": 18
+  },
+  ":face_with_symbols_on_mouth:": {
+    "x": 41,
+    "y": 19
+  },
+  ":face_with_hand_over_mouth:": {
+    "x": 41,
+    "y": 20
+  },
+  ":face_vomiting:": {
+    "x": 41,
+    "y": 21
+  },
+  ":exploding_head:": {
+    "x": 41,
+    "y": 22
+  },
+  ":pregnant_woman:": {
+    "x": 41,
+    "y": 23
+  },
+  ":breast-feeding:": {
+    "x": 41,
+    "y": 29
+  },
+  ":palms_up_together:": {
+    "x": 41,
+    "y": 35
+  },
+  ":selfie:": {
+    "x": 41,
+    "y": 41
+  },
+  ":prince:": {
+    "x": 41,
+    "y": 47
+  },
+  ":woman_in_tuxedo:": {
+    "x": 41,
+    "y": 53
+  },
+  ":man_in_tuxedo:": {
+    "x": 41,
+    "y": 59
+  },
+  ":person_in_tuxedo:": {
+    "x": 42,
+    "y": 3
+  },
+  ":mrs_claus:": {
+    "x": 42,
+    "y": 9
+  },
+  ":woman-shrugging:": {
+    "x": 42,
+    "y": 15
+  },
+  ":man-shrugging:": {
+    "x": 42,
+    "y": 21
+  },
+  ":shrug:": {
+    "x": 42,
+    "y": 27
+  },
+  ":woman-cartwheeling:": {
+    "x": 42,
+    "y": 33
+  },
+  ":man-cartwheeling:": {
+    "x": 42,
+    "y": 39
+  },
+  ":person_doing_cartwheel:": {
+    "x": 42,
+    "y": 45
+  },
+  ":woman-juggling:": {
+    "x": 42,
+    "y": 51
+  },
+  ":man-juggling:": {
+    "x": 42,
+    "y": 57
+  },
+  ":juggling:": {
+    "x": 43,
+    "y": 1
+  },
+  ":fencer:": {
+    "x": 43,
+    "y": 7
+  },
+  ":woman-wrestling:": {
+    "x": 43,
+    "y": 8
+  },
+  ":man-wrestling:": {
+    "x": 43,
+    "y": 9
+  },
+  ":wrestlers:": {
+    "x": 43,
+    "y": 10
+  },
+  ":woman-playing-water-polo:": {
+    "x": 43,
+    "y": 11
+  },
+  ":man-playing-water-polo:": {
+    "x": 43,
+    "y": 17
+  },
+  ":water_polo:": {
+    "x": 43,
+    "y": 23
+  },
+  ":woman-playing-handball:": {
+    "x": 43,
+    "y": 29
+  },
+  ":man-playing-handball:": {
+    "x": 43,
+    "y": 35
+  },
+  ":handball:": {
+    "x": 43,
+    "y": 41
+  },
+  ":diving_mask:": {
+    "x": 43,
+    "y": 47
+  },
+  ":wilted_flower:": {
+    "x": 43,
+    "y": 48
+  },
+  ":drum_with_drumsticks:": {
+    "x": 43,
+    "y": 49
+  },
+  ":clinking_glasses:": {
+    "x": 43,
+    "y": 50
+  },
+  ":tumbler_glass:": {
+    "x": 43,
+    "y": 51
+  },
+  ":spoon:": {
+    "x": 43,
+    "y": 52
+  },
+  ":goal_net:": {
+    "x": 43,
+    "y": 53
+  },
+  ":first_place_medal:": {
+    "x": 43,
+    "y": 54
+  },
+  ":second_place_medal:": {
+    "x": 43,
+    "y": 55
+  },
+  ":third_place_medal:": {
+    "x": 43,
+    "y": 56
+  },
+  ":boxing_glove:": {
+    "x": 43,
+    "y": 57
+  },
+  ":martial_arts_uniform:": {
+    "x": 43,
+    "y": 58
+  },
+  ":curling_stone:": {
+    "x": 43,
+    "y": 59
+  },
+  ":lacrosse:": {
+    "x": 43,
+    "y": 60
+  },
+  ":softball:": {
+    "x": 43,
+    "y": 61
+  },
+  ":flying_disc:": {
+    "x": 44,
+    "y": 0
+  },
+  ":croissant:": {
+    "x": 44,
+    "y": 1
+  },
+  ":avocado:": {
+    "x": 44,
+    "y": 2
+  },
+  ":cucumber:": {
+    "x": 44,
+    "y": 3
+  },
+  ":bacon:": {
+    "x": 44,
+    "y": 4
+  },
+  ":potato:": {
+    "x": 44,
+    "y": 5
+  },
+  ":carrot:": {
+    "x": 44,
+    "y": 6
+  },
+  ":baguette_bread:": {
+    "x": 44,
+    "y": 7
+  },
+  ":green_salad:": {
+    "x": 44,
+    "y": 8
+  },
+  ":shallow_pan_of_food:": {
+    "x": 44,
+    "y": 9
+  },
+  ":stuffed_flatbread:": {
+    "x": 44,
+    "y": 10
+  },
+  ":egg:": {
+    "x": 44,
+    "y": 11
+  },
+  ":glass_of_milk:": {
+    "x": 44,
+    "y": 12
+  },
+  ":peanuts:": {
+    "x": 44,
+    "y": 13
+  },
+  ":kiwifruit:": {
+    "x": 44,
+    "y": 14
+  },
+  ":pancakes:": {
+    "x": 44,
+    "y": 15
+  },
+  ":dumpling:": {
+    "x": 44,
+    "y": 16
+  },
+  ":fortune_cookie:": {
+    "x": 44,
+    "y": 17
+  },
+  ":takeout_box:": {
+    "x": 44,
+    "y": 18
+  },
+  ":chopsticks:": {
+    "x": 44,
+    "y": 19
+  },
+  ":bowl_with_spoon:": {
+    "x": 44,
+    "y": 20
+  },
+  ":cup_with_straw:": {
+    "x": 44,
+    "y": 21
+  },
+  ":coconut:": {
+    "x": 44,
+    "y": 22
+  },
+  ":broccoli:": {
+    "x": 44,
+    "y": 23
+  },
+  ":pie:": {
+    "x": 44,
+    "y": 24
+  },
+  ":pretzel:": {
+    "x": 44,
+    "y": 25
+  },
+  ":cut_of_meat:": {
+    "x": 44,
+    "y": 26
+  },
+  ":sandwich:": {
+    "x": 44,
+    "y": 27
+  },
+  ":canned_food:": {
+    "x": 44,
+    "y": 28
+  },
+  ":leafy_green:": {
+    "x": 44,
+    "y": 29
+  },
+  ":mango:": {
+    "x": 44,
+    "y": 30
+  },
+  ":moon_cake:": {
+    "x": 44,
+    "y": 31
+  },
+  ":bagel:": {
+    "x": 44,
+    "y": 32
+  },
+  ":smiling_face_with_3_hearts:": {
+    "x": 44,
+    "y": 33
+  },
+  ":yawning_face:": {
+    "x": 44,
+    "y": 34
+  },
+  ":smiling_face_with_tear:": {
+    "x": 44,
+    "y": 35
+  },
+  ":partying_face:": {
+    "x": 44,
+    "y": 36
+  },
+  ":woozy_face:": {
+    "x": 44,
+    "y": 37
+  },
+  ":hot_face:": {
+    "x": 44,
+    "y": 38
+  },
+  ":cold_face:": {
+    "x": 44,
+    "y": 39
+  },
+  ":ninja:": {
+    "x": 44,
+    "y": 40
+  },
+  ":disguised_face:": {
+    "x": 44,
+    "y": 46
+  },
+  ":face_holding_back_tears:": {
+    "x": 44,
+    "y": 47
+  },
+  ":pleading_face:": {
+    "x": 44,
+    "y": 48
+  },
+  ":sari:": {
+    "x": 44,
+    "y": 49
+  },
+  ":lab_coat:": {
+    "x": 44,
+    "y": 50
+  },
+  ":goggles:": {
+    "x": 44,
+    "y": 51
+  },
+  ":hiking_boot:": {
+    "x": 44,
+    "y": 52
+  },
+  ":womans_flat_shoe:": {
+    "x": 44,
+    "y": 53
+  },
+  ":crab:": {
+    "x": 44,
+    "y": 54
+  },
+  ":lion_face:": {
+    "x": 44,
+    "y": 55
+  },
+  ":scorpion:": {
+    "x": 44,
+    "y": 56
+  },
+  ":turkey:": {
+    "x": 44,
+    "y": 57
+  },
+  ":unicorn_face:": {
+    "x": 44,
+    "y": 58
+  },
+  ":eagle:": {
+    "x": 44,
+    "y": 59
+  },
+  ":duck:": {
+    "x": 44,
+    "y": 60
+  },
+  ":bat:": {
+    "x": 44,
+    "y": 61
+  },
+  ":shark:": {
+    "x": 45,
+    "y": 0
+  },
+  ":owl:": {
+    "x": 45,
+    "y": 1
+  },
+  ":fox_face:": {
+    "x": 45,
+    "y": 2
+  },
+  ":butterfly:": {
+    "x": 45,
+    "y": 3
+  },
+  ":deer:": {
+    "x": 45,
+    "y": 4
+  },
+  ":gorilla:": {
+    "x": 45,
+    "y": 5
+  },
+  ":lizard:": {
+    "x": 45,
+    "y": 6
+  },
+  ":rhinoceros:": {
+    "x": 45,
+    "y": 7
+  },
+  ":shrimp:": {
+    "x": 45,
+    "y": 8
+  },
+  ":squid:": {
+    "x": 45,
+    "y": 9
+  },
+  ":giraffe_face:": {
+    "x": 45,
+    "y": 10
+  },
+  ":zebra_face:": {
+    "x": 45,
+    "y": 11
+  },
+  ":hedgehog:": {
+    "x": 45,
+    "y": 12
+  },
+  ":sauropod:": {
+    "x": 45,
+    "y": 13
+  },
+  ":t-rex:": {
+    "x": 45,
+    "y": 14
+  },
+  ":cricket:": {
+    "x": 45,
+    "y": 15
+  },
+  ":kangaroo:": {
+    "x": 45,
+    "y": 16
+  },
+  ":llama:": {
+    "x": 45,
+    "y": 17
+  },
+  ":peacock:": {
+    "x": 45,
+    "y": 18
+  },
+  ":hippopotamus:": {
+    "x": 45,
+    "y": 19
+  },
+  ":parrot:": {
+    "x": 45,
+    "y": 20
+  },
+  ":raccoon:": {
+    "x": 45,
+    "y": 21
+  },
+  ":lobster:": {
+    "x": 45,
+    "y": 22
+  },
+  ":mosquito:": {
+    "x": 45,
+    "y": 23
+  },
+  ":microbe:": {
+    "x": 45,
+    "y": 24
+  },
+  ":badger:": {
+    "x": 45,
+    "y": 25
+  },
+  ":swan:": {
+    "x": 45,
+    "y": 26
+  },
+  ":mammoth:": {
+    "x": 45,
+    "y": 27
+  },
+  ":dodo:": {
+    "x": 45,
+    "y": 28
+  },
+  ":sloth:": {
+    "x": 45,
+    "y": 29
+  },
+  ":otter:": {
+    "x": 45,
+    "y": 30
+  },
+  ":orangutan:": {
+    "x": 45,
+    "y": 31
+  },
+  ":skunk:": {
+    "x": 45,
+    "y": 32
+  },
+  ":flamingo:": {
+    "x": 45,
+    "y": 33
+  },
+  ":oyster:": {
+    "x": 45,
+    "y": 34
+  },
+  ":beaver:": {
+    "x": 45,
+    "y": 35
+  },
+  ":bison:": {
+    "x": 45,
+    "y": 36
+  },
+  ":seal:": {
+    "x": 45,
+    "y": 37
+  },
+  ":guide_dog:": {
+    "x": 45,
+    "y": 38
+  },
+  ":probing_cane:": {
+    "x": 45,
+    "y": 39
+  },
+  ":bone:": {
+    "x": 45,
+    "y": 40
+  },
+  ":leg:": {
+    "x": 45,
+    "y": 41
+  },
+  ":foot:": {
+    "x": 45,
+    "y": 47
+  },
+  ":tooth:": {
+    "x": 45,
+    "y": 53
+  },
+  ":female_superhero:": {
+    "x": 45,
+    "y": 54
+  },
+  ":male_superhero:": {
+    "x": 45,
+    "y": 60
+  },
+  ":superhero:": {
+    "x": 46,
+    "y": 4
+  },
+  ":female_supervillain:": {
+    "x": 46,
+    "y": 10
+  },
+  ":male_supervillain:": {
+    "x": 46,
+    "y": 16
+  },
+  ":supervillain:": {
+    "x": 46,
+    "y": 22
+  },
+  ":safety_vest:": {
+    "x": 46,
+    "y": 28
+  },
+  ":ear_with_hearing_aid:": {
+    "x": 46,
+    "y": 29
+  },
+  ":motorized_wheelchair:": {
+    "x": 46,
+    "y": 35
+  },
+  ":manual_wheelchair:": {
+    "x": 46,
+    "y": 36
+  },
+  ":mechanical_arm:": {
+    "x": 46,
+    "y": 37
+  },
+  ":mechanical_leg:": {
+    "x": 46,
+    "y": 38
+  },
+  ":cheese_wedge:": {
+    "x": 46,
+    "y": 39
+  },
+  ":cupcake:": {
+    "x": 46,
+    "y": 40
+  },
+  ":salt:": {
+    "x": 46,
+    "y": 41
+  },
+  ":beverage_box:": {
+    "x": 46,
+    "y": 42
+  },
+  ":garlic:": {
+    "x": 46,
+    "y": 43
+  },
+  ":onion:": {
+    "x": 46,
+    "y": 44
+  },
+  ":falafel:": {
+    "x": 46,
+    "y": 45
+  },
+  ":waffle:": {
+    "x": 46,
+    "y": 46
+  },
+  ":butter:": {
+    "x": 46,
+    "y": 47
+  },
+  ":mate_drink:": {
+    "x": 46,
+    "y": 48
+  },
+  ":ice_cube:": {
+    "x": 46,
+    "y": 49
+  },
+  ":bubble_tea:": {
+    "x": 46,
+    "y": 50
+  },
+  ":troll:": {
+    "x": 46,
+    "y": 51
+  },
+  ":woman_standing:": {
+    "x": 46,
+    "y": 52
+  },
+  ":man_standing:": {
+    "x": 46,
+    "y": 58
+  },
+  ":standing_person:": {
+    "x": 47,
+    "y": 2
+  },
+  ":woman_kneeling:": {
+    "x": 47,
+    "y": 8
+  },
+  ":woman_kneeling_facing_right:": {
+    "x": 47,
+    "y": 14
+  },
+  ":man_kneeling:": {
+    "x": 47,
+    "y": 20
+  },
+  ":man_kneeling_facing_right:": {
+    "x": 47,
+    "y": 26
+  },
+  ":person_kneeling_facing_right:": {
+    "x": 47,
+    "y": 32
+  },
+  ":kneeling_person:": {
+    "x": 47,
+    "y": 38
+  },
+  ":deaf_woman:": {
+    "x": 47,
+    "y": 44
+  },
+  ":deaf_man:": {
+    "x": 47,
+    "y": 50
+  },
+  ":deaf_person:": {
+    "x": 47,
+    "y": 56
+  },
+  ":face_with_monocle:": {
+    "x": 48,
+    "y": 0
+  },
+  ":farmer:": {
+    "x": 48,
+    "y": 1
+  },
+  ":cook:": {
+    "x": 48,
+    "y": 7
+  },
+  ":person_feeding_baby:": {
+    "x": 48,
+    "y": 13
+  },
+  ":mx_claus:": {
+    "x": 48,
+    "y": 19
+  },
+  ":student:": {
+    "x": 48,
+    "y": 25
+  },
+  ":singer:": {
+    "x": 48,
+    "y": 31
+  },
+  ":artist:": {
+    "x": 48,
+    "y": 37
+  },
+  ":teacher:": {
+    "x": 48,
+    "y": 43
+  },
+  ":factory_worker:": {
+    "x": 48,
+    "y": 49
+  },
+  ":technologist:": {
+    "x": 48,
+    "y": 55
+  },
+  ":office_worker:": {
+    "x": 48,
+    "y": 61
+  },
+  ":mechanic:": {
+    "x": 49,
+    "y": 5
+  },
+  ":scientist:": {
+    "x": 49,
+    "y": 11
+  },
+  ":astronaut:": {
+    "x": 49,
+    "y": 17
+  },
+  ":firefighter:": {
+    "x": 49,
+    "y": 23
+  },
+  ":people_holding_hands:": {
+    "x": 49,
+    "y": 29
+  },
+  ":person_with_white_cane_facing_right:": {
+    "x": 49,
+    "y": 55
+  },
+  ":person_with_probing_cane:": {
+    "x": 49,
+    "y": 61
+  },
+  ":red_haired_person:": {
+    "x": 50,
+    "y": 5
+  },
+  ":curly_haired_person:": {
+    "x": 50,
+    "y": 11
+  },
+  ":bald_person:": {
+    "x": 50,
+    "y": 17
+  },
+  ":white_haired_person:": {
+    "x": 50,
+    "y": 23
+  },
+  ":person_in_motorized_wheelchair_facing_right:": {
+    "x": 50,
+    "y": 29
+  },
+  ":person_in_motorized_wheelchair:": {
+    "x": 50,
+    "y": 35
+  },
+  ":person_in_manual_wheelchair_facing_right:": {
+    "x": 50,
+    "y": 41
+  },
+  ":person_in_manual_wheelchair:": {
+    "x": 50,
+    "y": 47
+  },
+  ":family_adult_adult_child:": {
+    "x": 50,
+    "y": 53
+  },
+  ":family_adult_adult_child_child:": {
+    "x": 50,
+    "y": 54
+  },
+  ":family_adult_child_child:": {
+    "x": 50,
+    "y": 55
+  },
+  ":family_adult_child:": {
+    "x": 50,
+    "y": 56
+  },
+  ":health_worker:": {
+    "x": 50,
+    "y": 57
+  },
+  ":judge:": {
+    "x": 51,
+    "y": 1
+  },
+  ":pilot:": {
+    "x": 51,
+    "y": 7
+  },
+  ":adult:": {
+    "x": 51,
+    "y": 13
+  },
+  ":child:": {
+    "x": 51,
+    "y": 19
+  },
+  ":older_adult:": {
+    "x": 51,
+    "y": 25
+  },
+  ":woman_with_beard:": {
+    "x": 51,
+    "y": 31
+  },
+  ":man_with_beard:": {
+    "x": 51,
+    "y": 37
+  },
+  ":bearded_person:": {
+    "x": 51,
+    "y": 43
+  },
+  ":person_with_headscarf:": {
+    "x": 51,
+    "y": 49
+  },
+  ":woman_in_steamy_room:": {
+    "x": 51,
+    "y": 55
+  },
+  ":man_in_steamy_room:": {
+    "x": 51,
+    "y": 61
+  },
+  ":person_in_steamy_room:": {
+    "x": 52,
+    "y": 5
+  },
+  ":woman_climbing:": {
+    "x": 52,
+    "y": 11
+  },
+  ":man_climbing:": {
+    "x": 52,
+    "y": 17
+  },
+  ":person_climbing:": {
+    "x": 52,
+    "y": 23
+  },
+  ":woman_in_lotus_position:": {
+    "x": 52,
+    "y": 29
+  },
+  ":man_in_lotus_position:": {
+    "x": 52,
+    "y": 35
+  },
+  ":person_in_lotus_position:": {
+    "x": 52,
+    "y": 41
+  },
+  ":female_mage:": {
+    "x": 52,
+    "y": 47
+  },
+  ":male_mage:": {
+    "x": 52,
+    "y": 53
+  },
+  ":mage:": {
+    "x": 52,
+    "y": 59
+  },
+  ":female_fairy:": {
+    "x": 53,
+    "y": 3
+  },
+  ":male_fairy:": {
+    "x": 53,
+    "y": 9
+  },
+  ":fairy:": {
+    "x": 53,
+    "y": 15
+  },
+  ":female_vampire:": {
+    "x": 53,
+    "y": 21
+  },
+  ":male_vampire:": {
+    "x": 53,
+    "y": 27
+  },
+  ":vampire:": {
+    "x": 53,
+    "y": 33
+  },
+  ":mermaid:": {
+    "x": 53,
+    "y": 39
+  },
+  ":merman:": {
+    "x": 53,
+    "y": 45
+  },
+  ":merperson:": {
+    "x": 53,
+    "y": 51
+  },
+  ":female_elf:": {
+    "x": 53,
+    "y": 57
+  },
+  ":male_elf:": {
+    "x": 54,
+    "y": 1
+  },
+  ":elf:": {
+    "x": 54,
+    "y": 7
+  },
+  ":female_genie:": {
+    "x": 54,
+    "y": 13
+  },
+  ":male_genie:": {
+    "x": 54,
+    "y": 14
+  },
+  ":genie:": {
+    "x": 54,
+    "y": 15
+  },
+  ":female_zombie:": {
+    "x": 54,
+    "y": 16
+  },
+  ":male_zombie:": {
+    "x": 54,
+    "y": 17
+  },
+  ":zombie:": {
+    "x": 54,
+    "y": 18
+  },
+  ":brain:": {
+    "x": 54,
+    "y": 19
+  },
+  ":orange_heart:": {
+    "x": 54,
+    "y": 20
+  },
+  ":billed_cap:": {
+    "x": 54,
+    "y": 21
+  },
+  ":scarf:": {
+    "x": 54,
+    "y": 22
+  },
+  ":gloves:": {
+    "x": 54,
+    "y": 23
+  },
+  ":coat:": {
+    "x": 54,
+    "y": 24
+  },
+  ":socks:": {
+    "x": 54,
+    "y": 25
+  },
+  ":red_envelope:": {
+    "x": 54,
+    "y": 26
+  },
+  ":firecracker:": {
+    "x": 54,
+    "y": 27
+  },
+  ":jigsaw:": {
+    "x": 54,
+    "y": 28
+  },
+  ":test_tube:": {
+    "x": 54,
+    "y": 29
+  },
+  ":petri_dish:": {
+    "x": 54,
+    "y": 30
+  },
+  ":dna:": {
+    "x": 54,
+    "y": 31
+  },
+  ":compass:": {
+    "x": 54,
+    "y": 32
+  },
+  ":abacus:": {
+    "x": 54,
+    "y": 33
+  },
+  ":fire_extinguisher:": {
+    "x": 54,
+    "y": 34
+  },
+  ":toolbox:": {
+    "x": 54,
+    "y": 35
+  },
+  ":bricks:": {
+    "x": 54,
+    "y": 36
+  },
+  ":magnet:": {
+    "x": 54,
+    "y": 37
+  },
+  ":luggage:": {
+    "x": 54,
+    "y": 38
+  },
+  ":lotion_bottle:": {
+    "x": 54,
+    "y": 39
+  },
+  ":thread:": {
+    "x": 54,
+    "y": 40
+  },
+  ":yarn:": {
+    "x": 54,
+    "y": 41
+  },
+  ":safety_pin:": {
+    "x": 54,
+    "y": 42
+  },
+  ":teddy_bear:": {
+    "x": 54,
+    "y": 43
+  },
+  ":broom:": {
+    "x": 54,
+    "y": 44
+  },
+  ":basket:": {
+    "x": 54,
+    "y": 45
+  },
+  ":roll_of_paper:": {
+    "x": 54,
+    "y": 46
+  },
+  ":soap:": {
+    "x": 54,
+    "y": 47
+  },
+  ":sponge:": {
+    "x": 54,
+    "y": 48
+  },
+  ":receipt:": {
+    "x": 54,
+    "y": 49
+  },
+  ":nazar_amulet:": {
+    "x": 54,
+    "y": 50
+  },
+  ":ballet_shoes:": {
+    "x": 54,
+    "y": 51
+  },
+  ":one-piece_swimsuit:": {
+    "x": 54,
+    "y": 52
+  },
+  ":briefs:": {
+    "x": 54,
+    "y": 53
+  },
+  ":shorts:": {
+    "x": 54,
+    "y": 54
+  },
+  ":thong_sandal:": {
+    "x": 54,
+    "y": 55
+  },
+  ":light_blue_heart:": {
+    "x": 54,
+    "y": 56
+  },
+  ":grey_heart:": {
+    "x": 54,
+    "y": 57
+  },
+  ":pink_heart:": {
+    "x": 54,
+    "y": 58
+  },
+  ":drop_of_blood:": {
+    "x": 54,
+    "y": 59
+  },
+  ":adhesive_bandage:": {
+    "x": 54,
+    "y": 60
+  },
+  ":stethoscope:": {
+    "x": 54,
+    "y": 61
+  },
+  ":x-ray:": {
+    "x": 55,
+    "y": 0
+  },
+  ":crutch:": {
+    "x": 55,
+    "y": 1
+  },
+  ":yo-yo:": {
+    "x": 55,
+    "y": 2
+  },
+  ":kite:": {
+    "x": 55,
+    "y": 3
+  },
+  ":parachute:": {
+    "x": 55,
+    "y": 4
+  },
+  ":boomerang:": {
+    "x": 55,
+    "y": 5
+  },
+  ":magic_wand:": {
+    "x": 55,
+    "y": 6
+  },
+  ":pinata:": {
+    "x": 55,
+    "y": 7
+  },
+  ":nesting_dolls:": {
+    "x": 55,
+    "y": 8
+  },
+  ":maracas:": {
+    "x": 55,
+    "y": 9
+  },
+  ":flute:": {
+    "x": 55,
+    "y": 10
+  },
+  ":harp:": {
+    "x": 55,
+    "y": 11
+  },
+  ":shovel:": {
+    "x": 55,
+    "y": 12
+  },
+  ":ringed_planet:": {
+    "x": 55,
+    "y": 13
+  },
+  ":chair:": {
+    "x": 55,
+    "y": 14
+  },
+  ":razor:": {
+    "x": 55,
+    "y": 15
+  },
+  ":axe:": {
+    "x": 55,
+    "y": 16
+  },
+  ":diya_lamp:": {
+    "x": 55,
+    "y": 17
+  },
+  ":banjo:": {
+    "x": 55,
+    "y": 18
+  },
+  ":military_helmet:": {
+    "x": 55,
+    "y": 19
+  },
+  ":accordion:": {
+    "x": 55,
+    "y": 20
+  },
+  ":long_drum:": {
+    "x": 55,
+    "y": 21
+  },
+  ":coin:": {
+    "x": 55,
+    "y": 22
+  },
+  ":carpentry_saw:": {
+    "x": 55,
+    "y": 23
+  },
+  ":screwdriver:": {
+    "x": 55,
+    "y": 24
+  },
+  ":ladder:": {
+    "x": 55,
+    "y": 25
+  },
+  ":hook:": {
+    "x": 55,
+    "y": 26
+  },
+  ":mirror:": {
+    "x": 55,
+    "y": 27
+  },
+  ":window:": {
+    "x": 55,
+    "y": 28
+  },
+  ":plunger:": {
+    "x": 55,
+    "y": 29
+  },
+  ":sewing_needle:": {
+    "x": 55,
+    "y": 30
+  },
+  ":knot:": {
+    "x": 55,
+    "y": 31
+  },
+  ":bucket:": {
+    "x": 55,
+    "y": 32
+  },
+  ":mouse_trap:": {
+    "x": 55,
+    "y": 33
+  },
+  ":toothbrush:": {
+    "x": 55,
+    "y": 34
+  },
+  ":headstone:": {
+    "x": 55,
+    "y": 35
+  },
+  ":placard:": {
+    "x": 55,
+    "y": 36
+  },
+  ":rock:": {
+    "x": 55,
+    "y": 37
+  },
+  ":mirror_ball:": {
+    "x": 55,
+    "y": 38
+  },
+  ":identification_card:": {
+    "x": 55,
+    "y": 39
+  },
+  ":low_battery:": {
+    "x": 55,
+    "y": 40
+  },
+  ":hamsa:": {
+    "x": 55,
+    "y": 41
+  },
+  ":folding_hand_fan:": {
+    "x": 55,
+    "y": 42
+  },
+  ":hair_pick:": {
+    "x": 55,
+    "y": 43
+  },
+  ":khanda:": {
+    "x": 55,
+    "y": 44
+  },
+  ":fly:": {
+    "x": 55,
+    "y": 45
+  },
+  ":worm:": {
+    "x": 55,
+    "y": 46
+  },
+  ":beetle:": {
+    "x": 55,
+    "y": 47
+  },
+  ":cockroach:": {
+    "x": 55,
+    "y": 48
+  },
+  ":potted_plant:": {
+    "x": 55,
+    "y": 49
+  },
+  ":wood:": {
+    "x": 55,
+    "y": 50
+  },
+  ":feather:": {
+    "x": 55,
+    "y": 51
+  },
+  ":lotus:": {
+    "x": 55,
+    "y": 52
+  },
+  ":coral:": {
+    "x": 55,
+    "y": 53
+  },
+  ":empty_nest:": {
+    "x": 55,
+    "y": 54
+  },
+  ":nest_with_eggs:": {
+    "x": 55,
+    "y": 55
+  },
+  ":hyacinth:": {
+    "x": 55,
+    "y": 56
+  },
+  ":jellyfish:": {
+    "x": 55,
+    "y": 57
+  },
+  ":wing:": {
+    "x": 55,
+    "y": 58
+  },
+  ":leafless_tree:": {
+    "x": 55,
+    "y": 59
+  },
+  ":goose:": {
+    "x": 55,
+    "y": 60
+  },
+  ":anatomical_heart:": {
+    "x": 55,
+    "y": 61
+  },
+  ":lungs:": {
+    "x": 56,
+    "y": 0
+  },
+  ":people_hugging:": {
+    "x": 56,
+    "y": 1
+  },
+  ":pregnant_man:": {
+    "x": 56,
+    "y": 2
+  },
+  ":pregnant_person:": {
+    "x": 56,
+    "y": 8
+  },
+  ":person_with_crown:": {
+    "x": 56,
+    "y": 14
+  },
+  ":fingerprint:": {
+    "x": 56,
+    "y": 20
+  },
+  ":moose:": {
+    "x": 56,
+    "y": 21
+  },
+  ":donkey:": {
+    "x": 56,
+    "y": 22
+  },
+  ":blueberries:": {
+    "x": 56,
+    "y": 23
+  },
+  ":bell_pepper:": {
+    "x": 56,
+    "y": 24
+  },
+  ":olive:": {
+    "x": 56,
+    "y": 25
+  },
+  ":flatbread:": {
+    "x": 56,
+    "y": 26
+  },
+  ":tamale:": {
+    "x": 56,
+    "y": 27
+  },
+  ":fondue:": {
+    "x": 56,
+    "y": 28
+  },
+  ":teapot:": {
+    "x": 56,
+    "y": 29
+  },
+  ":pouring_liquid:": {
+    "x": 56,
+    "y": 30
+  },
+  ":beans:": {
+    "x": 56,
+    "y": 31
+  },
+  ":jar:": {
+    "x": 56,
+    "y": 32
+  },
+  ":ginger_root:": {
+    "x": 56,
+    "y": 33
+  },
+  ":pea_pod:": {
+    "x": 56,
+    "y": 34
+  },
+  ":root_vegetable:": {
+    "x": 56,
+    "y": 35
+  },
+  ":splatter:": {
+    "x": 56,
+    "y": 36
+  },
+  ":melting_face:": {
+    "x": 56,
+    "y": 37
+  },
+  ":saluting_face:": {
+    "x": 56,
+    "y": 38
+  },
+  ":face_with_open_eyes_and_hand_over_mouth:": {
+    "x": 56,
+    "y": 39
+  },
+  ":face_with_peeking_eye:": {
+    "x": 56,
+    "y": 40
+  },
+  ":face_with_diagonal_mouth:": {
+    "x": 56,
+    "y": 41
+  },
+  ":dotted_line_face:": {
+    "x": 56,
+    "y": 42
+  },
+  ":biting_lip:": {
+    "x": 56,
+    "y": 43
+  },
+  ":bubbles:": {
+    "x": 56,
+    "y": 44
+  },
+  ":shaking_face:": {
+    "x": 56,
+    "y": 45
+  },
+  ":face_with_bags_under_eyes:": {
+    "x": 56,
+    "y": 46
+  },
+  ":hand_with_index_finger_and_thumb_crossed:": {
+    "x": 56,
+    "y": 47
+  },
+  ":rightwards_hand:": {
+    "x": 56,
+    "y": 53
+  },
+  ":leftwards_hand:": {
+    "x": 56,
+    "y": 59
+  },
+  ":palm_down_hand:": {
+    "x": 57,
+    "y": 3
+  },
+  ":palm_up_hand:": {
+    "x": 57,
+    "y": 9
+  },
+  ":index_pointing_at_the_viewer:": {
+    "x": 57,
+    "y": 15
+  },
+  ":heart_hands:": {
+    "x": 57,
+    "y": 21
+  },
+  ":leftwards_pushing_hand:": {
+    "x": 57,
+    "y": 27
+  },
+  ":rightwards_pushing_hand:": {
+    "x": 57,
+    "y": 33
+  },
+  ":bangbang:": {
+    "x": 57,
+    "y": 39
+  },
+  ":interrobang:": {
+    "x": 57,
+    "y": 40
+  },
+  ":tm:": {
+    "x": 57,
+    "y": 41
+  },
+  ":information_source:": {
+    "x": 57,
+    "y": 42
+  },
+  ":left_right_arrow:": {
+    "x": 57,
+    "y": 43
+  },
+  ":arrow_up_down:": {
+    "x": 57,
+    "y": 44
+  },
+  ":arrow_upper_left:": {
+    "x": 57,
+    "y": 45
+  },
+  ":arrow_upper_right:": {
+    "x": 57,
+    "y": 46
+  },
+  ":arrow_lower_right:": {
+    "x": 57,
+    "y": 47
+  },
+  ":arrow_lower_left:": {
+    "x": 57,
+    "y": 48
+  },
+  ":leftwards_arrow_with_hook:": {
+    "x": 57,
+    "y": 49
+  },
+  ":arrow_right_hook:": {
+    "x": 57,
+    "y": 50
+  },
+  ":watch:": {
+    "x": 57,
+    "y": 51
+  },
+  ":hourglass:": {
+    "x": 57,
+    "y": 52
+  },
+  ":keyboard:": {
+    "x": 57,
+    "y": 53
+  },
+  ":eject:": {
+    "x": 57,
+    "y": 54
+  },
+  ":fast_forward:": {
+    "x": 57,
+    "y": 55
+  },
+  ":rewind:": {
+    "x": 57,
+    "y": 56
+  },
+  ":arrow_double_up:": {
+    "x": 57,
+    "y": 57
+  },
+  ":arrow_double_down:": {
+    "x": 57,
+    "y": 58
+  },
+  ":black_right_pointing_double_triangle_with_vertical_bar:": {
+    "x": 57,
+    "y": 59
+  },
+  ":black_left_pointing_double_triangle_with_vertical_bar:": {
+    "x": 57,
+    "y": 60
+  },
+  ":black_right_pointing_triangle_with_double_vertical_bar:": {
+    "x": 57,
+    "y": 61
+  },
+  ":alarm_clock:": {
+    "x": 58,
+    "y": 0
+  },
+  ":stopwatch:": {
+    "x": 58,
+    "y": 1
+  },
+  ":timer_clock:": {
+    "x": 58,
+    "y": 2
+  },
+  ":hourglass_flowing_sand:": {
+    "x": 58,
+    "y": 3
+  },
+  ":double_vertical_bar:": {
+    "x": 58,
+    "y": 4
+  },
+  ":black_square_for_stop:": {
+    "x": 58,
+    "y": 5
+  },
+  ":black_circle_for_record:": {
+    "x": 58,
+    "y": 6
+  },
+  ":m:": {
+    "x": 58,
+    "y": 7
+  },
+  ":black_small_square:": {
+    "x": 58,
+    "y": 8
+  },
+  ":white_small_square:": {
+    "x": 58,
+    "y": 9
+  },
+  ":arrow_forward:": {
+    "x": 58,
+    "y": 10
+  },
+  ":arrow_backward:": {
+    "x": 58,
+    "y": 11
+  },
+  ":white_medium_square:": {
+    "x": 58,
+    "y": 12
+  },
+  ":black_medium_square:": {
+    "x": 58,
+    "y": 13
+  },
+  ":white_medium_small_square:": {
+    "x": 58,
+    "y": 14
+  },
+  ":black_medium_small_square:": {
+    "x": 58,
+    "y": 15
+  },
+  ":sunny:": {
+    "x": 58,
+    "y": 16
+  },
+  ":cloud:": {
+    "x": 58,
+    "y": 17
+  },
+  ":umbrella:": {
+    "x": 58,
+    "y": 18
+  },
+  ":snowman:": {
+    "x": 58,
+    "y": 19
+  },
+  ":comet:": {
+    "x": 58,
+    "y": 20
+  },
+  ":phone:": {
+    "x": 58,
+    "y": 21
+  },
+  ":ballot_box_with_check:": {
+    "x": 58,
+    "y": 22
+  },
+  ":umbrella_with_rain_drops:": {
+    "x": 58,
+    "y": 23
+  },
+  ":coffee:": {
+    "x": 58,
+    "y": 24
+  },
+  ":shamrock:": {
+    "x": 58,
+    "y": 25
+  },
+  ":point_up:": {
+    "x": 58,
+    "y": 26
+  },
+  ":skull_and_crossbones:": {
+    "x": 58,
+    "y": 32
+  },
+  ":radioactive_sign:": {
+    "x": 58,
+    "y": 33
+  },
+  ":biohazard_sign:": {
+    "x": 58,
+    "y": 34
+  },
+  ":orthodox_cross:": {
+    "x": 58,
+    "y": 35
+  },
+  ":star_and_crescent:": {
+    "x": 58,
+    "y": 36
+  },
+  ":peace_symbol:": {
+    "x": 58,
+    "y": 37
+  },
+  ":yin_yang:": {
+    "x": 58,
+    "y": 38
+  },
+  ":wheel_of_dharma:": {
+    "x": 58,
+    "y": 39
+  },
+  ":white_frowning_face:": {
+    "x": 58,
+    "y": 40
+  },
+  ":relaxed:": {
+    "x": 58,
+    "y": 41
+  },
+  ":aries:": {
+    "x": 58,
+    "y": 44
+  },
+  ":taurus:": {
+    "x": 58,
+    "y": 45
+  },
+  ":gemini:": {
+    "x": 58,
+    "y": 46
+  },
+  ":cancer:": {
+    "x": 58,
+    "y": 47
+  },
+  ":leo:": {
+    "x": 58,
+    "y": 48
+  },
+  ":virgo:": {
+    "x": 58,
+    "y": 49
+  },
+  ":libra:": {
+    "x": 58,
+    "y": 50
+  },
+  ":scorpius:": {
+    "x": 58,
+    "y": 51
+  },
+  ":sagittarius:": {
+    "x": 58,
+    "y": 52
+  },
+  ":capricorn:": {
+    "x": 58,
+    "y": 53
+  },
+  ":aquarius:": {
+    "x": 58,
+    "y": 54
+  },
+  ":pisces:": {
+    "x": 58,
+    "y": 55
+  },
+  ":chess_pawn:": {
+    "x": 58,
+    "y": 56
+  },
+  ":spades:": {
+    "x": 58,
+    "y": 57
+  },
+  ":clubs:": {
+    "x": 58,
+    "y": 58
+  },
+  ":hearts:": {
+    "x": 58,
+    "y": 59
+  },
+  ":diamonds:": {
+    "x": 58,
+    "y": 60
+  },
+  ":hotsprings:": {
+    "x": 58,
+    "y": 61
+  },
+  ":recycle:": {
+    "x": 59,
+    "y": 0
+  },
+  ":infinity:": {
+    "x": 59,
+    "y": 1
+  },
+  ":wheelchair:": {
+    "x": 59,
+    "y": 2
+  },
+  ":hammer_and_pick:": {
+    "x": 59,
+    "y": 3
+  },
+  ":anchor:": {
+    "x": 59,
+    "y": 4
+  },
+  ":crossed_swords:": {
+    "x": 59,
+    "y": 5
+  },
+  ":scales:": {
+    "x": 59,
+    "y": 7
+  },
+  ":alembic:": {
+    "x": 59,
+    "y": 8
+  },
+  ":gear:": {
+    "x": 59,
+    "y": 9
+  },
+  ":atom_symbol:": {
+    "x": 59,
+    "y": 10
+  },
+  ":fleur_de_lis:": {
+    "x": 59,
+    "y": 11
+  },
+  ":warning:": {
+    "x": 59,
+    "y": 12
+  },
+  ":zap:": {
+    "x": 59,
+    "y": 13
+  },
+  ":transgender_symbol:": {
+    "x": 59,
+    "y": 14
+  },
+  ":white_circle:": {
+    "x": 59,
+    "y": 15
+  },
+  ":black_circle:": {
+    "x": 59,
+    "y": 16
+  },
+  ":coffin:": {
+    "x": 59,
+    "y": 17
+  },
+  ":funeral_urn:": {
+    "x": 59,
+    "y": 18
+  },
+  ":soccer:": {
+    "x": 59,
+    "y": 19
+  },
+  ":baseball:": {
+    "x": 59,
+    "y": 20
+  },
+  ":snowman_without_snow:": {
+    "x": 59,
+    "y": 21
+  },
+  ":partly_sunny:": {
+    "x": 59,
+    "y": 22
+  },
+  ":thunder_cloud_and_rain:": {
+    "x": 59,
+    "y": 23
+  },
+  ":ophiuchus:": {
+    "x": 59,
+    "y": 24
+  },
+  ":pick:": {
+    "x": 59,
+    "y": 25
+  },
+  ":helmet_with_white_cross:": {
+    "x": 59,
+    "y": 26
+  },
+  ":broken_chain:": {
+    "x": 59,
+    "y": 27
+  },
+  ":chains:": {
+    "x": 59,
+    "y": 28
+  },
+  ":no_entry:": {
+    "x": 59,
+    "y": 29
+  },
+  ":shinto_shrine:": {
+    "x": 59,
+    "y": 30
+  },
+  ":church:": {
+    "x": 59,
+    "y": 31
+  },
+  ":mountain:": {
+    "x": 59,
+    "y": 32
+  },
+  ":umbrella_on_ground:": {
+    "x": 59,
+    "y": 33
+  },
+  ":fountain:": {
+    "x": 59,
+    "y": 34
+  },
+  ":golf:": {
+    "x": 59,
+    "y": 35
+  },
+  ":ferry:": {
+    "x": 59,
+    "y": 36
+  },
+  ":boat:": {
+    "x": 59,
+    "y": 37
+  },
+  ":skier:": {
+    "x": 59,
+    "y": 38
+  },
+  ":ice_skate:": {
+    "x": 59,
+    "y": 39
+  },
+  ":woman-bouncing-ball:": {
+    "x": 59,
+    "y": 40
+  },
+  ":man-bouncing-ball:": {
+    "x": 59,
+    "y": 46
+  },
+  ":person_with_ball:": {
+    "x": 59,
+    "y": 52
+  },
+  ":tent:": {
+    "x": 59,
+    "y": 58
+  },
+  ":fuelpump:": {
+    "x": 59,
+    "y": 59
+  },
+  ":scissors:": {
+    "x": 59,
+    "y": 60
+  },
+  ":white_check_mark:": {
+    "x": 59,
+    "y": 61
+  },
+  ":airplane:": {
+    "x": 60,
+    "y": 0
+  },
+  ":email:": {
+    "x": 60,
+    "y": 1
+  },
+  ":fist:": {
+    "x": 60,
+    "y": 2
+  },
+  ":hand:": {
+    "x": 60,
+    "y": 8
+  },
+  ":v:": {
+    "x": 60,
+    "y": 14
+  },
+  ":writing_hand:": {
+    "x": 60,
+    "y": 20
+  },
+  ":pencil2:": {
+    "x": 60,
+    "y": 26
+  },
+  ":black_nib:": {
+    "x": 60,
+    "y": 27
+  },
+  ":heavy_check_mark:": {
+    "x": 60,
+    "y": 28
+  },
+  ":heavy_multiplication_x:": {
+    "x": 60,
+    "y": 29
+  },
+  ":latin_cross:": {
+    "x": 60,
+    "y": 30
+  },
+  ":star_of_david:": {
+    "x": 60,
+    "y": 31
+  },
+  ":sparkles:": {
+    "x": 60,
+    "y": 32
+  },
+  ":eight_spoked_asterisk:": {
+    "x": 60,
+    "y": 33
+  },
+  ":eight_pointed_black_star:": {
+    "x": 60,
+    "y": 34
+  },
+  ":snowflake:": {
+    "x": 60,
+    "y": 35
+  },
+  ":sparkle:": {
+    "x": 60,
+    "y": 36
+  },
+  ":x:": {
+    "x": 60,
+    "y": 37
+  },
+  ":negative_squared_cross_mark:": {
+    "x": 60,
+    "y": 38
+  },
+  ":question:": {
+    "x": 60,
+    "y": 39
+  },
+  ":grey_question:": {
+    "x": 60,
+    "y": 40
+  },
+  ":grey_exclamation:": {
+    "x": 60,
+    "y": 41
+  },
+  ":exclamation:": {
+    "x": 60,
+    "y": 42
+  },
+  ":heavy_heart_exclamation_mark_ornament:": {
+    "x": 60,
+    "y": 43
+  },
+  ":heart_on_fire:": {
+    "x": 60,
+    "y": 44
+  },
+  ":mending_heart:": {
+    "x": 60,
+    "y": 45
+  },
+  ":heart:": {
+    "x": 60,
+    "y": 46
+  },
+  ":heavy_plus_sign:": {
+    "x": 60,
+    "y": 47
+  },
+  ":heavy_minus_sign:": {
+    "x": 60,
+    "y": 48
+  },
+  ":heavy_division_sign:": {
+    "x": 60,
+    "y": 49
+  },
+  ":arrow_right:": {
+    "x": 60,
+    "y": 50
+  },
+  ":curly_loop:": {
+    "x": 60,
+    "y": 51
+  },
+  ":loop:": {
+    "x": 60,
+    "y": 52
+  },
+  ":arrow_heading_up:": {
+    "x": 60,
+    "y": 53
+  },
+  ":arrow_heading_down:": {
+    "x": 60,
+    "y": 54
+  },
+  ":arrow_left:": {
+    "x": 60,
+    "y": 55
+  },
+  ":arrow_up:": {
+    "x": 60,
+    "y": 56
+  },
+  ":arrow_down:": {
+    "x": 60,
+    "y": 57
+  },
+  ":black_large_square:": {
+    "x": 60,
+    "y": 58
+  },
+  ":white_large_square:": {
+    "x": 60,
+    "y": 59
+  },
+  ":star:": {
+    "x": 60,
+    "y": 60
+  },
+  ":o:": {
+    "x": 60,
+    "y": 61
+  },
+  ":wavy_dash:": {
+    "x": 61,
+    "y": 0
+  },
+  ":part_alternation_mark:": {
+    "x": 61,
+    "y": 1
+  },
+  ":congratulations:": {
+    "x": 61,
+    "y": 2
+  },
+  ":secret:": {
+    "x": 61,
+    "y": 3
+  }
+}

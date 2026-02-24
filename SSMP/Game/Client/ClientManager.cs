@@ -635,7 +635,8 @@ internal class ClientManager : IClientManager {
     /// Callback method for when chat is input by the local user.
     /// </summary>
     /// <param name="message">The message that was submitted by the user.</param>
-    private void OnChatInput(string message) {
+    /// <param name="targetId">Optional target player ID for private messages.</param>
+    private void OnChatInput(string message, ushort? targetId) {
         if (_commandManager.ProcessCommand(message)) {
             Logger.Debug("Chat input was processed as command");
             return;
@@ -645,7 +646,7 @@ internal class ClientManager : IClientManager {
             return;
         }
 
-        _netClient.UpdateManager.SetChatMessage(message);
+        _netClient.UpdateManager.SetChatMessage(message, targetId);
     }
 
     /// <summary>
