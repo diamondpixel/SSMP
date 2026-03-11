@@ -267,7 +267,7 @@ public class Program {
             
             var hostIp = (remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4() : remoteIp).ToString();
 
-            // Use IPEndPoint.ToString() to properly bracket IPv6 addresses (e.g. "[::1]:5001")
+            // Format as IP:Port for the connection string
             connectionData = new IPEndPoint(IPAddress.Parse(hostIp), discovered.Port).ToString();
         }
 
@@ -505,9 +505,10 @@ public class Program {
     /// Extracts the host IP string from a <c>"ip:port"</c> or bare IP <paramref name="connectionData"/> value.
     /// </summary>
     /// <remarks>
-    /// Delegates first to <see cref="IPEndPoint.TryParse(ReadOnlySpan&lt;char&gt;, out IPEndPoint?)"/> which handles IPv4 (<c>"1.2.3.4:7777"</c>),
-    /// bracketed IPv6 with port (<c>"[::1]:7777"</c>), and bare IPv6.
+    /// Delegates first to <see cref="IPEndPoint.TryParse(ReadOnlySpan&lt;char&gt;, out IPEndPoint?)"/> which handles IPv4 (<c>"1.2.3.4:7777"</c>).
     /// Falls back to <see cref="IPAddress.TryParse(string?, out IPAddress?)"/> for addresses with no port component.
+    /// Note: native IPv6 addresses are not produced by this server; only IPv4-mapped addresses
+    /// are expected, and they are normalized to plain IPv4 before being stored.
     /// </remarks>
     /// <param name="connectionData">The raw connection string to parse.</param>
     /// <param name="hostIp">

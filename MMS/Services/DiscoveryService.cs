@@ -84,10 +84,14 @@ public sealed class DiscoveryService {
         using var timer = new PeriodicTimer(PollInterval);
         var deadlineTicks = GetExpiryTicks(timeout);
 
-        while (!IsExpired(deadlineTicks) && await timer.WaitForNextTickAsync(ct)) {
-            ep = TryGet(token);
-            if (ep is not null)
-                return ep;
+        try {
+            while (!IsExpired(deadlineTicks) && await timer.WaitForNextTickAsync(ct)) {
+                ep = TryGet(token);
+                if (ep is not null)
+                    return ep;
+            }
+        } catch (OperationCanceledException) {
+            return null;
         }
 
         return null;

@@ -241,13 +241,22 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     /// <param name="length">Number of valid bytes in <paramref name="data"/>.</param>
     private void OnClientDataReceived(DtlsServerClient dtlsClient, byte[] data, int length)
     {
-        var candidate = new HolePunchEncryptedTransportClient(dtlsClient);
-        var client = _clients.GetOrAdd(dtlsClient.EndPoint, _ => candidate);
-
-        if (ReferenceEquals(client, candidate)) {
-            ClientConnectedEvent?.Invoke(client);
+        // Fast path: avoid allocation for endpoints that are already tracked.
+        if (_clients.TryGetValue(dtlsClient.EndPoint, out var existingClient)) {
+            existingClient.RaiseDataReceived(data, length);
+            return;
         }
-        
-        client.RaiseDataReceived(data, length);
+
+        // Slow path: first contact from this endpoint – allocate and register.
+        var client = new HolePunchEncryptedTransportClient(dtlsClient);
+        if (_clients.TryAdd(dtlsClient.EndPoint, client)) {
+            ClientConnectedEvent?.Invoke(client);
+            client.RaiseDataReceived(data, length);
+            return;
+        }
+
+        // Lost a race with another thread registering the same endpoint? use theirs.
+        if (_clients.TryGetValue(dtlsClient.EndPoint, out existingClient))
+            existingClient.RaiseDataReceived(data, length);
     }
 }

@@ -1138,43 +1138,55 @@ internal class ConnectInterface {
     }
 
     /// <summary>
-    /// Coroutine to join a lobby, handling both Matchmaking and Steam types.
+    /// Coroutine to join a lobby, handling both Matchmaking and Steam lobby types.
     /// </summary>
     private IEnumerator JoinLobbyCoroutine(string lobbyId, string username)
     {
         ShowFeedback(Color.yellow, "Joining lobby...");
 
+        // Attempt to join the lobby and wait for the result
         var joinTask = _mmsClient.JoinLobbyAsync(lobbyId);
         yield return new WaitUntil(() => joinTask.IsCompleted);
 
-        var lobbyInfo = joinTask.Result;
-        if (lobbyInfo == null)
+        if (joinTask.Result is not { } lobbyInfo)
         {
-            ShowFeedback(Color.red, "Lobby not found, offline, or join failed");
+            ShowFeedback(Color.red, "Lobby not found, offline, or join failed.");
             yield break;
         }
 
-        var (connectionData, lobbyType, lanConnectionData, clientToken) = lobbyInfo.Value;
+        var (connectionData, lobbyType, lanConnectionData, clientToken) = lobbyInfo;
 
+        // Steam lobbies use a simpler direct connection path
         if (lobbyType == PublicLobbyType.Steam)
         {
             ConnectToSteamLobby(connectionData, username);
             yield break;
         }
 
+        // Matchmaking lobbies require hole-punching before connecting
         var holePunchSocket = CreateHolePunchSocket();
+        var connectSuccess = false;
 
-        // Continuously resend the discovery packet until the MMS acknowledges.
         using var discoveryCts = new CancellationTokenSource();
-        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(holePunchSocket, clientToken!.Value, discoveryCts.Token);
-        
-        // Wait for the first packet attempt to finish synchronously
-        yield return new WaitUntil(() => discoveryTask.IsCompleted);
+        try
+        {
+            // Continuously resend the discovery packet until the MMS acknowledges
+            var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(
+                holePunchSocket, clientToken!.Value, discoveryCts.Token);
 
-        ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
+            yield return new WaitUntil(() => discoveryTask.IsCompleted);
 
-        // Cancel the discovery loop now that the connection has been initiated.
-        discoveryCts.Cancel();
+            ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
+            connectSuccess = true;
+        }
+        finally
+        {
+            // Cancel the discovery loop now that the connection has been initiated or aborted
+            discoveryCts.Cancel();
+
+            if (!connectSuccess)
+                holePunchSocket.Dispose();
+        }
     }
 
     /// <summary>
@@ -1815,7 +1827,8 @@ internal class ConnectInterface {
     }
 
     /// <summary>
-    /// Parses connection data in format "IP:Port" or "[IPv6]:Port".
+    /// Parses connection data in format "IP:Port". IPv4-mapped-IPv6 addresses
+    /// are normalized server-side, so only plain IPv4 strings are expected here.
     /// </summary>
     private static bool TryParseConnectionData(string connectionData, out string ip, out int port)
     {
@@ -1826,19 +1839,6 @@ internal class ConnectInterface {
             return false;
         }
 
-        // Handle IPv6 format: [::1]:1234
-        if (connectionData.StartsWith("["))
-        {
-            var closingBracket = connectionData.IndexOf(']');
-            if (closingBracket < 0 || closingBracket + 1 >= connectionData.Length || connectionData[closingBracket + 1] != ':') {
-                return false;
-            }
-
-            ip = connectionData[1..closingBracket];
-            var portStr = connectionData[(closingBracket + 2)..]; // skip "]:"
-            return int.TryParse(portStr, out port);
-        }
-
         // Handle IPv4 format: 1.2.3.4:1234
         var lastColon = connectionData.LastIndexOf(':');
         if (lastColon < 0 || lastColon >= connectionData.Length - 1) {
@@ -1846,7 +1846,7 @@ internal class ConnectInterface {
         }
         
         ip = connectionData[..lastColon];
-        return int.TryParse(connectionData[(lastColon + 1)..], out port);
+        return int.TryParse(connectionData[(lastColon + 1)..], out port) && port is >= 1 and <= 65535;
     }
 
     /// <summary>
