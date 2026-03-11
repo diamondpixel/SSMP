@@ -147,15 +147,14 @@ public sealed class UdpDiscoveryListener(
     /// </summary>
     private bool IsRateLimited(IPAddress address) {
         var now = Stopwatch.GetTimestamp();
-        var entry = _rateLimits.GetOrAdd(address, _ => (0, now));
+        var entry = _rateLimits.AddOrUpdate(
+            address,
+            _ => (1, now),
+            (_, existing) => now - existing.WindowStart > RateWindowTicks
+                ? (1, now)
+                : (existing.Count + 1, existing.WindowStart)
+        );
 
-        // Reset counter when the window has elapsed
-        if (now - entry.WindowStart > RateWindowTicks){
-            entry = (1, now);
-        }else{
-            entry = (entry.Count + 1, entry.WindowStart);
-        }
-        _rateLimits[address] = entry;
         return entry.Count > MaxPacketsPerWindow;
     }
 }

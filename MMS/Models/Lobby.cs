@@ -49,16 +49,31 @@ public class Lobby(
     private const int MaxPendingClients = 64;
 
     /// <summary>Queue of clients waiting for NAT hole-punch.</summary>
-    public ConcurrentQueue<PendingClient> PendingClients { get; } = new();
+    private readonly Queue<PendingClient> _pendingClients = new();
+
+    /// <summary>Synchronization primitive for queue operations.</summary>
+    private readonly object _syncRoot = new();
 
     /// <summary>
-    /// Attempts to enqueue a pending client. Returns <see langword="false"/> if the queue
+    /// Attempts to enqueue a pending client atomically. Returns <see langword="false"/> if the queue
     /// has reached <see cref="MaxPendingClients"/>, preventing unbounded memory growth.
     /// </summary>
     public bool TryEnqueuePendingClient(PendingClient client) {
-        if (PendingClients.Count >= MaxPendingClients) return false;
-        PendingClients.Enqueue(client);
-        return true;
+        lock (_syncRoot) {
+            if (_pendingClients.Count >= MaxPendingClients) return false;
+            _pendingClients.Enqueue(client);
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Attempts to dequeue a pending client atomically. Returns <see langword="true"/>
+    /// if a client was successfully dequeued; otherwise <see langword="false"/>.
+    /// </summary>
+    public bool TryDequeuePendingClient(out PendingClient client) {
+        lock (_syncRoot) {
+            return _pendingClients.TryDequeue(out client);
+        }
     }
 
     /// <summary>True if no heartbeat received in the last 60 seconds.</summary>

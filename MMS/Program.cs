@@ -259,12 +259,16 @@ public class Program {
                 return TypedResults.BadRequest(new ErrorResponse("UDP endpoint discovery timed out. Ensure your client is sending discovery packets."));
             }
 
-            // Use the IP from the TCP request rather than the UDP source address.
-            var hostIp = context.Connection.RemoteIpAddress is { } remoteIp
-                ? (remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4() : remoteIp).ToString()
-                : discovered.Address.ToString(); // fallback
+            // Use the IP from the TCP request rather than the UDP source address to prevent spoofing.
+            if (context.Connection.RemoteIpAddress is not { } remoteIp) {
+                logger.LogWarning("[LOBBY] CreateLobby failed - cannot determine client IP address from TCP connection");
+                return TypedResults.BadRequest(new ErrorResponse("Cannot determine client IP address"));
+            }
+            
+            var hostIp = (remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4() : remoteIp).ToString();
 
-            connectionData = $"{hostIp}:{discovered.Port}";
+            // Use IPEndPoint.ToString() to properly bracket IPv6 addresses (e.g. "[::1]:5001")
+            connectionData = new IPEndPoint(IPAddress.Parse(hostIp), discovered.Port).ToString();
         }
 
         var lobby = lobbyService.CreateLobby(
@@ -343,7 +347,7 @@ public class Program {
         var pending = new List<PendingClientResponse>();
         var cutoff = timeProvider.GetUtcNow().UtcDateTime.AddSeconds(-30);
 
-        while (lobby.PendingClients.TryDequeue(out var client)) {
+        while (lobby.TryDequeuePendingClient(out var client)) {
             if (client.RequestedAt >= cutoff)
                 pending.Add(new PendingClientResponse(client.ClientIp, client.ClientPort));
         }
@@ -372,7 +376,7 @@ public class Program {
     /// 200 OK with a <see cref="JoinResponse"/> on success;
     /// 404 Not Found if the lobby does not exist.
     /// </returns>
-    private static Results<Ok<JoinResponse>, NotFound<ErrorResponse>> JoinLobby(
+    private static Results<Ok<JoinResponse>, NotFound<ErrorResponse>, BadRequest<ErrorResponse>> JoinLobby(
         string connectionData,
         LobbyService lobbyService,
         DiscoveryService discoveryService,
@@ -384,13 +388,17 @@ public class Program {
         if (lobby is null)
             return TypedResults.NotFound(new ErrorResponse("Lobby not found"));
 
-        // Normalize the remote IP - handles IPv6-mapped IPv4 (e.g., "::ffff:1.2.3.4" → "1.2.3.4")
-        var clientIp = context.Connection.RemoteIpAddress is { } remoteIp
-            ? (remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4() : remoteIp).ToString()
-            : "unknown";
+        if (context.Connection.RemoteIpAddress is not { } remoteIp)
+            return TypedResults.BadRequest(new ErrorResponse("Cannot determine client IP address"));
 
-        var clientToken = Guid.NewGuid();
-        discoveryService.RegisterPendingJoin(clientToken, lobby.HostToken, clientIp);
+        // Normalize the remote IP - handles IPv6-mapped IPv4 (e.g., "::ffff:1.2.3.4" → "1.2.3.4")
+        var clientIp = (remoteIp.IsIPv4MappedToIPv6 ? remoteIp.MapToIPv4() : remoteIp).ToString();
+
+        Guid? clientToken = null;
+        if (lobby.LobbyType == LobbyTypes.Matchmaking) {
+            clientToken = Guid.NewGuid();
+            discoveryService.RegisterPendingJoin(clientToken.Value, lobby.HostToken, clientIp);
+        }
 
         logger.LogInformation(
             "[JOIN] Registered pending join for lobby {Lobby} (token: {Token})",
@@ -577,7 +585,7 @@ public class Program {
         string ConnectionData,
         string LobbyType,
         string? LanConnectionData,
-        Guid ClientToken
+        Guid? ClientToken
     );
 
     /// <summary>Represents a client that has joined a lobby but whose NAT hole-punch is still pending.</summary>

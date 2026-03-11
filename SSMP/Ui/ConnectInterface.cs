@@ -1166,14 +1166,15 @@ internal class ConnectInterface {
 
         // Continuously resend the discovery packet until the MMS acknowledges.
         using var discoveryCts = new CancellationTokenSource();
-        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(holePunchSocket, clientToken, discoveryCts.Token);
-        Logger.Info($"ConnectInterface: Started UDP discovery loop for client token {clientToken}");
+        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(holePunchSocket, clientToken!.Value, discoveryCts.Token);
+        
+        // Wait for the first packet attempt to finish synchronously
+        yield return new WaitUntil(() => discoveryTask.IsCompleted);
 
         ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
 
         // Cancel the discovery loop now that the connection has been initiated.
         discoveryCts.Cancel();
-        yield return new WaitUntil(() => discoveryTask.IsCompleted);
     }
 
     /// <summary>
@@ -1797,45 +1798,53 @@ internal class ConnectInterface {
     /// <summary>
     /// Determines the optimal connection strategy (LAN first, then public).
     /// </summary>
-    private static ConnectionInfo? DetermineConnectionInfo(string publicConnectionData, string? lanConnectionData) {
-        // Try LAN connection first if available
+    private static ConnectionInfo? DetermineConnectionInfo(string publicConnectionData, string? lanConnectionData)
+    {
+        if (!TryParseConnectionData(publicConnectionData, out var publicIp, out var publicPort))
+            return null;
+
         if (!string.IsNullOrEmpty(lanConnectionData) &&
-            TryParseConnectionData(lanConnectionData, out var lanIp, out var lanPort)) {
-            var publicIp = publicConnectionData.Split(':')[0];
-            return new ConnectionInfo(
-                lanIp,
-                lanPort,
-                publicIp,
-                $"Connecting to LAN {lanIp}:{lanPort}..."
-            );
+            TryParseConnectionData(lanConnectionData, out var lanIp, out var lanPort))
+        {
+            return new ConnectionInfo(lanIp, lanPort, publicIp, $"Connecting to LAN {lanIp}:{lanPort}...");
         }
 
-        // Fall back to public connection
-        if (TryParseConnectionData(publicConnectionData, out var publicIpParsed, out var publicPort)) {
-            return new ConnectionInfo(
-                publicIpParsed,
-                publicPort,
-                null,
-                $"Connecting to {publicIpParsed}:{publicPort}..."
-            );
-        }
-
-        return null;
+        return new ConnectionInfo(publicIp, publicPort, null, $"Connecting to {publicIp}:{publicPort}...");
     }
 
     /// <summary>
-    /// Parses connection data in format "IP:Port".
+    /// Parses connection data in format "IP:Port" or "[IPv6]:Port".
     /// </summary>
-    private static bool TryParseConnectionData(string connectionData, out string ip, out int port) {
+    private static bool TryParseConnectionData(string connectionData, out string ip, out int port)
+    {
         ip = string.Empty;
         port = 0;
 
-        var parts = connectionData.Split(':');
-        if (parts.Length != 2)
+        if (string.IsNullOrEmpty(connectionData)) {
             return false;
+        }
 
-        ip = parts[0];
-        return int.TryParse(parts[1], out port);
+        // Handle IPv6 format: [::1]:1234
+        if (connectionData.StartsWith("["))
+        {
+            var closingBracket = connectionData.IndexOf(']');
+            if (closingBracket < 0) {
+                return false;
+            }
+
+            ip = connectionData[1..closingBracket];
+            var portStr = connectionData[(closingBracket + 2)..]; // skip "]:"
+            return int.TryParse(portStr, out port);
+        }
+
+        // Handle IPv4 format: 1.2.3.4:1234
+        var lastColon = connectionData.LastIndexOf(':');
+        if (lastColon < 0) {
+            return false;
+        }
+        
+        ip = connectionData[..lastColon];
+        return int.TryParse(connectionData[(lastColon + 1)..], out port);
     }
 
     /// <summary>

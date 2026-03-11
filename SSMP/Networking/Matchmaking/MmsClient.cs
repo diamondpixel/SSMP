@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -28,7 +29,7 @@ internal sealed class MmsClient : IDisposable {
     private const int HttpTimeoutMs = 5_000;
 
     /// <summary>Opcode for UDP endpoint discovery packets: <c>[0x44][16-byte Guid]</c>.</summary>
-    private const byte DiscoveryOpcode = 0x44; // 'D'
+    private const byte DiscoveryOpcode = 0x44;
 
     /// <summary>Resend time for each packet.</summary>
     private const int DiscoveryRetryMs = 500;
@@ -218,13 +219,14 @@ internal sealed class MmsClient : IDisposable {
         _currentLobbyCode = null;
 
         _ = Task.Run(async () => {
-            try {
-                if (await DeleteAsync($"{_baseUrl}/lobby/{token}")) Logger.Info($"MmsClient: Closed lobby {code}");
-                else Logger.Warn($"MmsClient: CloseLobby DELETE returned false for lobby {code}");
-            } catch (Exception ex) {
-                Logger.Warn($"MmsClient: CloseLobby failed: {ex.Message}");
+                try {
+                    if (await DeleteAsync($"{_baseUrl}/lobby/{token}")) Logger.Info($"MmsClient: Closed lobby {code}");
+                    else Logger.Warn($"MmsClient: CloseLobby DELETE returned false for lobby {code}");
+                } catch (Exception ex) {
+                    Logger.Warn($"MmsClient: CloseLobby failed: {ex.Message}");
+                }
             }
-        });
+        );
     }
 
     /// <summary>
@@ -256,7 +258,7 @@ internal sealed class MmsClient : IDisposable {
     /// A tuple of host connection details and a client token on success;
     /// <see langword="null"/> on failure.
     /// </returns>
-    public async Task<(string ConnectionData, PublicLobbyType LobbyType, string? LanConnectionData, Guid ClientToken)?>
+    public async Task<(string ConnectionData, PublicLobbyType LobbyType, string? LanConnectionData, Guid? ClientToken)?>
         JoinLobbyAsync(string lobbyId) {
         try {
             var response = await PostJsonStringAsync($"{_baseUrl}/lobby/{lobbyId}/join", "{}");
@@ -269,7 +271,7 @@ internal sealed class MmsClient : IDisposable {
             var lanConnectionData = ExtractJsonValue(span, "lanConnectionData");
             var clientTokenString = ExtractJsonValue(span, "clientToken");
 
-            if (connectionData is null || lobbyTypeString is null || clientTokenString is null) {
+            if (connectionData is null || lobbyTypeString is null) {
                 Logger.Error($"MmsClient: Unexpected JoinLobby response: {response}");
                 return null;
             }
@@ -279,9 +281,13 @@ internal sealed class MmsClient : IDisposable {
                 return null;
             }
 
-            if (!Guid.TryParse(clientTokenString, out var clientToken)) {
-                Logger.Error($"MmsClient: Invalid client token '{clientTokenString}'");
-                return null;
+            Guid? clientToken = null;
+            if (lobbyType == PublicLobbyType.Matchmaking) {
+                if (clientTokenString is null || !Guid.TryParse(clientTokenString, out var parsedToken)) {
+                    Logger.Error($"MmsClient: Invalid or missing client token for Matchmaking lobby '{clientTokenString}'");
+                    return null;
+                }
+                clientToken = parsedToken;
             }
 
             Logger.Info($"MmsClient: Joined lobby {lobbyId} [{lobbyType}] -> {connectionData}");
@@ -313,36 +319,61 @@ internal sealed class MmsClient : IDisposable {
         try {
             var uri = new Uri(_baseUrl);
             var addresses = await Dns.GetHostAddressesAsync(uri.Host);
-            if (addresses.Length == 0) {
-                Logger.Warn("MmsClient: Could not resolve MMS hostname for UDP discovery");
+
+            var address = addresses.FirstOrDefault(a => a.AddressFamily == socket.AddressFamily);
+            if (address is null) {
+                Logger.Warn(
+                    $"MmsClient: No {socket.AddressFamily} address found for '{uri.Host}' " +
+                    $"(resolved: {string.Join(", ", addresses.Select(a => a.ToString()))})"
+                );
                 return;
             }
-            endpoint = new IPEndPoint(addresses[0], UdpDiscoveryPort);
+
+            endpoint = new IPEndPoint(address, UdpDiscoveryPort);
+        } catch (OperationCanceledException) {
+            return;
         } catch (Exception ex) {
             Logger.Warn($"MmsClient: Discovery packet setup failed: {ex.Message}");
             return;
         }
 
-        var packetBytes = new byte[17];
+        var packetBytes = ArrayPool<byte>.Shared.Rent(17);
         packetBytes[0] = DiscoveryOpcode;
-        token.TryWriteBytes(packetBytes.AsSpan(1));
+        token.TryWriteBytes(packetBytes.AsSpan(1, 16));
 
         Logger.Info($"MmsClient: Starting discovery packet loop to {endpoint} for token {token}");
-        var sent = 0;
-        while (!ct.IsCancellationRequested) {
-            try {
-                socket.SendTo(packetBytes, endpoint);
-                sent++;
-                Logger.Debug($"MmsClient: Sent discovery packet #{sent} to {endpoint}");
-                await Task.Delay(DiscoveryRetryMs, ct);
-            } catch (OperationCanceledException) {
-                break;
-            } catch (Exception ex) {
-                Logger.Warn($"MmsClient: Discovery packet send failed: {ex.Message}");
-            }
+        
+        // Attempt the first send synchronously so the caller knows at least one packet went out
+        try {
+            socket.SendTo(packetBytes, 0, 17, SocketFlags.None, endpoint);
+            Logger.Debug($"MmsClient: Sent initial discovery packet to {endpoint}");
+        } catch (Exception ex) {
+            Logger.Warn($"MmsClient: Initial discovery packet send failed: {ex.Message}");
+            ArrayPool<byte>.Shared.Return(packetBytes);
+            return;
         }
 
-        Logger.Info($"MmsClient: Discovery packet loop stopped after {sent} packet(s)");
+        // Fire and forget the retry loop
+        _ = Task.Run(async () => {
+            try {
+                var sent = 1; // start at 1 since we just sent the initial packet
+                while (!ct.IsCancellationRequested) {
+                    try {
+                        await Task.Delay(DiscoveryRetryMs, ct);
+                        socket.SendTo(packetBytes, 0, 17, SocketFlags.None, endpoint);
+                        Logger.Debug($"MmsClient: Sent discovery packet #{++sent} to {endpoint}");
+                    } catch (OperationCanceledException) {
+                        break;
+                    } catch (Exception ex) {
+                        Logger.Warn($"MmsClient: Discovery packet send failed: {ex.Message}");
+                    }
+                }
+
+                Logger.Info($"MmsClient: Discovery packet loop stopped after {sent} packet(s)");
+            } finally {
+                ArrayPool<byte>.Shared.Return(packetBytes);
+            }
+        }, CancellationToken.None);
     }
 
     /// <summary>
@@ -355,6 +386,7 @@ internal sealed class MmsClient : IDisposable {
             Logger.Error("MmsClient: Cannot start WebSocket without host token");
             return;
         }
+
         _ = ConnectWebSocketAsync();
     }
 
@@ -418,6 +450,11 @@ internal sealed class MmsClient : IDisposable {
         var portStr = ExtractJsonValue(span, "clientPort");
 
         if (ip is not null && int.TryParse(portStr, out var port)) {
+            if (port < 1 || port > 65535) {
+                Logger.Warn($"MmsClient: Push notification rejected - invalid client port: {port}");
+                return;
+            }
+            
             Logger.Info($"MmsClient: Push notification - client {ip}:{port}");
             PunchClientRequested?.Invoke(ip, port);
             PunchClientRequestedStatic?.Invoke(ip, port);
@@ -626,11 +663,10 @@ internal sealed class MmsClient : IDisposable {
             // Escape-aware string scan that skips \" sequences instead of terminating on them
             var searchStart = valueStart + 1;
             while (searchStart < json.Length) {
-                switch (json[searchStart])
-                {
+                switch (json[searchStart]) {
                     case '\\':
                         // skip the escaped character
-                        searchStart += 2; 
+                        searchStart += 2;
                         continue;
                     case '"':
                         return json.Slice(valueStart + 1, searchStart - valueStart - 1).ToString();
@@ -639,6 +675,7 @@ internal sealed class MmsClient : IDisposable {
                         break;
                 }
             }
+
             return null;
         }
 
@@ -663,17 +700,18 @@ internal sealed class MmsClient : IDisposable {
             switch (c) {
                 case '\\': sb.Append("\\\\"); break;
                 case '\"': sb.Append("\\\""); break;
-                case '\n': sb.Append("\\n");  break;
-                case '\r': sb.Append("\\r");  break;
-                case '\t': sb.Append("\\t");  break;
+                case '\n': sb.Append("\\n"); break;
+                case '\r': sb.Append("\\r"); break;
+                case '\t': sb.Append("\\t"); break;
                 default:
                     if (c < ' ')
-                        sb.Append($"\\u{(int)c:X4}");
+                        sb.Append($"\\u{(int) c:X4}");
                     else
                         sb.Append(c);
                     break;
             }
         }
+
         return sb.ToString();
     }
 

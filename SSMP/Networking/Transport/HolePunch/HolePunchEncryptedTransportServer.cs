@@ -235,15 +235,15 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     /// <param name="dtlsClient">The DTLS client descriptor supplied by the underlying server.</param>
     /// <param name="data">Buffer containing the received data.</param>
     /// <param name="length">Number of valid bytes in <paramref name="data"/>.</param>
-    private void OnClientDataReceived(DtlsServerClient dtlsClient, byte[] data, int length) {
-        var isNew = false;
-        var client = _clients.GetOrAdd(
-            dtlsClient.EndPoint, _ => {
-                isNew = true;
-                return new HolePunchEncryptedTransportClient(dtlsClient);
-            }
-        );
-        if (isNew) ClientConnectedEvent?.Invoke(client);
+    private void OnClientDataReceived(DtlsServerClient dtlsClient, byte[] data, int length)
+    {
+        var candidate = new HolePunchEncryptedTransportClient(dtlsClient);
+        var client = _clients.GetOrAdd(dtlsClient.EndPoint, _ => candidate);
+
+        if (ReferenceEquals(client, candidate)) {
+            ClientConnectedEvent?.Invoke(client);
+        }
+        
         client.RaiseDataReceived(data, length);
     }
 }
