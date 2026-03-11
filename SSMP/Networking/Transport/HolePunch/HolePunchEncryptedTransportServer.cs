@@ -140,16 +140,16 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     public void Stop() {
         Logger.Info("HolePunch Server: Stopping");
 
+        if (_mmsClient is not null) {
+            _mmsClient.PunchClientRequested -= OnPunchClientRequested;
+            _mmsClient.CloseLobby();
+        }
+
         // Cancel all in-flight punch tasks before closing the socket so we don't
         // send packets on a socket that may already be disposed.
         _punchCts?.Cancel();
         _punchCts?.Dispose();
         _punchCts = null;
-
-        if (_mmsClient is not null) {
-            _mmsClient.PunchClientRequested -= OnPunchClientRequested;
-            _mmsClient.CloseLobby();
-        }
 
         // Disconnect tracked clients before clearing the dictionary
         foreach (var client in _clients.Values)
@@ -204,7 +204,11 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     /// Any other exception is caught internally, logged at Warn level, and swallowed.
     /// </exception>
     private async Task PunchToClientAsync(IPEndPoint clientEndpoint) {
-        var ct = _punchCts?.Token ?? CancellationToken.None;
+        if (_punchCts is null || _punchCts.IsCancellationRequested) {
+            return;
+        }
+
+        var ct = _punchCts.Token;
 
         Logger.Debug($"HolePunch Server: Starting punch sequence to {clientEndpoint}");
 

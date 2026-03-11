@@ -1828,7 +1828,7 @@ internal class ConnectInterface {
         if (connectionData.StartsWith("["))
         {
             var closingBracket = connectionData.IndexOf(']');
-            if (closingBracket < 0) {
+            if (closingBracket < 0 || closingBracket + 1 >= connectionData.Length || connectionData[closingBracket + 1] != ':') {
                 return false;
             }
 
@@ -1839,7 +1839,7 @@ internal class ConnectInterface {
 
         // Handle IPv4 format: 1.2.3.4:1234
         var lastColon = connectionData.LastIndexOf(':');
-        if (lastColon < 0) {
+        if (lastColon < 0 || lastColon >= connectionData.Length - 1) {
             return false;
         }
         

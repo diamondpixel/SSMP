@@ -46,18 +46,14 @@ internal sealed class MmsClient : IDisposable {
     /// </summary>
     private static readonly HttpClient HttpClient = CreateSharedHttpClient();
 
-    /// <summary>
-    /// Pre-built content for heartbeat POSTs. Constructed once, reused forever.
-    /// Sending an empty JSON object is sufficient since the token is in the URL.
-    /// </summary>
-    private static readonly ByteArrayContent EmptyJsonContent = CreateEmptyJsonContent();
-
-    private static HttpClient CreateSharedHttpClient() {
+    static MmsClient() {
         // Process-wide on Mono/Unity, documented intentionally (see XML doc above)
         ServicePointManager.DefaultConnectionLimit = 10;
         ServicePointManager.UseNagleAlgorithm = false;
         ServicePointManager.Expect100Continue = false;
+    }
 
+    private static HttpClient CreateSharedHttpClient() {
         var handler = new HttpClientHandler {
             UseProxy = false,
             UseCookies = false,
@@ -69,11 +65,7 @@ internal sealed class MmsClient : IDisposable {
         };
     }
 
-    private static ByteArrayContent CreateEmptyJsonContent() {
-        var content = new ByteArrayContent("{}"u8.ToArray());
-        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        return content;
-    }
+
 
     private readonly string _baseUrl;
 
@@ -496,12 +488,12 @@ internal sealed class MmsClient : IDisposable {
 
     /// <summary>
     /// Posts a heartbeat to the MMS for the given host token.
-    /// Uses the pre-built <see cref="EmptyJsonContent"/> to avoid per-call allocation.
     /// </summary>
     /// <param name="hostToken">Host token of the lobby to refresh.</param>
     private async Task SendHeartbeatAsync(string hostToken) {
         try {
-            await HttpClient.PostAsync($"{_baseUrl}/lobby/heartbeat/{hostToken}", EmptyJsonContent);
+            using var content = new StringContent("{}", Encoding.UTF8, "application/json");
+            using var response = await HttpClient.PostAsync($"{_baseUrl}/lobby/heartbeat/{hostToken}", content);
         } catch (Exception ex) {
             Logger.Warn($"MmsClient: Heartbeat failed: {ex.Message}");
         }
