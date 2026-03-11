@@ -1310,11 +1310,13 @@ internal class ConnectInterface {
         var hostGameSocket = bindTask.Result;
         var localPort = GetSocketPort(hostGameSocket);
 
-        // Continuously resend the discovery packet until the MMS acknowledges the
-        // host's endpoint via TCP (lobby creation response). UDP is unreliable so a
-        // single packet may be dropped before the MMS observes the endpoint.
+        // Continuously resend the discovery packet until the MMS acknowledges.
         using var discoveryCts = new CancellationTokenSource();
         var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(hostGameSocket, discoveryToken, discoveryCts.Token);
+        
+        // Wait for the first packet attempt to finish synchronously
+        yield return new WaitUntil(() => discoveryTask.IsCompleted);
+
         Logger.Info($"ConnectInterface: Started UDP discovery loop for host token {discoveryToken}");
 
         var lobbyTask = _mmsClient.CreateLobbyAsync(

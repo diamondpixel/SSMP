@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
@@ -46,7 +45,11 @@ internal sealed class MmsClient : IDisposable {
     /// </summary>
     private static readonly HttpClient HttpClient = CreateSharedHttpClient();
 
+    /// <summary>Guards the initialization of global <see cref="ServicePointManager"/> defaults to ensure they are only applied once per process.</summary>
+    private static readonly int SServicePointInitialized;
+
     static MmsClient() {
+        if (Interlocked.Exchange(ref SServicePointInitialized, 1) != 0) return;
         // Process-wide on Mono/Unity, documented intentionally (see XML doc above)
         ServicePointManager.DefaultConnectionLimit = 10;
         ServicePointManager.UseNagleAlgorithm = false;
@@ -403,19 +406,25 @@ internal sealed class MmsClient : IDisposable {
             Logger.Info("MmsClient: WebSocket connected");
 
             var buffer = ArrayPool<byte>.Shared.Rent(1024);
+            var ms = new System.IO.MemoryStream();
             try {
                 while (_hostWebSocket.State == WebSocketState.Open && !ct.IsCancellationRequested) {
                     var result = await _hostWebSocket.ReceiveAsync(
                         new ArraySegment<byte>(buffer), ct
                     );
-
                     if (result.MessageType == WebSocketMessageType.Close)
                         break;
-
-                    if (result is { MessageType: WebSocketMessageType.Text, Count: > 0 })
-                        HandleWebSocketMessage(Encoding.UTF8.GetString(buffer, 0, result.Count));
+                    if (result.Count > 0)
+                        ms.Write(buffer, 0, result.Count);
+                    if (result is not { EndOfMessage: true, MessageType: WebSocketMessageType.Text })
+                        continue;
+                    if (ms.Length <= 0)
+                        continue;
+                    HandleWebSocketMessage(Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int) ms.Length));
+                    ms.SetLength(0);
                 }
             } finally {
+                await ms.DisposeAsync();
                 ArrayPool<byte>.Shared.Return(buffer);
             }
         } catch (OperationCanceledException) {

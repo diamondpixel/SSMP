@@ -109,14 +109,19 @@ public sealed class DiscoveryService {
     }
 
     /// <summary>
-    /// Atomically removes and returns the host token and TCP-observed client IP associated
-    /// with a pending join. Returns <see langword="null"/> if the token is not registered.
+    /// Retrieves the host token and TCP-observed client IP associated with a pending join
+    /// without removing it from the registry. Returns <see langword="null"/> if not registered.
     /// </summary>
-    public (string HostToken, string ClientIp)? TryConsumePendingJoin(Guid clientToken)
-        => _pendingJoins.TryRemove(clientToken, out var entry)
+    public (string HostToken, string ClientIp)? TryGetPendingJoin(Guid clientToken)
+        => _pendingJoins.TryGetValue(clientToken, out var entry)
             ? (entry.HostToken, entry.ClientIp)
             : null;
 
+    /// <summary>
+    /// Atomically removes a pending join from the registry.
+    /// </summary>
+    public void RemovePendingJoin(Guid clientToken) => _pendingJoins.TryRemove(clientToken, out _);
+    
     /// <summary>
     /// Removes expired endpoint cache entries and stale pending joins.
     /// Called periodically by <see cref="LobbyCleanupService"/>.

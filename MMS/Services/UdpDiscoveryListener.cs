@@ -51,26 +51,19 @@ public sealed class UdpDiscoveryListener(
         using var udp = new UdpClient(AddressFamily.InterNetworkV6);
         udp.Client.DualMode = true;
         udp.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, UdpPort));
-        
+
         logger.LogInformation("[UDP] Discovery listener started on port {Port} (Dual-Mode)", UdpPort);
 
-        // Background task to prune stale rate limit entries to prevent memory exhaustion
         _ = Task.Run(async () => {
-            while (!stoppingToken.IsCancellationRequested) {
-                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+            while (await timer.WaitForNextTickAsync(stoppingToken)) {
                 var now = Stopwatch.GetTimestamp();
-                var evicted = 0;
-                foreach (var kvp in _rateLimits) {
-                    // Evict entries older than 2 windows to be safe
-                    if (now - kvp.Value.WindowStart > RateWindowTicks * 2) {
-                        if (_rateLimits.TryRemove(kvp.Key, out _)) {
-                            evicted++;
-                        }
-                    }
-                }
-                if (evicted > 0) {
+                var evicted = _rateLimits
+                              .Where(kvp => now - kvp.Value.WindowStart > RateWindowTicks * 2)
+                              .Count(kvp => _rateLimits.TryRemove(kvp.Key, out _));
+
+                if (evicted > 0)
                     logger.LogDebug("[UDP] Evicted {Count} stale rate limit entries", evicted);
-                }
             }
         }, stoppingToken);
 
@@ -114,7 +107,7 @@ public sealed class UdpDiscoveryListener(
         discoveryService.Record(token, endpoint);
         logger.LogDebug("[UDP] Recorded endpoint {Endpoint} for token {Token}", endpoint, token);
 
-        var pending = discoveryService.TryConsumePendingJoin(token);
+        var pending = discoveryService.TryGetPendingJoin(token);
         if (pending is null)
             return;
 
@@ -124,9 +117,16 @@ public sealed class UdpDiscoveryListener(
             return;
         }
 
+        // Only consume the join after we confirm the WebSocket is open
+        discoveryService.RemovePendingJoin(token);
+
         // Use the TCP-observed IP rather than the one in the packet to prevent MiTM spoofing.
         // The port still comes from UDP since that's what the client is actually hole-punching on.
-        var safeEndpoint = new IPEndPoint(IPAddress.Parse(pending.Value.ClientIp), endpoint.Port);
+        if (!IPAddress.TryParse(pending.Value.ClientIp, out var clientIp)) {
+            logger.LogWarning("[UDP] Invalid pending client IP {Ip} for token {Token}", pending.Value.ClientIp, token);
+            return;
+        }
+        var safeEndpoint = new IPEndPoint(clientIp, endpoint.Port);
 
         await PushClientEndpointAsync(ws, safeEndpoint, cancellationToken);
         logger.LogInformation("[UDP] Pushed client endpoint {Endpoint} to host via WebSocket", safeEndpoint);
@@ -149,8 +149,8 @@ public sealed class UdpDiscoveryListener(
         IPEndPoint endpoint,
         CancellationToken cancellationToken
     ) {
-        var json = $"{{\"clientIp\":\"{endpoint.Address}\",\"clientPort\":{endpoint.Port}}}";
-
+        var payload = new { clientIp = endpoint.Address.ToString(), clientPort = endpoint.Port };
+        var json = System.Text.Json.JsonSerializer.Serialize(payload);
 
         var maxByteCount = Encoding.UTF8.GetMaxByteCount(json.Length);
         var rentedBuffer = ArrayPool<byte>.Shared.Rent(maxByteCount);
