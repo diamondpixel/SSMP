@@ -486,6 +486,12 @@ internal class ConnectInterface {
     /// </summary>
     public MmsClient MmsClient => _mmsClient;
 
+    /// <summary>
+    /// Tracks the active cancellation token for the background UDP discovery loop,
+    /// ensuring punch packets continue to send until the connection succeeds or fails.
+    /// </summary>
+    private CancellationTokenSource? _activeDiscoveryCts;
+
     #endregion
 
     #region Events
@@ -1140,53 +1146,71 @@ internal class ConnectInterface {
     /// <summary>
     /// Coroutine to join a lobby, handling both Matchmaking and Steam lobby types.
     /// </summary>
-    private IEnumerator JoinLobbyCoroutine(string lobbyId, string username)
-    {
+    private IEnumerator JoinLobbyCoroutine(string lobbyId, string username) {
         ShowFeedback(Color.yellow, "Joining lobby...");
 
-        // Attempt to join the lobby and wait for the result
         var joinTask = _mmsClient.JoinLobbyAsync(lobbyId);
         yield return new WaitUntil(() => joinTask.IsCompleted);
 
-        if (joinTask.Result is not { } lobbyInfo)
-        {
+        if (joinTask.IsFaulted || joinTask.IsCanceled) {
+            Logger.Error($"ConnectInterface: JoinLobbyAsync failed: {joinTask.Exception?.GetBaseException().Message}");
+            ShowFeedback(Color.red, "Failed to join lobby. Is MMS running?");
+            yield break;
+        }
+
+        if (joinTask.Result is not { } lobbyInfo) {
             ShowFeedback(Color.red, "Lobby not found, offline, or join failed.");
             yield break;
         }
 
         var (connectionData, lobbyType, lanConnectionData, clientToken) = lobbyInfo;
 
-        // Steam lobbies use a simpler direct connection path
-        if (lobbyType == PublicLobbyType.Steam)
-        {
+        if (lobbyType == PublicLobbyType.Steam) {
             ConnectToSteamLobby(connectionData, username);
             yield break;
         }
 
-        // Matchmaking lobbies require hole-punching before connecting
+        yield return JoinMatchmakingLobbyCoroutine(connectionData, lanConnectionData, clientToken, username);
+    }
+
+    /// <summary>
+    /// Handles the hole-punch discovery and connection flow for Matchmaking lobbies.
+    /// </summary>
+    private IEnumerator JoinMatchmakingLobbyCoroutine(
+        string connectionData,
+        string lanConnectionData,
+        Guid? clientToken,
+        string username
+    ) {
         var holePunchSocket = CreateHolePunchSocket();
-        var connectSuccess = false;
 
-        using var discoveryCts = new CancellationTokenSource();
-        try
-        {
-            // Continuously resend the discovery packet until the MMS acknowledges
-            var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(
-                holePunchSocket, clientToken!.Value, discoveryCts.Token);
+        CancelDiscoveryLoop();
+        _activeDiscoveryCts = new CancellationTokenSource();
 
-            yield return new WaitUntil(() => discoveryTask.IsCompleted);
+        Task discoveryTask;
+        try {
+            discoveryTask = _mmsClient.SendDiscoveryPacketAsync(
+                holePunchSocket, clientToken!.Value, _activeDiscoveryCts.Token
+            );
+        } catch (Exception ex) {
+            Logger.Error($"ConnectInterface: Discovery packet setup failed: {ex.Message}");
+            Cleanup(holePunchSocket);
+            yield break;
+        }
 
+        yield return new WaitUntil(() => discoveryTask.IsCompleted);
+
+        try {
             ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
-            connectSuccess = true;
+        } catch (Exception ex) {
+            Logger.Error($"ConnectInterface: Matchmaking connection failed: {ex.Message}");
+            Cleanup(holePunchSocket);
         }
-        finally
-        {
-            // Cancel the discovery loop now that the connection has been initiated or aborted
-            discoveryCts.Cancel();
+    }
 
-            if (!connectSuccess)
-                holePunchSocket.Dispose();
-        }
+    private void Cleanup(Socket holePunchSocket) {
+        CancelDiscoveryLoop();
+        holePunchSocket.Dispose();
     }
 
     /// <summary>
@@ -1302,7 +1326,7 @@ internal class ConnectInterface {
         string username
     ) {
         var discoveryToken = Guid.NewGuid();
-        
+
         Socket hostGameSocket;
         try {
             hostGameSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -1317,10 +1341,14 @@ internal class ConnectInterface {
 
         var localPort = GetSocketPort(hostGameSocket);
 
+        CancelDiscoveryLoop();
+        _activeDiscoveryCts = new CancellationTokenSource();
+
         // Continuously resend the discovery packet until the MMS acknowledges.
-        using var discoveryCts = new CancellationTokenSource();
-        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(hostGameSocket, discoveryToken, discoveryCts.Token);
-        
+        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(
+            hostGameSocket, discoveryToken, _activeDiscoveryCts.Token
+        );
+
         // Wait for the first packet attempt to finish synchronously
         yield return new WaitUntil(() => discoveryTask.IsCompleted);
 
@@ -1339,11 +1367,11 @@ internal class ConnectInterface {
         // TCP responded so we can cancel the UDP discovery loop.
         // Note: discoveryTask is already complete here (it only awaits the initial synchronous send;
         // the fire-and-forget retry loop inside runs independently and is stopped via discoveryCts).
-        discoveryCts.Cancel();
+        CancelDiscoveryLoop();
 
-        if (lobbyTask.IsFaulted) {
+        if (lobbyTask.IsFaulted || lobbyTask.IsCanceled) {
             Logger.Error(
-                $"ConnectInterface: CreateLobbyAsync faulted: {lobbyTask.Exception?.GetBaseException().Message}"
+                $"ConnectInterface: CreateLobbyAsync failed: {lobbyTask.Exception?.GetBaseException().Message}"
             );
             hostGameSocket.Dispose();
             ShowFeedback(Color.red, "Failed to create lobby. Is MMS running?");
@@ -1649,6 +1677,7 @@ internal class ConnectInterface {
     /// Resets UI state and displays success message.
     /// </summary>
     public void OnSuccessfulConnect() {
+        CancelDiscoveryLoop();
         ShowFeedback(Color.green, MsgConnected);
         ResetConnectionButtons();
     }
@@ -1658,6 +1687,7 @@ internal class ConnectInterface {
     /// Resets the connection UI to allow reconnection.
     /// </summary>
     public void OnClientDisconnect() {
+        CancelDiscoveryLoop();
         ResetConnectionButtons();
     }
 
@@ -1667,9 +1697,20 @@ internal class ConnectInterface {
     /// </summary>
     /// <param name="result">Details about why the connection failed.</param>
     public void OnFailedConnect(ConnectionFailedResult result) {
+        CancelDiscoveryLoop();
         var message = GetFailureMessage(result);
         ShowFeedback(Color.red, message);
         ResetConnectionButtons();
+    }
+
+    private void CancelDiscoveryLoop() {
+        if (_activeDiscoveryCts == null) {
+            return;
+        }
+
+        _activeDiscoveryCts.Cancel();
+        _activeDiscoveryCts.Dispose();
+        _activeDiscoveryCts = null;
     }
 
     #endregion
@@ -1808,14 +1849,12 @@ internal class ConnectInterface {
     /// <summary>
     /// Determines the optimal connection strategy (LAN first, then public).
     /// </summary>
-    private static ConnectionInfo? DetermineConnectionInfo(string publicConnectionData, string? lanConnectionData)
-    {
+    private static ConnectionInfo? DetermineConnectionInfo(string publicConnectionData, string? lanConnectionData) {
         if (!TryParseConnectionData(publicConnectionData, out var publicIp, out var publicPort))
             return null;
 
         if (!string.IsNullOrEmpty(lanConnectionData) &&
-            TryParseConnectionData(lanConnectionData, out var lanIp, out var lanPort))
-        {
+            TryParseConnectionData(lanConnectionData, out var lanIp, out var lanPort)) {
             return new ConnectionInfo(lanIp, lanPort, publicIp, $"Connecting to LAN {lanIp}:{lanPort}...");
         }
 
@@ -1826,8 +1865,7 @@ internal class ConnectInterface {
     /// Parses connection data in format "IP:Port". IPv4-mapped-IPv6 addresses
     /// are normalized server-side, so only plain IPv4 strings are expected here.
     /// </summary>
-    private static bool TryParseConnectionData(string connectionData, out string ip, out int port)
-    {
+    private static bool TryParseConnectionData(string connectionData, out string ip, out int port) {
         ip = string.Empty;
         port = 0;
 
@@ -1840,7 +1878,7 @@ internal class ConnectInterface {
         if (lastColon < 0 || lastColon >= connectionData.Length - 1) {
             return false;
         }
-        
+
         ip = connectionData[..lastColon];
         return int.TryParse(connectionData[(lastColon + 1)..], out port) && port is >= 1 and <= 65535;
     }

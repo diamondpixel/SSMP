@@ -55,15 +55,21 @@ public sealed class UdpDiscoveryListener(
         logger.LogInformation("[UDP] Discovery listener started on port {Port} (Dual-Mode)", UdpPort);
 
         _ = Task.Run(async () => {
-            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
-            while (await timer.WaitForNextTickAsync(stoppingToken)) {
-                var now = Stopwatch.GetTimestamp();
-                var evicted = _rateLimits
-                              .Where(kvp => now - kvp.Value.WindowStart > RateWindowTicks * 2)
-                              .Count(kvp => _rateLimits.TryRemove(kvp.Key, out _));
+            try {
+                using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+                while (await timer.WaitForNextTickAsync(stoppingToken)) {
+                    var now = Stopwatch.GetTimestamp();
+                    var evicted = _rateLimits
+                                  .Where(kvp => now - kvp.Value.WindowStart > RateWindowTicks * 2)
+                                  .Count(kvp => _rateLimits.TryRemove(kvp.Key, out _));
 
-                if (evicted > 0)
-                    logger.LogDebug("[UDP] Evicted {Count} stale rate limit entries", evicted);
+                    if (evicted > 0)
+                        logger.LogDebug("[UDP] Evicted {Count} stale rate limit entries", evicted);
+                }
+            } catch (OperationCanceledException) {
+                // Ignore cancellation on shutdown
+            } catch (Exception ex) {
+                logger.LogError(ex, "[UDP] Error in background rate limit cleanup");
             }
         }, stoppingToken);
 
