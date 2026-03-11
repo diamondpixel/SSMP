@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SSMP.Logging;
 using SSMP.Util;
 
@@ -70,18 +71,30 @@ internal class PacketHandlerRegistry<TPacketId, THandler>
     /// </summary>
     /// <param name="packetId">The packet ID.</param>
     /// <param name="invoker">Action that invokes the handler with appropriate parameters.</param>
-    /// <returns>True if handler was found and invoked, false otherwise.</returns>
+    /// <summary>
+    /// Locate the handler registered for the given packet ID and invoke it, dispatching to the main thread if the registry is configured to do so.
+    /// </summary>
+    /// <param name="packetId">The packet identifier used to look up the registered handler.</param>
+    /// <param name="invoker">An action that receives the located handler and performs the invocation.</param>
     public void Execute(TPacketId packetId, Action<THandler> invoker) {
         if (!_handlers.TryGetValue(packetId, out var handler)) {
             Logger.Error($"There is no {_registryName} packet handler registered for ID: {packetId}");
             return;
         }
 
-        if (_dispatchToMainThread) {
-            ThreadUtil.RunActionOnMainThread(() => SafeInvoke(packetId, handler, invoker));
-        } else {
-            SafeInvoke(packetId, handler, invoker);
-        }
+        if (_dispatchToMainThread) DispatchToMainThread(packetId, handler, invoker);
+        else SafeInvoke(packetId, handler, invoker);
+    }
+
+    /// <summary>
+    /// Schedules the provided handler invocation to execute on the application's main (Unity) thread.
+    /// </summary>
+    /// <param name="packetId">The packet identifier associated with the handler (used for logging context).</param>
+    /// <param name="handler">The registered handler delegate to invoke.</param>
+    /// <param name="invoker">An action that performs the actual handler invocation when executed.</param>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void DispatchToMainThread(TPacketId packetId, THandler handler, Action<THandler> invoker) {
+        ThreadUtil.RunActionOnMainThread(() => SafeInvoke(packetId, handler, invoker));
     }
 
     /// <summary>

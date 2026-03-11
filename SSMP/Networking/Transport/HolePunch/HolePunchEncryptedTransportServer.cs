@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using SSMP.Logging;
@@ -17,7 +18,8 @@ namespace SSMP.Networking.Transport.HolePunch;
 internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     /// <summary>
     /// Number of punch packets to send per client.
-    /// Increased to 100 (5s) to ensure reliability.
+    /// Set to 100 iterations at <see cref="PunchPacketDelayMs"/> ms each (5 s total)
+    /// to maximise the probability of establishing a NAT mapping before the client connects.
     /// </summary>
     private const int PunchPacketCount = 100;
 
@@ -27,15 +29,19 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     private const int PunchPacketDelayMs = 50;
 
     /// <summary>
-    /// Pre-allocated punch packet bytes ("PUNCH").
+    /// Pre-allocated punch packet payload (<c>"PUNCH"</c> encoded as UTF-8).
+    /// Allocated once at class initialisation and reused for every send to avoid
+    /// per-packet heap allocations on the hot punch path.
     /// </summary>
     private static readonly byte[] PunchPacket = "PUNCH"u8.ToArray();
 
     /// <summary>
-    /// MMS client instance for lobby management.
-    /// Stored to enable proper cleanup when server shuts down.
+    /// Fallback handoff point for callers that cannot pass the socket through the constructor
+    /// (e.g. when <see cref="Start"/> is triggered via an event). Consumed and cleared on
+    /// <see cref="Start"/> to prevent accidental reuse across sessions.
+    /// Prefer the constructor parameter where the call chain allows it.
     /// </summary>
-    private MmsClient? _mmsClient;
+    public static Socket? PreBoundSocket { get; set; }
 
     /// <summary>
     /// The underlying DTLS server.
@@ -47,91 +53,231 @@ internal class HolePunchEncryptedTransportServer : IEncryptedTransportServer {
     /// </summary>
     private readonly ConcurrentDictionary<IPEndPoint, HolePunchEncryptedTransportClient> _clients;
 
+    /// <summary>
+    /// MMS client instance for lobby management.
+    /// Stored to enable proper cleanup when server shuts down.
+    /// </summary>
+    private readonly MmsClient? _mmsClient;
+
+    /// <summary>
+    /// Optional pre-bound socket supplied at construction time.
+    /// Takes priority over <see cref="PreBoundSocket"/> in <see cref="Start"/>.
+    /// </summary>
+    private readonly Socket? _preBoundSocket;
+
+    /// <summary>
+    /// Cancels all in-flight <see cref="PunchToClientAsync"/> tasks when
+    /// <see cref="Stop"/> is called, ensuring no punch packets are sent after
+    /// the underlying socket has been closed.
+    /// </summary>
+    private CancellationTokenSource? _punchCts;
+
     /// <inheritdoc />
     public event Action<IEncryptedTransportClient>? ClientConnectedEvent;
 
-    public HolePunchEncryptedTransportServer(MmsClient? mmsClient = null) {
+    /// <summary>
+    /// Initialises a new <see cref="HolePunchEncryptedTransportServer"/>.
+    /// </summary>
+    /// <param name="mmsClient">
+    /// MMS client to subscribe to for punch notifications.
+    /// Pass <see langword="null"/> if MMS is not in use.
+    /// </param>
+    /// <param name="preBoundSocket">
+    /// UDP socket already bound during STUN/UDP discovery.
+    /// Pass <see langword="null"/> to fall back to <see cref="PreBoundSocket"/>, or to let
+    /// the server bind a fresh socket (NAT traversal may be unreliable in that case).
+    /// <summary>
+    /// Initializes a HolePunchEncryptedTransportServer with optional MMS coordination and an optional pre-bound UDP socket.
+    /// </summary>
+    /// <param name="mmsClient">Optional MMS client used for lobby and punch coordination; if null, MMS features are not used.</param>
+    /// <param name="preBoundSocket">Optional UDP socket that is already bound and will be reused when starting; if provided it takes precedence over the static PreBoundSocket.</param>
+    public HolePunchEncryptedTransportServer(MmsClient? mmsClient = null, Socket? preBoundSocket = null) {
         _mmsClient = mmsClient;
+        _preBoundSocket = preBoundSocket;
         _dtlsServer = new DtlsServer();
         _clients = new ConcurrentDictionary<IPEndPoint, HolePunchEncryptedTransportClient>();
         _dtlsServer.DataReceivedEvent += OnClientDataReceived;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts the server on the given port, reusing a pre-bound socket where available.
+    /// Subscribes to <see cref="MmsClient.PunchClientRequested"/> if an
+    /// <see cref="MmsClient"/> was provided at construction time.
+    /// </summary>
+    /// <remarks>
+    /// The constructor-supplied socket takes priority over <see cref="PreBoundSocket"/>.
+    /// <see cref="PreBoundSocket"/> is cleared immediately after being consumed to prevent
+    /// accidental reuse on a subsequent <see cref="Start"/> call.
+    /// </remarks>
+    /// <summary>
+    /// Start the hole-punch DTLS transport and begin accepting clients, preferring a constructor-provided or pre-bound socket when available.
+    /// </summary>
+    /// <param name="port">UDP port to listen on when no pre-bound socket is available.</param>
     public void Start(int port) {
         Logger.Info($"HolePunch Server: Starting on port {port}");
-        
-        // Subscribe to punch coordination
-        MmsClient.PunchClientRequested += OnPunchClientRequested;
-        
-        _dtlsServer.Start(port);
-    }
 
-    /// <inheritdoc />
-    public void Stop() {
-        Logger.Info("HolePunch Server: Stopping");
-        
-        // Close MMS lobby if we have an MMS client
-        _mmsClient?.CloseLobby();
-        _mmsClient = null;
-        
-        // Unsubscribe from punch coordination
-        MmsClient.PunchClientRequested -= OnPunchClientRequested;
-        
-        _dtlsServer.Stop();
-        _clients.Clear();
+        // Constructor parameter takes priority; static property is the fallback for callers
+        // that set it before firing the event that constructs and starts the server.
+        var socket = _preBoundSocket ?? PreBoundSocket;
+        // consume immediately to prevent reuse on a second Start()
+        PreBoundSocket = null; 
+
+        _punchCts = new CancellationTokenSource();
+
+        if (_mmsClient is not null)
+            _mmsClient.PunchClientRequested += OnPunchClientRequested;
+        else
+            Logger.Warn("HolePunch Server: No MmsClient provided - push-based punch coordination disabled");
+
+        if (socket is not null) {
+            Logger.Info("HolePunch Server: Reusing pre-bound socket from STUN discovery");
+            _dtlsServer.Start(socket);
+        } else {
+            Logger.Warn(
+                "HolePunch Server: No pre-bound socket - binding a new socket (NAT traversal may be unreliable)"
+            );
+            _dtlsServer.Start(port);
+        }
     }
 
     /// <summary>
-    /// Called when MMS notifies us of a client needing punch-back.
+    /// Stops the server, cancels all in-flight punch tasks, closes the MMS lobby,
+    /// disconnects all tracked clients, and shuts down the underlying DTLS server.
+    /// <summary>
+    /// Stops the hole-punch transport server and cleans up its runtime state.
     /// </summary>
-    private void OnPunchClientRequested(string clientIp, int clientPort) {
-        if (!IPAddress.TryParse(clientIp, out var ip)) {
-            Logger.Warn($"HolePunch Server: Invalid client IP: {clientIp}");
-            return;
+    /// <remarks>
+    /// Cancels any in-flight punch operations, unsubscribes from MMS punch requests and closes the lobby if present,
+    /// disconnects and clears all tracked clients, and stops the underlying DTLS server.
+    /// </remarks>
+    public void Stop() {
+        Logger.Info("HolePunch Server: Stopping");
+
+        // Cancel all in-flight punch tasks before closing the socket so we don't
+        // send packets on a socket that may already be disposed.
+        _punchCts?.Cancel();
+        _punchCts?.Dispose();
+        _punchCts = null;
+
+        if (_mmsClient is not null) {
+            _mmsClient.PunchClientRequested -= OnPunchClientRequested;
+            _mmsClient.CloseLobby();
         }
-        
-        PunchToClient(new IPEndPoint(ip, clientPort));
+
+        // Disconnect tracked clients before clearing the dictionary
+        foreach (var client in _clients.Values)
+            _dtlsServer.DisconnectClient(client.EndPoint);
+
+        _clients.Clear();
+        _dtlsServer.Stop();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disconnects the specified client from the server and removes it from internal tracking if it is a hole-punch client; otherwise does nothing.
+    /// </summary>
+    /// <param name="client">The transport client to disconnect. Only instances of HolePunchEncryptedTransportClient are disconnected and removed.</param>
     public void DisconnectClient(IEncryptedTransportClient client) {
         if (client is not HolePunchEncryptedTransportClient hpClient)
             return;
-        
+
         _dtlsServer.DisconnectClient(hpClient.EndPoint);
         _clients.TryRemove(hpClient.EndPoint, out _);
     }
 
     /// <summary>
-    /// Initiates hole punch to a client that wants to connect.
-    /// Uses the DTLS server's socket so the punch comes from the correct port.
+    /// Invoked by <see cref="MmsClient.PunchClientRequested"/> when the MMS server pushes
+    /// a new client endpoint. Validates the IP and starts a fire-and-forget punch sequence.
     /// </summary>
-    /// <param name="clientEndpoint">The client's public endpoint.</param>
-    private void PunchToClient(IPEndPoint clientEndpoint) {
-        // Run on background thread to avoid blocking the calling thread for 5 seconds
-        Task.Run(() => {
-            Logger.Debug($"HolePunch Server: Punching to client at {clientEndpoint}");
-            
-            for (var i = 0; i < PunchPacketCount; i++) {
-                _dtlsServer.SendRaw(PunchPacket, clientEndpoint);
-                Thread.Sleep(PunchPacketDelayMs);
-            }
-            
-            Logger.Info($"HolePunch Server: Punch packets sent to {clientEndpoint}");
-        });
+    /// <param name="clientIp">Client's public IP address string as received from MMS.</param>
+    /// <summary>
+    /// Initiates a UDP hole-punch sequence to the client endpoint specified by the MMS punch request.
+    /// </summary>
+    /// <param name="clientIp">The client's public IP address as reported by MMS. If this is not a valid IP, the request is ignored and a warning is logged.</param>
+    /// <param name="clientPort">The client's public port as reported by MMS.</param>
+    private void OnPunchClientRequested(string clientIp, int clientPort) {
+        if (!IPAddress.TryParse(clientIp, out var ip)) {
+            Logger.Warn($"HolePunch Server: Invalid client IP in punch request: '{clientIp}'");
+            return;
+        }
+
+        // Fire-and-forget as PunchToClientAsync manages its own lifetime via _punchCts
+        _ = PunchToClientAsync(new IPEndPoint(ip, clientPort));
     }
 
     /// <summary>
-    /// Callback method for when data is received from a server client.
+    /// Sends <see cref="PunchPacketCount"/> UDP punch packets to <paramref name="clientEndpoint"/>
+    /// at <see cref="PunchPacketDelayMs"/> ms intervals to establish a NAT mapping.
+    /// Cancels cleanly when the server stops via <see cref="_punchCts"/>.
     /// </summary>
-    private void OnClientDataReceived(DtlsServerClient dtlsClient, byte[] data, int length) {
-        var client = _clients.GetOrAdd(dtlsClient.EndPoint, _ => {
-            var newClient = new HolePunchEncryptedTransportClient(dtlsClient);
-            ClientConnectedEvent?.Invoke(newClient);
-            return newClient;
-        });
+    /// <remarks>
+    /// Cancellation is driven entirely by <see cref="Task.Delay(int, CancellationToken)"/>;
+    /// no explicit <see cref="CancellationToken.ThrowIfCancellationRequested"/> call is needed
+    /// inside the loop because the delay already throws <see cref="OperationCanceledException"/>
+    /// as soon as the token is signalled.
+    /// </remarks>
+    /// <param name="clientEndpoint">The remote endpoint to punch towards.</param>
+    /// <exception cref="OperationCanceledException">
+    /// Caught internally; logged at Debug level and swallowed so the fire-and-forget
+    /// caller is not affected.
+    /// </exception>
+    /// <exception cref="Exception">
+    /// Any other exception is caught internally, logged at Warn level, and swallowed.
+    /// <summary>
+    /// Sends a sequence of UDP punch packets to the specified client endpoint to facilitate NAT hole punching.
+    /// </summary>
+    /// <param name="clientEndpoint">The target client IP endpoint to which punch packets will be sent.</param>
+    /// <remarks>
+    /// The method sends the configured number of punch packets spaced by the configured delay, observes the server's punch cancellation token (so it can be cancelled by Stop), and suppresses exceptions arising during the sequence.
+    /// </remarks>
+    private async Task PunchToClientAsync(IPEndPoint clientEndpoint) {
+        var ct = _punchCts?.Token ?? CancellationToken.None;
 
+        Logger.Debug($"HolePunch Server: Starting punch sequence to {clientEndpoint}");
+
+        try {
+            for (var i = 0; i < PunchPacketCount; i++) {
+                _dtlsServer.SendRaw(PunchPacket, clientEndpoint);
+                await Task.Delay(PunchPacketDelayMs, ct);
+            }
+
+            Logger.Info($"HolePunch Server: Punch sequence complete for {clientEndpoint}");
+        } catch (OperationCanceledException) {
+            Logger.Debug($"HolePunch Server: Punch sequence cancelled for {clientEndpoint}");
+        } catch (Exception ex) {
+            Logger.Warn($"HolePunch Server: Punch sequence failed for {clientEndpoint}: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Invoked by the DTLS server when data arrives from a remote endpoint.
+    /// Registers new clients on first contact and routes data to existing ones.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ConcurrentDictionary{TKey,TValue}.GetOrAdd(TKey, Func{TKey, TValue})"/>
+    /// factory may execute more than once under contention and must therefore remain
+    /// side-effect free. <see cref="ClientConnectedEvent"/> is raised outside
+    /// <c>GetOrAdd</c> to guarantee exactly one invocation per unique endpoint.
+    /// </remarks>
+    /// <param name="dtlsClient">The DTLS client descriptor supplied by the underlying server.</param>
+    /// <param name="data">Buffer containing the received data.</param>
+    /// <summary>
+    /// Handle incoming data from a DTLS client, ensure a wrapper exists for its endpoint, and forward the received bytes to that wrapper.
+    /// </summary>
+    /// <remarks>
+    /// If the endpoint was not previously tracked, a new HolePunchEncryptedTransportClient is created and ClientConnectedEvent is raised exactly once for that client.
+    /// </remarks>
+    /// <param name="dtlsClient">The DTLS client that produced the data; its EndPoint is used to identify the associated transport client.</param>
+    /// <param name="data">Buffer containing the received bytes.</param>
+    /// <param name="length">Number of valid bytes in <paramref name="data"/>.</param>
+    private void OnClientDataReceived(DtlsServerClient dtlsClient, byte[] data, int length) {
+        var isNew = false;
+        var client = _clients.GetOrAdd(
+            dtlsClient.EndPoint, _ => {
+                isNew = true;
+                return new HolePunchEncryptedTransportClient(dtlsClient);
+            }
+        );
+        if (isNew) ClientConnectedEvent?.Invoke(client);
         client.RaiseDataReceived(data, length);
     }
 }

@@ -45,14 +45,39 @@ public class Lobby(
     /// <summary>Timestamp of the last heartbeat from the host.</summary>
     public DateTime LastHeartbeat { get; set; } = DateTime.UtcNow;
 
+    /// <summary>Maximum number of pending clients before the queue stops accepting new entries.</summary>
+    private const int MaxPendingClients = 64;
+
     /// <summary>Queue of clients waiting for NAT hole-punch.</summary>
     public ConcurrentQueue<PendingClient> PendingClients { get; } = new();
+
+    /// <summary>
+    /// Attempts to enqueue a pending client. Returns <see langword="false"/> if the queue
+    /// has reached <see cref="MaxPendingClients"/>, preventing unbounded memory growth.
+    /// <summary>
+    /// Adds a client to the lobby's pending NAT hole-punch queue if the lobby has not reached its pending-client limit.
+    /// </summary>
+    /// <param name="client">The client to enqueue for NAT hole-punch processing.</param>
+    /// <returns>`true` if the client was enqueued, `false` if the pending-client limit has been reached.</returns>
+    public bool TryEnqueuePendingClient(PendingClient client) {
+        if (PendingClients.Count >= MaxPendingClients) return false;
+        PendingClients.Enqueue(client);
+        return true;
+    }
 
     /// <summary>True if no heartbeat received in the last 60 seconds.</summary>
     public bool IsDead => DateTime.UtcNow - LastHeartbeat > TimeSpan.FromSeconds(60);
 
     /// <summary>
     /// WebSocket connection from the host for push notifications.
+    /// Marked <see langword="volatile"/> so the UDP background service always reads the
+    /// latest value written by the HTTP thread without requiring a lock.
     /// </summary>
-    public WebSocket? HostWebSocket { get; set; }
+    private volatile WebSocket? _hostWebSocket;
+
+    /// <inheritdoc cref="_hostWebSocket"/>
+    public WebSocket? HostWebSocket {
+        get => _hostWebSocket;
+        set => _hostWebSocket = value;
+    }
 }

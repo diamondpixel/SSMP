@@ -115,7 +115,15 @@ internal class NetClient : INetClient {
     /// <param name="username">The username to connect with.</param>
     /// <param name="authKey">The authentication key to use.</param>
     /// <param name="addonData">A list of addon data that the client has.</param>
-    /// <param name="transport">The transport to use.</param>
+    /// <summary>
+    /// Initiates an asynchronous connection to the specified server using the provided encrypted transport.
+    /// </summary>
+    /// <param name="address">Server hostname or IP address to connect to.</param>
+    /// <param name="port">Server port to connect to.</param>
+    /// <param name="username">Username used for the connection handshake.</param>
+    /// <param name="authKey">Authentication key used for the connection handshake.</param>
+    /// <param name="addonData">List of addon metadata to include with the connection request.</param>
+    /// <param name="transport">Encrypted transport implementation to use for the connection.</param>
     public void Connect(
         string address,
         int port,
@@ -152,10 +160,7 @@ internal class NetClient : INetClient {
                     UpdateManager.StartUpdates();
                     _chunkSender.Start();
 
-                    // Only UDP/HolePunch need timeout management (Steam has built-in connection tracking)
-                    if (_transport.RequiresCongestionManagement) {
-                        UpdateManager.TimeoutEvent += OnConnectTimedOut;
-                    }
+                    UpdateManager.TimeoutEvent += OnConnectTimedOut;
 
                     _connectionManager.StartConnection(username, authKey, addonData);
                 } catch (TlsTimeoutException) {

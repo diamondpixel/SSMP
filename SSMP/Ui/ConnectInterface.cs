@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using SSMP.Game;
 using SSMP.Game.Settings;
 using SSMP.Networking.Client;
@@ -1137,34 +1139,46 @@ internal class ConnectInterface {
 
     /// <summary>
     /// Coroutine to join a lobby, handling both Matchmaking and Steam types.
+    /// <summary>
+    /// Joins a matchmaking lobby with the given ID and initiates the appropriate connection flow for the returned lobby info.
     /// </summary>
-    private IEnumerator JoinLobbyCoroutine(string lobbyId, string username) {
+    /// <param name="lobbyId">The identifier of the lobby to join (from MMS or a lobby browser).</param>
+    /// <param name="username">The local player's display name used when connecting or hosting.</param>
+    /// <returns>An IEnumerator used to run the join process as a coroutine.</returns>
+    private IEnumerator JoinLobbyCoroutine(string lobbyId, string username)
+    {
         ShowFeedback(Color.yellow, "Joining lobby...");
 
-        // Create hole-punch socket for non-Steam lobbies
-        var holePunchSocket = CreateHolePunchSocket();
-        var clientPort = GetSocketPort(holePunchSocket);
+        var joinTask = _mmsClient.JoinLobbyAsync(lobbyId);
+        yield return new WaitUntil(() => joinTask.IsCompleted);
 
-        // Join lobby and get connection info
-        var task = _mmsClient.JoinLobbyAsync(lobbyId, clientPort);
-        yield return new WaitUntil(() => task.IsCompleted);
-
-        var lobbyInfo = task.Result;
-        if (lobbyInfo == null) {
-            CleanupHolePunchSocket(holePunchSocket);
+        var lobbyInfo = joinTask.Result;
+        if (lobbyInfo == null)
+        {
             ShowFeedback(Color.red, "Lobby not found, offline, or join failed");
             yield break;
         }
 
-        var (connectionData, lobbyType, lanConnectionData) = lobbyInfo.Value;
+        var (connectionData, lobbyType, lanConnectionData, clientToken) = lobbyInfo.Value;
 
-        // Handle connection based on lobby type
-        if (lobbyType == PublicLobbyType.Steam) {
-            CleanupHolePunchSocket(holePunchSocket);
+        if (lobbyType == PublicLobbyType.Steam)
+        {
             ConnectToSteamLobby(connectionData, username);
-        } else {
-            ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
+            yield break;
         }
+
+        var holePunchSocket = CreateHolePunchSocket();
+
+        // Continuously resend the discovery packet until the MMS acknowledges.
+        using var discoveryCts = new CancellationTokenSource();
+        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(holePunchSocket, clientToken, discoveryCts.Token);
+        Logger.Info($"ConnectInterface: Started UDP discovery loop for client token {clientToken}");
+
+        ConnectToMatchmakingLobby(connectionData, lanConnectionData, username, holePunchSocket);
+
+        // Cancel the discovery loop now that the connection has been initiated.
+        discoveryCts.Cancel();
+        yield return new WaitUntil(() => discoveryTask.IsCompleted);
     }
 
     /// <summary>
@@ -1273,32 +1287,83 @@ internal class ConnectInterface {
 
     /// <summary>
     /// Coroutine for async lobby creation with config.
+    /// <summary>
+    /// Creates a matchmaking lobby with the specified visibility and type, registers it with the MMS service,
+    /// binds a UDP game socket for hole-punching, and starts hosting on success.
     /// </summary>
+    /// <param name="visibility">The lobby visibility to create (Public or Private).</param>
+    /// <param name="lobbyType">The public lobby category used for MMS listing.</param>
+    /// <param name="username">The display name to use when starting the host.</param>
+    /// <remarks>
+    /// Binds a UDP socket on port 26960 and repeatedly sends discovery packets until the MMS acknowledges the host via TCP.
+    /// On successful lobby creation the bound socket is stored for the hole-punch transport and hosting is initiated.
+    /// On failure the bound socket is disposed and user-facing feedback is shown.
+    /// </remarks>
     private IEnumerator CreateLobbyWithConfigCoroutine(
         LobbyVisibility visibility,
         PublicLobbyType lobbyType,
         string username
     ) {
-        var isPublic = visibility == LobbyVisibility.Public;
-        var task = _mmsClient.CreateLobbyAsync(
-            hostPort: 26960,
-            isPublic: isPublic,
+        var discoveryToken = Guid.NewGuid();
+
+        var bindTask = Task.Run(() => {
+                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socket.Bind(new IPEndPoint(IPAddress.Any, 26960));
+                return socket;
+            }
+        );
+        yield return new WaitUntil(() => bindTask.IsCompleted);
+
+        if (bindTask.IsFaulted) {
+            Logger.Error(
+                $"ConnectInterface: Socket bind task faulted: {bindTask.Exception?.GetBaseException().Message}"
+            );
+            ShowFeedback(Color.red, "Failed to bind game port 26960. Is another instance running?");
+            yield break;
+        }
+
+        var hostGameSocket = bindTask.Result;
+        var localPort = GetSocketPort(hostGameSocket);
+
+        // Continuously resend the discovery packet until the MMS acknowledges the
+        // host's endpoint via TCP (lobby creation response). UDP is unreliable so a
+        // single packet may be dropped before the MMS observes the endpoint.
+        using var discoveryCts = new CancellationTokenSource();
+        var discoveryTask = _mmsClient.SendDiscoveryPacketAsync(hostGameSocket, discoveryToken, discoveryCts.Token);
+        Logger.Info($"ConnectInterface: Started UDP discovery loop for host token {discoveryToken}");
+
+        var lobbyTask = _mmsClient.CreateLobbyAsync(
+            discoveryToken: discoveryToken,
+            localPort: localPort,
+            isPublic: visibility == LobbyVisibility.Public,
             gameVersion: Application.version,
             lobbyType: lobbyType
         );
 
-        yield return new WaitUntil(() => task.IsCompleted);
+        yield return new WaitUntil(() => lobbyTask.IsCompleted);
 
-        var (lobbyId, lobbyName) = task.Result;
-        if (lobbyId == null || lobbyName == null) {
+        // TCP responded so we can cancel the UDP discovery loop.
+        discoveryCts.Cancel();
+        yield return new WaitUntil(() => discoveryTask.IsCompleted);
+
+        if (lobbyTask.IsFaulted) {
+            Logger.Error(
+                $"ConnectInterface: CreateLobbyAsync faulted: {lobbyTask.Exception?.GetBaseException().Message}"
+            );
+            hostGameSocket.Dispose();
             ShowFeedback(Color.red, "Failed to create lobby. Is MMS running?");
             yield break;
         }
 
-        // Start polling for pending clients to punch back
+        var (lobbyId, lobbyName) = lobbyTask.Result;
+        if (lobbyId == null || lobbyName == null) {
+            hostGameSocket.Dispose();
+            ShowFeedback(Color.red, "Failed to create lobby. Is MMS running?");
+            yield break;
+        }
+
         _mmsClient.StartPendingClientPolling();
 
-        // For private lobbies, show invite code in ChatBox so it's easily shareable
         if (visibility == LobbyVisibility.Private) {
             UiManager.InternalChatBox.AddMessage(
                 $"<color=yellow>[Private Lobby]</color> Invite code: <color=lime>{lobbyId}</color>"
@@ -1311,6 +1376,7 @@ internal class ConnectInterface {
             ShowFeedback(Color.green, $"Lobby: {lobbyId}");
         }
 
+        HolePunchEncryptedTransportServer.PreBoundSocket = hostGameSocket;
         StartHostButtonPressed?.Invoke("0.0.0.0", 26960, username, TransportType.HolePunch, null);
     }
 
@@ -1619,7 +1685,11 @@ internal class ConnectInterface {
     /// Validates the username input field.
     /// </summary>
     /// <param name="username">Output parameter containing the validated username.</param>
-    /// <returns>True if username is valid, false otherwise.</returns>
+    /// <summary>
+    /// Validates the username entered in the UI and displays feedback when validation fails.
+    /// </summary>
+    /// <param name="username">Contains the validated username when the method returns true; otherwise undefined.</param>
+    /// <returns>`true` if the username is valid, `false` otherwise.</returns>
     private bool ValidateUsername(out string username) {
         if (ConnectInterfaceHelpers.ValidateUsername(
                 _usernameInput,
@@ -1627,7 +1697,7 @@ internal class ConnectInterface {
                 out username,
                 _feedbackHideCoroutine,
                 out var newCoroutine
-        )) {
+            )) {
             return true;
         }
 

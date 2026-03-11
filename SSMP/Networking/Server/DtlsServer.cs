@@ -70,7 +70,10 @@ internal class DtlsServer {
     /// <summary>
     /// Start the DTLS server on the given port.
     /// </summary>
-    /// <param name="port">The port to start listening on.</param>
+    /// <summary>
+    /// Initializes TLS server state, binds a UDP socket to the specified port, and starts the background socket receive loop to accept DTLS client packets.
+    /// </summary>
+    /// <param name="port">UDP port to bind the server socket to.</param>
     public void Start(int port) {
         _port = port;
         _tlsServer = new ServerTlsServer(new BcTlsCrypto());
@@ -78,6 +81,28 @@ internal class DtlsServer {
 
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         _socket.Bind(new IPEndPoint(IPAddress.Any, _port));
+
+        _socketReceiveThread = new Thread(() => SocketReceiveLoop(_cancellationTokenSource.Token)) {
+            IsBackground = true
+        };
+        _socketReceiveThread.Start();
+    }
+
+    /// <summary>
+    /// Start the DTLS server using an already-bound socket.
+    /// Use this when STUN discovery was run on the same socket so the NAT mapping is preserved.
+    /// NAT creates per-socket mappings — the socket that sent the STUN request must be the same
+    /// socket that receives gameplay traffic, or the discovered external port will be wrong.
+    /// </summary>
+    /// <summary>
+    /// Starts the DTLS server using an already-bound UDP socket and begins the background receive loop.
+    /// </summary>
+    /// <param name="preboundSocket">A UDP socket that is already bound to the desired local endpoint; ownership is retained by the server and the socket will be used for all incoming/outgoing DTLS traffic.</param>
+    public void Start(Socket preboundSocket) {
+        _port = ((IPEndPoint) preboundSocket.LocalEndPoint!).Port;
+        _tlsServer = new ServerTlsServer(new BcTlsCrypto());
+        _cancellationTokenSource = new CancellationTokenSource();
+        _socket = preboundSocket;
 
         _socketReceiveThread = new Thread(() => SocketReceiveLoop(_cancellationTokenSource.Token)) {
             IsBackground = true
