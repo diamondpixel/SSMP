@@ -16,20 +16,20 @@ namespace MMS.Services.Matchmaking;
 /// The typical flow is:
 /// <list type="number">
 ///   <item>
-///     Client calls <c>POST /lobby/{id}/join</c> →
+///     Client calls <c>POST /lobby/{id}/join</c> ->
 ///     <see cref="CreateJoinSession"/> allocates a session and a client discovery token.
 ///   </item>
 ///   <item>
-///     Client opens a WebSocket →
+///     Client opens a WebSocket ->
 ///     <see cref="AttachJoinWebSocket"/> stores it on the session so the service can push events.
 ///   </item>
 ///   <item>
-///     MMS receives the client's UDP discovery packet →
+///     MMS receives the client's UDP discovery packet ->
 ///     <see cref="SetDiscoveredPortAsync"/> records the client's external port and sends a
 ///     <c>refresh_host_mapping</c> request to the host.
 ///   </item>
 ///   <item>
-///     MMS receives the host's UDP discovery packet →
+///     MMS receives the host's UDP discovery packet ->
 ///     <see cref="SetDiscoveredPortAsync"/> records the host's external port and calls
 ///     <see cref="TryStartJoinSessionAsync"/>, which sends synchronized <c>start_punch</c>
 ///     messages to both sides.

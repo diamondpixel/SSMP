@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
+using SSMP.Networking.Matchmaking.Protocol;
+using SSMP.Networking.Matchmaking.Utilities;
 
-namespace SSMP.Networking.Matchmaking;
+namespace SSMP.Networking.Matchmaking.Parsing;
 
 /// <summary>
 /// Lightweight JSON helpers for reading and writing MMS API payloads.
@@ -13,7 +15,7 @@ internal static class MmsJsonParser
 {
     /// <summary>Shared pool for minimizing character buffer allocations.</summary>
     private static readonly ArrayPool<char> CharPool = ArrayPool<char>.Shared;
-    
+
     /// <summary>
     /// Finds <c>"key":value</c> in <paramref name="json"/> and returns the value as a string.
     /// Supports both quoted string values and unquoted numeric values.
@@ -24,8 +26,8 @@ internal static class MmsJsonParser
     /// <returns>The extracted value or <c>null</c>.</returns>
     public static string? ExtractValue(ReadOnlySpan<char> json, string key)
     {
-        // "key":
-        Span<char> searchKey = stackalloc char[key.Length + 3]; 
+        // Build "key": search token on the stack
+        Span<char> searchKey = stackalloc char[key.Length + 3];
         searchKey[0] = '"';
         key.AsSpan().CopyTo(searchKey[1..]);
         searchKey[key.Length + 1] = '"';
@@ -38,20 +40,9 @@ internal static class MmsJsonParser
         while (valueStart < json.Length && char.IsWhiteSpace(json[valueStart])) valueStart++;
         if (valueStart >= json.Length) return null;
 
-        if (json[valueStart] == '"')
-        {
-            var valueEnd = json[(valueStart + 1)..].IndexOf('"');
-            return valueEnd == -1 ? null : json.Slice(valueStart + 1, valueEnd).ToString();
-        }
-
-        // Numeric: read until non-numeric character
-        var numericEnd = valueStart;
-        while (numericEnd < json.Length &&
-               (char.IsDigit(json[numericEnd]) || json[numericEnd] == '.' || json[numericEnd] == '-'))
-        {
-            numericEnd++;
-        }
-        return json.Slice(valueStart, numericEnd - valueStart).ToString();
+        return json[valueStart] == '"'
+            ? ExtractStringValue(json, valueStart)
+            : ExtractNumericValue(json, valueStart);
     }
 
     /// <summary>
@@ -72,14 +63,17 @@ internal static class MmsJsonParser
         PublicLobbyType lobbyType,
         string? hostLanIp)
     {
-        var lanIpPart = hostLanIp != null ? $",\"HostLanIp\":\"{hostLanIp}:{port}\"" : "";
+        var lanIpPart = hostLanIp != null
+            ? $",\"{MmsFields.HostLanIpRequest}\":\"{hostLanIp}:{port}\""
+            : "";
+
         var matchmakingVersionPart = lobbyType == PublicLobbyType.Matchmaking
-            ? $",\"MatchmakingVersion\":{MmsProtocol.CurrentVersion}"
+            ? $",\"{MmsFields.MatchmakingVersionRequest}\":{MmsProtocol.CurrentVersion}"
             : "";
 
         var json =
-            $"{{\"HostPort\":{port},\"IsPublic\":{BoolToJson(isPublic)},\"GameVersion\":\"{gameVersion}\"," +
-            $"\"LobbyType\":\"{lobbyType.ToString().ToLower()}\"{lanIpPart}{matchmakingVersionPart}}}";
+            $"{{\"{MmsFields.HostPortRequest}\":{port},\"{MmsFields.IsPublicRequest}\":{MmsUtilities.BoolToJson(isPublic)}," +
+            $"\"{MmsFields.GameVersionRequest}\":\"{gameVersion}\",\"{MmsFields.LobbyTypeRequest}\":\"{lobbyType.ToString().ToLower()}\"{lanIpPart}{matchmakingVersionPart}}}";
 
         var buffer = CharPool.Rent(json.Length);
         json.AsSpan().CopyTo(buffer);
@@ -92,7 +86,27 @@ internal static class MmsJsonParser
     public static void ReturnBuffer(char[] buffer) => CharPool.Return(buffer);
 
     /// <summary>
-    /// Returns the JSON representation of a boolean value.
+    /// Extracts a quoted string value starting at the opening <c>"</c>.
+    /// Returns <c>null</c> if the closing quote is missing.
     /// </summary>
-    private static string BoolToJson(bool value) => value ? "true" : "false";
+    private static string? ExtractStringValue(ReadOnlySpan<char> json, int openQuoteIndex)
+    {
+        var valueEnd = json[(openQuoteIndex + 1)..].IndexOf('"');
+        return valueEnd == -1 ? null : json.Slice(openQuoteIndex + 1, valueEnd).ToString();
+    }
+
+    /// <summary>
+    /// Extracts an unquoted numeric value (digits, <c>.</c>, <c>-</c>) starting at
+    /// <paramref name="start"/>. Returns an empty string if no numeric characters are found.
+    /// </summary>
+    private static string ExtractNumericValue(ReadOnlySpan<char> json, int start)
+    {
+        var end = start;
+        while (end < json.Length &&
+               (char.IsDigit(json[end]) || json[end] == '.' || json[end] == '-'))
+        {
+            end++;
+        }
+        return json.Slice(start, end - start).ToString();
+    }
 }

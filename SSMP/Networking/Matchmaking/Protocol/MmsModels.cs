@@ -1,4 +1,4 @@
-namespace SSMP.Networking.Matchmaking;
+namespace SSMP.Networking.Matchmaking.Protocol;
 
 /// <summary>
 /// Constants and configuration for the MatchMaking Service (MMS) protocol.
@@ -94,9 +94,14 @@ internal sealed class MatchmakingJoinStartResult {
 /// <summary>
 /// Public lobby information for the lobby browser.
 /// </summary>
+/// <param name="ConnectionData"> The connection string for the lobby (e.g. "IP:Port" or Steam ID). </param>
+/// <param name="Name"> The display name of the lobby. </param>
+/// <param name="LobbyType"> The type of the lobby (e.g. Matchmaking or Steam). </param>
+/// <param name="LobbyCode"> A short alphanumeric code used to join the lobby. </param>
 public record PublicLobbyInfo(
     string ConnectionData,
     string Name,
     PublicLobbyType LobbyType,
     string LobbyCode
 );
+

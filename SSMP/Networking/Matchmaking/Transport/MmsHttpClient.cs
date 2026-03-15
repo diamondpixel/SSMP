@@ -3,8 +3,10 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using SSMP.Networking.Matchmaking.Parsing;
+using SSMP.Networking.Matchmaking.Protocol;
 
-namespace SSMP.Networking.Matchmaking;
+namespace SSMP.Networking.Matchmaking.Transport;
 
 /// <summary>
 /// Thin HTTP transport layer for MMS API calls.
@@ -78,7 +80,7 @@ internal sealed class MmsHttpClient
     {
         if ((int)status < 400 || body == null) return;
 
-        var errorCode = MmsJsonParser.ExtractValue(body.AsSpan(), "errorCode");
+        var errorCode = MmsJsonParser.ExtractValue(body.AsSpan(), MmsFields.ErrorCode);
         LastError = errorCode == MmsProtocol.UpdateRequiredErrorCode
             ? MatchmakingError.UpdateRequired
             : MatchmakingError.NetworkFailure;

@@ -4,16 +4,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SSMP.Logging;
+using SSMP.Networking.Matchmaking.Protocol;
 
-namespace SSMP.Networking.Matchmaking;
+namespace SSMP.Networking.Matchmaking.Join;
 
 /// <summary>
 /// Sends periodic UDP packets carrying a discovery token to the MMS discovery port.
 /// MMS uses the incoming packets to learn the sender's external IP and port,
 /// which it then shares with the peer to enable NAT hole-punching.
 /// </summary>
-internal static class UdpDiscoveryService
-{
+internal static class UdpDiscoveryService {
     /// <summary>
     /// Resolves the MMS discovery endpoint and sends token bytes every
     /// <see cref="MmsProtocol.DiscoveryIntervalMs"/> until cancellation.
@@ -22,8 +22,8 @@ internal static class UdpDiscoveryService
         string discoveryHost,
         string token,
         Action<byte[], IPEndPoint> sendRaw,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken
+    ) {
         var endpoint = await ResolveEndpointAsync(discoveryHost);
         if (endpoint is null) return;
 
@@ -36,8 +36,7 @@ internal static class UdpDiscoveryService
     /// <see cref="MmsProtocol.DiscoveryPort"/>. Returns <c>null</c> and logs an
     /// error if DNS resolution yields no addresses.
     /// </summary>
-    private static async Task<IPEndPoint?> ResolveEndpointAsync(string host)
-    {
+    private static async Task<IPEndPoint?> ResolveEndpointAsync(string host) {
         var addresses = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
 
         if (addresses is { Length: > 0 })
@@ -60,10 +59,9 @@ internal static class UdpDiscoveryService
         Action<byte[], IPEndPoint> sendRaw,
         byte[] tokenBytes,
         IPEndPoint endpoint,
-        CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
-        {
+        CancellationToken cancellationToken
+    ) {
+        while (!cancellationToken.IsCancellationRequested) {
             if (!TrySend(sendRaw, tokenBytes, endpoint)) return;
 
             if (!await TryDelayAsync(cancellationToken).ConfigureAwait(false)) return;
@@ -76,15 +74,12 @@ internal static class UdpDiscoveryService
     private static bool TrySend(
         Action<byte[], IPEndPoint> sendRaw,
         byte[] tokenBytes,
-        IPEndPoint endpoint)
-    {
-        try
-        {
+        IPEndPoint endpoint
+    ) {
+        try {
             sendRaw(tokenBytes, endpoint);
             return true;
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
+        } catch (Exception ex) when (ex is not OperationCanceledException) {
             Logger.Warn($"UdpDiscoveryService: send error, aborting – {ex}");
             return false;
         }
@@ -94,16 +89,12 @@ internal static class UdpDiscoveryService
     /// Waits for one discovery interval. Returns <c>false</c> when the
     /// cancellation token fires (normal shutdown), <c>true</c> otherwise.
     /// </summary>
-    private static async Task<bool> TryDelayAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
+    private static async Task<bool> TryDelayAsync(CancellationToken cancellationToken) {
+        try {
             await Task.Delay(MmsProtocol.DiscoveryIntervalMs, cancellationToken)
                       .ConfigureAwait(false);
             return true;
-        }
-        catch (OperationCanceledException)
-        {
+        } catch (OperationCanceledException) {
             return false;
         }
     }

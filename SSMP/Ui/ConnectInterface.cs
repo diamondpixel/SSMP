@@ -6,6 +6,7 @@ using SSMP.Game;
 using SSMP.Game.Settings;
 using SSMP.Networking.Client;
 using SSMP.Networking.Matchmaking;
+using SSMP.Networking.Matchmaking.Protocol;
 using SSMP.Ui.Component;
 using Steamworks;
 using SSMP.Networking.Transport.Common;
@@ -407,11 +408,6 @@ internal class ConnectInterface {
     private readonly ComponentGroup _matchmakingGroup;
 
     /// <summary>
-    /// Component group holding the matchmaking update-required message.
-    /// </summary>
-    private readonly ComponentGroup _matchmakingBlockedGroup;
-
-    /// <summary>
     /// Component group holding Steam tab content.
     /// </summary>
     private readonly ComponentGroup? _steamGroup;
@@ -442,11 +438,6 @@ internal class ConnectInterface {
     /// Configuration panel for hosting a matchmaking lobby.
     /// </summary>
     private readonly LobbyConfigPanel _lobbyConfigPanel;
-
-    /// <summary>
-    /// Large text shown when matchmaking is blocked due to protocol version mismatch.
-    /// </summary>
-    private readonly ITextComponent _matchmakingBlockedText;
 
     // Steam tab components
     /// <summary>
@@ -593,8 +584,6 @@ internal class ConnectInterface {
         _matchmakingGroup = matchmakingComponents.group;
         _lobbyIdInput = matchmakingComponents.lobbyIdInput;
         _lobbyConnectButton = matchmakingComponents.connectButton;
-        _matchmakingBlockedGroup = CreateMatchmakingBlockedGroup();
-        _matchmakingBlockedText = CreateMatchmakingBlockedText(currentY);
 
         // Create lobby browser panel
         _lobbyBrowserPanel = new LobbyBrowserPanel(
@@ -1095,31 +1084,6 @@ internal class ConnectInterface {
     }
 
     /// <summary>
-    /// Creates the group that contains the matchmaking update-required blocking message.
-    /// </summary>
-    private ComponentGroup CreateMatchmakingBlockedGroup() {
-        var group = new ComponentGroup(false, _backgroundGroup);
-        return group;
-    }
-
-    /// <summary>
-    /// Creates the large blocking matchmaking version error text.
-    /// </summary>
-    private ITextComponent CreateMatchmakingBlockedText(float startY) {
-        var text = new TextComponent(
-            _matchmakingBlockedGroup,
-            new Vector2(InitialX, startY - 20f),
-            new Vector2(ContentWidth, 220f),
-            MatchmakingUpdateRequiredText,
-            28,
-            FontStyle.Bold
-        );
-        text.SetColor(Color.red);
-        text.SetActive(false);
-        return text;
-    }
-
-    /// <summary>
     /// Finalizes the UI layout by reparenting components and positioning tabs correctly.
     /// </summary>
     private void FinalizeLayout() {
@@ -1178,8 +1142,6 @@ internal class ConnectInterface {
                                     _isMatchmakingReady &&
                                     !_isMatchmakingVersionBlocked &&
                                     !_isCheckingMatchmakingVersion);
-        _matchmakingBlockedGroup.SetActive(false);
-        _matchmakingBlockedText.SetActive(false);
         _steamGroup?.SetActive(tab == Tab.Steam);
         _directIpGroup.SetActive(tab == Tab.DirectIp);
         RefreshMatchmakingStatusFeedback();
