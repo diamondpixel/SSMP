@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using SSMP.Game.Command.Server;
 using SSMP.Game.Settings;
 using SSMP.Networking.Packet;
@@ -61,6 +62,9 @@ internal class ModServerManager : ServerManager {
         _uiManager.RequestServerStartHostEvent += (_, port, _, transportType, _) => 
             OnRequestServerStartHost(port, _modSettings.FullSynchronisation, transportType);
         _uiManager.RequestServerStopHostEvent += Stop;
+        PlayerConnectEvent += _ => UpdateMatchmakingRemotePlayerCount();
+        PlayerDisconnectEvent += _ => UpdateMatchmakingRemotePlayerCount();
+        ServerShutdownEvent += () => _uiManager.ConnectInterface.MmsClient.SetConnectedPlayers(0);
 
         // Register application quit handler
         // ModHooks.ApplicationQuitHook += Stop;
@@ -97,6 +101,7 @@ internal class ModServerManager : ServerManager {
         };
 
         Start(port, fullSynchronisation, transportServer);
+        UpdateMatchmakingRemotePlayerCount();
     }
 
     /// <summary>
@@ -118,5 +123,14 @@ internal class ModServerManager : ServerManager {
         base.DeregisterCommands();
         
         CommandManager.DeregisterCommand(_settingsCommand);
+    }
+
+    /// <summary>
+    /// Pushes the current remote-player count to MMS heartbeat state.
+    /// </summary>
+    private void UpdateMatchmakingRemotePlayerCount() {
+        var hostAuthKey = _modSettings.AuthKey;
+        var remotePlayerCount = Players.Count(player => player.AuthKey != hostAuthKey);
+        _uiManager.ConnectInterface.MmsClient.SetConnectedPlayers(remotePlayerCount);
     }
 }
