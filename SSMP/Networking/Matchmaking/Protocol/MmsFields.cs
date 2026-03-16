@@ -11,6 +11,9 @@ internal static class MmsFields
     /// <summary> The error code returned in a failed response. </summary>
     public const string ErrorCode = "errorCode";
 
+    /// <summary> A machine-readable failure reason returned in an error or control message. </summary>
+    public const string Reason = "reason";
+
     /// <summary> The version of the protocol or application. </summary>
     public const string Version = "version";
 

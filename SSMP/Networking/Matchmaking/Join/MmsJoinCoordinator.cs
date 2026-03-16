@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SSMP.Logging;
@@ -15,7 +14,7 @@ namespace SSMP.Networking.Matchmaking.Join;
 /// <summary>
 /// Coordinates the client-side MMS matchmaking flow over a WebSocket connection.
 /// Drives UDP mapping refresh when instructed by the server and returns the
-/// synchronised punch-start data needed to begin NAT hole-punching.
+/// synchronized punch-start data needed to begin NAT hole-punching.
 /// </summary>
 internal sealed class MmsJoinCoordinator
 {
@@ -59,6 +58,7 @@ internal sealed class MmsJoinCoordinator
         public void Cancel()
         {
             Cts?.Cancel();
+            Cts?.Dispose();
             Cts = null;
         }
 
@@ -114,7 +114,7 @@ internal sealed class MmsJoinCoordinator
         try
         {
             await ConnectAsync(socket, joinId, timeoutCts.Token);
-            return await RunMessageLoopAsync(socket, timeoutCts, sendRawAction, discovery);
+            return await RunMessageLoopAsync(socket, timeoutCts, sendRawAction, discovery, onJoinFailed);
         }
         catch (OperationCanceledException)
         {
@@ -163,6 +163,7 @@ internal sealed class MmsJoinCoordinator
     /// <param name="timeoutCts">Cancellation source governing the overall session timeout.</param>
     /// <param name="sendRaw">UDP send callback forwarded to discovery tasks.</param>
     /// <param name="discovery">Mutable holder for the active discovery CTS.</param>
+    /// <param name="onJoinFailed">Failure callback invoked when the server sends a terminal rejection reason.</param>
     /// <returns>
     /// A <see cref="MatchmakingJoinStartResult"/> if <c>start_punch</c> was received
     /// and parsed successfully; <c>null</c> if the loop ended without a result.
@@ -171,17 +172,16 @@ internal sealed class MmsJoinCoordinator
         ClientWebSocket socket,
         CancellationTokenSource timeoutCts,
         Action<byte[], IPEndPoint> sendRaw,
-        DiscoverySession discovery)
+        DiscoverySession discovery,
+        Action<string> onJoinFailed)
     {
-        var buffer = new byte[1024];
         while (socket.State == WebSocketState.Open && !timeoutCts.Token.IsCancellationRequested)
         {
-            var frame = await socket.ReceiveAsync(buffer, timeoutCts.Token);
-            if (frame.MessageType == WebSocketMessageType.Close) break;
-            if (frame is not { MessageType: WebSocketMessageType.Text, Count: > 0 }) continue;
+            var (messageType, message) = await MmsUtilities.ReceiveTextMessageAsync(socket, timeoutCts.Token);
+            if (messageType == WebSocketMessageType.Close) break;
+            if (messageType != WebSocketMessageType.Text || string.IsNullOrEmpty(message)) continue;
 
-            var message = Encoding.UTF8.GetString(buffer, 0, frame.Count);
-            var outcome = await HandleMessage(message, timeoutCts, sendRaw, discovery);
+            var outcome = await HandleMessage(message, timeoutCts, sendRaw, discovery, onJoinFailed);
             if (outcome.hasResult) return outcome.result;
         }
 
@@ -197,6 +197,7 @@ internal sealed class MmsJoinCoordinator
     /// <param name="timeoutCts">Session timeout source, passed through to <c>start_punch</c> handling.</param>
     /// <param name="sendRaw">UDP send callback, passed through to <c>begin_client_mapping</c> handling.</param>
     /// <param name="discovery">Mutable holder for the active discovery CTS.</param>
+    /// <param name="onJoinFailed">Failure callback invoked when the message encodes a terminal join failure.</param>
     /// <returns>
     /// <c>(true, result)</c> when the loop should exit and return the parsed result;
     /// <c>(false, null)</c> to continue reading.
@@ -205,14 +206,15 @@ internal sealed class MmsJoinCoordinator
         string message,
         CancellationTokenSource timeoutCts,
         Action<byte[], IPEndPoint> sendRaw,
-        DiscoverySession discovery)
+        DiscoverySession discovery,
+        Action<string> onJoinFailed)
     {
         var action = MmsJsonParser.ExtractValue(message.AsSpan(), MmsFields.Action);
 
         switch (action)
         {
             case MmsActions.BeginClientMapping:
-                HandleBeginClientMapping(message, sendRaw, discovery);
+                RestartDiscovery(message, sendRaw, discovery);
                 break;
 
             case MmsActions.StartPunch:
@@ -224,7 +226,7 @@ internal sealed class MmsJoinCoordinator
                 break;
 
             case MmsActions.JoinFailed:
-                Logger.Warn($"MmsJoinCoordinator: {MmsActions.JoinFailed} - {message}");
+                HandleJoinFailed(message, onJoinFailed);
                 return (true, null);
         }
 
@@ -238,7 +240,7 @@ internal sealed class MmsJoinCoordinator
     /// <param name="message">Raw message text containing the <c>clientDiscoveryToken</c> field.</param>
     /// <param name="sendRaw">UDP send callback forwarded to the new discovery task.</param>
     /// <param name="discovery">Updated with the new discovery CTS.</param>
-    private void HandleBeginClientMapping(
+    private void RestartDiscovery(
         string message,
         Action<byte[], IPEndPoint> sendRaw,
         DiscoverySession discovery)
@@ -290,7 +292,11 @@ internal sealed class MmsJoinCoordinator
             return null;
 
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(MmsProtocol.DiscoveryDurationSeconds));
-        _ = UdpDiscoveryService.SendUntilCancelledAsync(_discoveryHost, token, sendRaw, cts.Token);
+        MmsUtilities.RunBackground(
+            UdpDiscoveryService.SendUntilCancelledAsync(_discoveryHost, token, sendRaw, cts.Token),
+            nameof(MmsJoinCoordinator),
+            "client UDP discovery"
+        );
         return cts;
     }
 
@@ -304,5 +310,17 @@ internal sealed class MmsJoinCoordinator
     {
         var delayMs = targetUnixMs - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (delayMs > 0) await Task.Delay(TimeSpan.FromMilliseconds(delayMs), ct);
+    }
+
+    /// <summary>
+    /// Extracts the server-supplied failure reason from a <c>join_failed</c> message,
+    /// forwards it to the caller, and records the payload for diagnostics.
+    /// </summary>
+    /// <param name="message">Raw JSON WebSocket message from MMS.</param>
+    /// <param name="onJoinFailed">Callback that updates higher-level matchmaking state.</param>
+    private static void HandleJoinFailed(string message, Action<string> onJoinFailed)
+    {
+        onJoinFailed(MmsJsonParser.ExtractValue(message.AsSpan(), MmsFields.Reason) ?? "join_failed");
+        Logger.Warn($"MmsJoinCoordinator: {MmsActions.JoinFailed} - {message}");
     }
 }

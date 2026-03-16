@@ -152,6 +152,10 @@ public sealed class JoinSessionCoordinator(
     /// <summary>
     /// Fails a join session: notifies both the client and the host, then cleans up the session.
     /// </summary>
+    /// <remarks>
+    /// Notification sends are best-effort. Socket disposal and disconnect races are logged at debug level
+    /// so cleanup can still complete when either side has already gone away.
+    /// </remarks>
     /// <param name="joinId">The join session identifier.</param>
     /// <param name="reason">A short machine-readable failure reason (e.g. <c>"host_unreachable"</c>).</param>
     /// <param name="cancellationToken">Propagates notification that the operation should be cancelled.</param>
@@ -160,8 +164,23 @@ public sealed class JoinSessionCoordinator(
         var session = GetJoinSession(joinId);
         if (session == null) return;
 
-        await JoinSessionMessenger.SendJoinFailedToClientAsync(session, reason, cancellationToken);
-        await messenger.SendJoinFailedToHostAsync(session.LobbyConnectionData, joinId, reason, cancellationToken);
+        try
+        {
+            await JoinSessionMessenger.SendJoinFailedToClientAsync(session, reason, cancellationToken);
+        }
+        catch (Exception ex) when (IsSocketSendFailure(ex))
+        {
+            logger.LogDebug(ex, "Failed to notify join client for {JoinId}", joinId);
+        }
+
+        try
+        {
+            await messenger.SendJoinFailedToHostAsync(session.LobbyConnectionData, joinId, reason, cancellationToken);
+        }
+        catch (Exception ex) when (IsSocketSendFailure(ex))
+        {
+            logger.LogDebug(ex, "Failed to notify host about join failure for {JoinId}", joinId);
+        }
 
         CleanupJoinSession(joinId);
     }
@@ -277,6 +296,10 @@ public sealed class JoinSessionCoordinator(
     /// Does nothing and returns silently if either the client port or the host port
     /// is not yet available.
     /// </summary>
+    /// <remarks>
+    /// The host is notified first so a late host disconnect cannot leave the client punching alone.
+    /// Any socket failure while dispatching the pair is converted into a join failure.
+    /// </remarks>
     private async Task TryStartJoinSessionAsync(string joinId, CancellationToken cancellationToken)
     {
         var session = GetJoinSession(joinId);
@@ -295,29 +318,54 @@ public sealed class JoinSessionCoordinator(
             return;
         }
 
+        if (session.ClientWebSocket is not { State: WebSocketState.Open })
+        {
+            await FailJoinSessionAsync(joinId, "client_disconnected", cancellationToken);
+            return;
+        }
+
         // Host port is not yet known so we wait for the next host discovery event.
         if (lobby.ExternalPort == null) return;
 
         var hostIp      = lobby.ConnectionData.Split(':')[0];
         var startTimeMs = DateTimeOffset.UtcNow.AddMilliseconds(250).ToUnixTimeMilliseconds();
 
-        await JoinSessionMessenger.SendStartPunchToClientAsync(
-            session,
-            lobby.ExternalPort.Value,
-            hostIp,
-            startTimeMs,
-            cancellationToken
-        );
+        try
+        {
+            var hostSent = await JoinSessionMessenger.SendStartPunchToHostAsync(
+                lobby,
+                joinId,
+                session.ClientIp,
+                session.ClientExternalPort.Value,
+                lobby.ExternalPort.Value,
+                startTimeMs,
+                cancellationToken
+            );
+            if (!hostSent)
+            {
+                await FailJoinSessionAsync(joinId, "host_unreachable", cancellationToken);
+                return;
+            }
 
-        await JoinSessionMessenger.SendStartPunchToHostAsync(
-            lobby,
-            joinId,
-            session.ClientIp,
-            session.ClientExternalPort.Value,
-            lobby.ExternalPort.Value,
-            startTimeMs,
-            cancellationToken
-        );
+            var clientSent = await JoinSessionMessenger.SendStartPunchToClientAsync(
+                session,
+                lobby.ExternalPort.Value,
+                hostIp,
+                startTimeMs,
+                cancellationToken
+            );
+            if (!clientSent)
+            {
+                await FailJoinSessionAsync(joinId, "client_disconnected", cancellationToken);
+                return;
+            }
+        }
+        catch (Exception ex) when (IsSocketSendFailure(ex))
+        {
+            logger.LogDebug(ex, "Failed to dispatch start_punch for join {JoinId}", joinId);
+            await FailJoinSessionAsync(joinId, "host_unreachable", cancellationToken);
+            return;
+        }
 
         CleanupJoinSession(joinId);
     }
@@ -327,9 +375,8 @@ public sealed class JoinSessionCoordinator(
     /// then performs a best-effort close of the client WebSocket.
     /// </summary>
     /// <remarks>
-    /// The WebSocket close is synchronous via <c>GetAwaiter().GetResult()</c> because this
-    /// method is intentionally non-async to keep cleanup callers simple. Failures are
-    /// logged at debug level and do not propagate.
+    /// Socket shutdown is kicked off in the background with a short timeout so callers are not blocked
+    /// on a peer that never completes the close handshake. Failures are logged at debug level only.
     /// </remarks>
     private void CleanupJoinSession(string joinId)
     {
@@ -339,15 +386,31 @@ public sealed class JoinSessionCoordinator(
 
         if (session.ClientWebSocket is not { State: WebSocketState.Open } ws) return;
 
+        _ = CloseJoinSocketAsync(ws, joinId);
+    }
+
+    /// <summary>
+    /// Attempts a graceful close of the client rendezvous socket using a bounded timeout.
+    /// </summary>
+    /// <param name="webSocket">The client WebSocket to close.</param>
+    /// <param name="joinId">Join identifier used for debug logging.</param>
+    private async Task CloseJoinSocketAsync(WebSocket webSocket, string joinId)
+    {
         try
         {
-            ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "join complete", CancellationToken.None)
-              .GetAwaiter()
-              .GetResult();
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "join complete", timeoutCts.Token);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (IsSocketSendFailure(ex) || ex is OperationCanceledException)
         {
             logger.LogDebug(ex, "Failed to close client join WebSocket for join {JoinId}", joinId);
         }
     }
+
+    /// <summary>
+    /// Returns <see langword="true"/> for exceptions that commonly mean the peer disappeared during send/close.
+    /// </summary>
+    /// <param name="ex">The exception raised by a socket operation.</param>
+    private static bool IsSocketSendFailure(Exception ex) =>
+        ex is WebSocketException or ObjectDisposedException;
 }

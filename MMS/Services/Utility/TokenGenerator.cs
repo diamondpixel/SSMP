@@ -1,9 +1,9 @@
+using System.Security.Cryptography;
+
 namespace MMS.Services.Utility;
 
 /// <summary>
-/// Generates random tokens and lobby codes.
-/// Uses a <see langword="[ThreadStatic]"/> <see cref="Random"/> instance per thread
-/// to avoid lock contention on hot paths.
+/// Generates random tokens and lobby codes using a cryptographically secure RNG.
 /// </summary>
 internal static class TokenGenerator
 {
@@ -12,12 +12,6 @@ internal static class TokenGenerator
 
     /// <summary>Fixed length of all generated lobby codes.</summary>
     private const int LobbyCodeLength = 6;
-
-    [ThreadStatic]
-    private static Random? _random;
-
-    /// <summary>Per-thread RNG initialized lazily on first access per thread.</summary>
-    private static Random Rng => _random ??= new Random();
 
     /// <summary>
     /// Generates a random URL-safe token of the requested length.
@@ -29,7 +23,7 @@ internal static class TokenGenerator
         string.Create(length, 0, (span, _) =>
         {
             for (var i = 0; i < span.Length; i++)
-                span[i] = TokenChars[Rng.Next(TokenChars.Length)];
+                span[i] = TokenChars[RandomNumberGenerator.GetInt32(TokenChars.Length)];
         });
 
     /// <summary>
@@ -47,7 +41,7 @@ internal static class TokenGenerator
             code = string.Create(LobbyCodeLength, 0, (span, _) =>
             {
                 for (var i = 0; i < span.Length; i++)
-                    span[i] = LobbyCodeChars[Rng.Next(LobbyCodeChars.Length)];
+                    span[i] = LobbyCodeChars[RandomNumberGenerator.GetInt32(LobbyCodeChars.Length)];
             });
         } while (existingCodes.Contains(code));
 

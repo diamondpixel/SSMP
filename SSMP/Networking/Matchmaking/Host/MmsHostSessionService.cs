@@ -8,7 +8,6 @@ using SSMP.Networking.Matchmaking.Parsing;
 using SSMP.Networking.Matchmaking.Protocol;
 using SSMP.Networking.Matchmaking.Transport;
 using SSMP.Networking.Matchmaking.Utilities;
-using SSMP.Util;
 
 namespace SSMP.Networking.Matchmaking.Host;
 
@@ -235,7 +234,11 @@ internal sealed class MmsHostSessionService {
             new CancellationTokenSource(TimeSpan.FromSeconds(MmsProtocol.DiscoveryDurationSeconds));
         var cts = _hostDiscoveryRefreshCts;
 
-        _ = RunHostDiscoveryRefreshAsync(hostDiscoveryToken, sendRawAction, cts);
+        MmsUtilities.RunBackground(
+            RunHostDiscoveryRefreshAsync(hostDiscoveryToken, sendRawAction, cts),
+            nameof(MmsHostSessionService),
+            "host UDP discovery"
+        );
     }
 
     /// <summary>

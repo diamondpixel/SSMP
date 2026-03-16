@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,13 +38,18 @@ internal static class UdpDiscoveryService {
     /// error if DNS resolution yields no addresses.
     /// </summary>
     private static async Task<IPEndPoint?> ResolveEndpointAsync(string host) {
-        var addresses = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
+        try {
+            var addresses = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
 
-        if (addresses is { Length: > 0 })
-            return new IPEndPoint(addresses[0], MmsProtocol.DiscoveryPort);
+            if (addresses is { Length: > 0 })
+                return new IPEndPoint(addresses[0], MmsProtocol.DiscoveryPort);
 
-        Logger.Error($"UdpDiscoveryService: could not resolve host '{host}'");
-        return null;
+            Logger.Error($"UdpDiscoveryService: could not resolve host '{host}'");
+            return null;
+        } catch (Exception ex) when (ex is SocketException or OperationCanceledException) {
+            Logger.Warn($"UdpDiscoveryService: DNS resolution failed for '{host}': {ex.Message}");
+            return null;
+        }
     }
 
     /// <summary>Encodes <paramref name="token"/> to a UTF-8 byte array.</summary>

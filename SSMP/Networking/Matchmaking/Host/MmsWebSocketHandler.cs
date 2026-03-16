@@ -1,11 +1,11 @@
 using System;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SSMP.Logging;
 using SSMP.Networking.Matchmaking.Parsing;
 using SSMP.Networking.Matchmaking.Protocol;
+using SSMP.Networking.Matchmaking.Utilities;
 
 namespace SSMP.Networking.Matchmaking.Host;
 
@@ -17,11 +17,17 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// <summary>The base WebSocket URL of the MMS service.</summary>
     private readonly string _wsBaseUrl;
 
+    /// <summary>Synchronizes swaps of the active socket/CTS pair across overlapping start-stop cycles.</summary>
+    private readonly object _stateGate = new();
+
     /// <summary>The underlying WebSocket client.</summary>
     private ClientWebSocket? _socket;
 
     /// <summary>Cancellation source for the background listening loop.</summary>
     private CancellationTokenSource? _cts;
+
+    /// <summary>Monotonic version used to invalidate older background runs.</summary>
+    private int _runVersion;
 
     /// <summary>
     /// Raised when MMS asks the host to refresh its NAT mapping.
@@ -56,8 +62,8 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// </summary>
     /// <param name="hostToken">Bearer token used to authenticate the WebSocket URL.</param>
     public void Start(string hostToken) {
-        Stop();
-        Task.Run(() => RunAsync(hostToken));
+        var runVersion = InvalidateActiveRun();
+        Task.Run(() => RunAsync(hostToken, runVersion));
     }
 
     /// <summary>
@@ -65,11 +71,7 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// Safe to call when no connection is active.
     /// </summary>
     public void Stop() {
-        _cts?.Cancel();
-        _cts?.Dispose();
-        _cts = null;
-        _socket?.Dispose();
-        _socket = null;
+        InvalidateActiveRun();
     }
 
     /// <inheritdoc/>
@@ -80,27 +82,36 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// receive loop, then tears down and logs the disconnection.
     /// </summary>
     /// <param name="hostToken">Bearer token used to build the WebSocket URL.</param>
-    private async Task RunAsync(string hostToken) {
-        _cts = new CancellationTokenSource();
-        _socket = new ClientWebSocket();
+    /// <param name="runVersion">Generation number captured when this run was started.</param>
+    private async Task RunAsync(string hostToken, int runVersion) {
+        var cts = new CancellationTokenSource();
+        var socket = new ClientWebSocket();
+
+        if (!TryRegisterRun(runVersion, socket, cts)) {
+            cts.Dispose();
+            socket.Dispose();
+            return;
+        }
 
         try {
-            await ConnectAsync(hostToken);
-            await ReceiveLoopAsync();
+            await ConnectAsync(socket, hostToken, cts.Token);
+            await ReceiveLoopAsync(socket, cts.Token);
         } catch (Exception ex) when (ex is not OperationCanceledException) {
             Logger.Error($"MmsWebSocketHandler: error - {ex.Message}");
         } finally {
-            TearDownSocket();
+            TearDownSocket(runVersion, socket, cts);
         }
     }
 
     /// <summary>
     /// Connects <see cref="_socket"/> to the host WebSocket endpoint.
     /// </summary>
+    /// <param name="socket">The WebSocket instance owned by the current run.</param>
     /// <param name="hostToken">Token appended to the WebSocket URL path.</param>
-    private async Task ConnectAsync(string hostToken) {
+    /// <param name="cancellationToken">Cancellation token for the connection attempt.</param>
+    private async Task ConnectAsync(ClientWebSocket socket, string hostToken, CancellationToken cancellationToken) {
         var uri = new Uri($"{_wsBaseUrl}{MmsRoutes.HostWebSocket(hostToken)}");
-        await _socket!.ConnectAsync(uri, _cts!.Token);
+        await socket.ConnectAsync(uri, cancellationToken);
         Logger.Info("MmsWebSocketHandler: connected");
     }
 
@@ -109,14 +120,15 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// cancellation is requested. Each text frame is forwarded to
     /// <see cref="HandleMessage"/>.
     /// </summary>
-    private async Task ReceiveLoopAsync() {
-        var buffer = new byte[1024];
-        while (_socket!.State == WebSocketState.Open && !_cts!.Token.IsCancellationRequested) {
-            var result = await _socket.ReceiveAsync(buffer, _cts.Token);
-            if (result.MessageType == WebSocketMessageType.Close) break;
+    /// <param name="socket">The WebSocket instance owned by the current run.</param>
+    /// <param name="cancellationToken">Cancellation token that ends the receive loop.</param>
+    private async Task ReceiveLoopAsync(ClientWebSocket socket, CancellationToken cancellationToken) {
+        while (socket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested) {
+            var (messageType, message) = await MmsUtilities.ReceiveTextMessageAsync(socket, cancellationToken);
+            if (messageType == WebSocketMessageType.Close) break;
+            if (messageType != WebSocketMessageType.Text || string.IsNullOrEmpty(message)) continue;
 
-            if (result is { MessageType: WebSocketMessageType.Text, Count: > 0 })
-                HandleMessage(Encoding.UTF8.GetString(buffer, 0, result.Count));
+            HandleMessage(message);
         }
     }
 
@@ -124,10 +136,64 @@ internal sealed class MmsWebSocketHandler : IDisposable {
     /// Disposes <see cref="_socket"/> and nulls the reference, then logs the
     /// disconnection. Called from the <c>finally</c> block of <see cref="RunAsync"/>.
     /// </summary>
-    private void TearDownSocket() {
-        _socket?.Dispose();
-        _socket = null;
+    /// <param name="runVersion">Generation number for the run being torn down.</param>
+    /// <param name="socket">The socket owned by that run.</param>
+    /// <param name="cts">The cancellation source owned by that run.</param>
+    private void TearDownSocket(int runVersion, ClientWebSocket socket, CancellationTokenSource cts) {
+        lock (_stateGate) {
+            if (_runVersion == runVersion) {
+                if (ReferenceEquals(_socket, socket))
+                    _socket = null;
+
+                if (ReferenceEquals(_cts, cts))
+                    _cts = null;
+            }
+        }
+
+        cts.Dispose();
+        socket.Dispose();
         Logger.Info("MmsWebSocketHandler: disconnected");
+    }
+
+    /// <summary>
+    /// Cancels and disposes any active run and returns the next valid version number.
+    /// </summary>
+    /// <returns>The generation number that should be used by the next background run.</returns>
+    private int InvalidateActiveRun() {
+        CancellationTokenSource? previousCts;
+        ClientWebSocket? previousSocket;
+        int nextVersion;
+
+        lock (_stateGate) {
+            previousCts = _cts;
+            previousSocket = _socket;
+            _cts = null;
+            _socket = null;
+            nextVersion = unchecked(++_runVersion);
+        }
+
+        previousCts?.Cancel();
+        previousCts?.Dispose();
+        previousSocket?.Dispose();
+        return nextVersion;
+    }
+
+    /// <summary>
+    /// Registers the run-local socket and cancellation source if the run is still current.
+    /// </summary>
+    /// <param name="runVersion">Generation number captured when the run was started.</param>
+    /// <param name="socket">Socket allocated for the run.</param>
+    /// <param name="cts">Cancellation source allocated for the run.</param>
+    /// <returns><see langword="true"/> if the run is still current and has become active.</returns>
+    private bool TryRegisterRun(int runVersion, ClientWebSocket socket, CancellationTokenSource cts) {
+        lock (_stateGate) {
+            if (_runVersion != runVersion)
+                return false;
+
+            _socket = socket;
+            _cts = cts;
+            return true;
+        }
     }
 
     /// <summary>
@@ -203,7 +269,8 @@ internal sealed class MmsWebSocketHandler : IDisposable {
 
     /// <summary>
     /// Handles a <c>join_failed</c> message by logging the full message body
-    /// as a warning. No event is raised; the host has no recovery action to take.
+    /// as a warning. No event is raised because the host has no corrective action
+    /// beyond surfacing the diagnostic.
     /// </summary>
     /// <param name="message">Full raw message text, logged verbatim for diagnostics.</param>
     private static void HandleJoinFailed(string message) {

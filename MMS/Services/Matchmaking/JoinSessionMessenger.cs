@@ -10,8 +10,9 @@ namespace MMS.Services.Matchmaking;
 /// Sends matchmaking rendezvous messages over client and host WebSockets.
 /// </summary>
 /// <remarks>
-/// All send methods are fire-and-forget safe: they silently skip delivery
-/// when the target socket is absent or not in the <see cref="WebSocketState.Open"/> state.
+/// Each send helper first verifies that the target socket is still open.
+/// Methods returning <see cref="bool"/> let the coordinator distinguish "target missing"
+/// from transport exceptions raised during the actual send.
 /// </remarks>
 public sealed class JoinSessionMessenger(LobbyService lobbyService) {
     /// <summary>
@@ -114,15 +115,19 @@ public sealed class JoinSessionMessenger(LobbyService lobbyService) {
     /// Coordinated UTC timestamp (Unix ms) at which both sides should begin punching.
     /// </param>
     /// <param name="cancellationToken">Propagates notification that the operation should be cancelled.</param>
-    public static Task SendStartPunchToClientAsync(
+    /// <returns><see langword="true"/> if the client socket was open and the payload was queued for send.</returns>
+    public static async Task<bool> SendStartPunchToClientAsync(
         JoinSession session,
         int hostPort,
         string hostIp,
         long startTimeMs,
         CancellationToken cancellationToken
-    ) =>
-        SendToJoinClientAsync(
-            session,
+    ) {
+        if (session.ClientWebSocket is not { State: WebSocketState.Open } ws)
+            return false;
+
+        await WebSocketMessenger.SendAsync(
+            ws,
             new {
                 action = "start_punch",
                 joinId = session.JoinId,
@@ -132,6 +137,8 @@ public sealed class JoinSessionMessenger(LobbyService lobbyService) {
             },
             cancellationToken
         );
+        return true;
+    }
 
     /// <summary>
     /// Sends a synchronized NAT punch instruction to the lobby host.
@@ -145,7 +152,8 @@ public sealed class JoinSessionMessenger(LobbyService lobbyService) {
     /// Coordinated UTC timestamp (Unix ms) at which both sides should begin punching.
     /// </param>
     /// <param name="cancellationToken">Propagates notification that the operation should be cancelled.</param>
-    public static async Task SendStartPunchToHostAsync(
+    /// <returns><see langword="true"/> if the host socket was open and the payload was queued for send.</returns>
+    public static async Task<bool> SendStartPunchToHostAsync(
         _Lobby lobby,
         string joinId,
         string clientIp,
@@ -155,7 +163,7 @@ public sealed class JoinSessionMessenger(LobbyService lobbyService) {
         CancellationToken cancellationToken
     ) {
         if (lobby.HostWebSocket is not { State: WebSocketState.Open } hostWs)
-            return;
+            return false;
 
         await WebSocketMessenger.SendAsync(
             hostWs,
@@ -169,6 +177,7 @@ public sealed class JoinSessionMessenger(LobbyService lobbyService) {
             },
             cancellationToken
         );
+        return true;
     }
 
     /// <summary>
