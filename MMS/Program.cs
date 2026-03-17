@@ -16,6 +16,8 @@ public class Program {
         var builder = WebApplication.CreateBuilder(args);
         var isDevelopment = builder.Environment.IsDevelopment();
 
+        // ProgramState is initialized once during startup
+        // and treated as read-only thereafter.
         ProgramState.IsDevelopment = isDevelopment;
 
         builder.Services.AddMmsCoreServices();
@@ -29,6 +31,8 @@ public class Program {
         }
 
         var app = builder.Build();
+        // ProgramState.Logger is assigned once after the host is built,
+        // it should only be read after this point.
         ProgramState.Logger = app.Logger;
 
         app.UseMmsPipeline(isDevelopment);

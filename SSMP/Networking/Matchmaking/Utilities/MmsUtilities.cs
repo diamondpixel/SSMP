@@ -136,4 +136,48 @@ internal static class MmsUtilities {
         buffer.AsSpan(0, count).CopyTo(writer.GetSpan(count));
         writer.Advance(count);
     }
+    
+    
+    /// <summary>
+    /// Advances an index past any whitespace characters in a JSON span.
+    /// </summary>
+    /// <param name="json">The JSON character span being parsed.</param>
+    /// <param name="index">The position to start skipping from.</param>
+    /// <returns>The index of the first non-whitespace character, or <paramref name="json"/>.Length if the rest of the span is whitespace.</returns>
+    public static int SkipWhitespace(ReadOnlySpan<char> json, int index) {
+        while (index < json.Length && char.IsWhiteSpace(json[index]))
+            index++;
+
+        return index;
+    }
+
+    /// <summary>
+    /// Escapes a string for safe embedding in JSON, encoding special characters
+    /// and non-printable control characters as their JSON escape sequences.
+    /// </summary>
+    /// <param name="value">The raw string to escape.</param>
+    /// <returns>A JSON-safe escaped string, without surrounding quotes.</returns>
+    public static string EscapeJsonString(string value) {
+        var builder = new StringBuilder(value.Length);
+        foreach (var ch in value) {
+            switch (ch) {
+                case '"': builder.Append("\\\""); break;
+                case '\\': builder.Append(@"\\"); break;
+                case '/': builder.Append("\\/"); break;
+                case '\b': builder.Append("\\b"); break;
+                case '\f': builder.Append("\\f"); break;
+                case '\n': builder.Append("\\n"); break;
+                case '\r': builder.Append("\\r"); break;
+                case '\t': builder.Append("\\t"); break;
+                default:
+                    if (char.IsControl(ch))
+                        builder.AppendFormat("\\u{0:X4}", (int) ch);
+                    else
+                        builder.Append(ch);
+                    break;
+            }
+        }
+
+        return builder.ToString();
+    }
 }

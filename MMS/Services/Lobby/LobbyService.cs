@@ -15,6 +15,7 @@ public class LobbyService(LobbyNameService lobbyNameService) {
     private readonly ConcurrentDictionary<string, _Lobby> _lobbies = new();
     private readonly ConcurrentDictionary<string, string> _tokenToConnectionData = new();
     private readonly ConcurrentDictionary<string, string> _codeToConnectionData = new();
+    private readonly Lock _createLobbyLock = new();
 
     /// <summary>
     /// Creates and stores a new lobby.
@@ -38,29 +39,30 @@ public class LobbyService(LobbyNameService lobbyNameService) {
         bool isPublic = true
     ) {
         var hostToken = TokenGenerator.GenerateToken(32);
-        var lobbyCode = IsSteamLobby(lobbyType)
-            ? ""
-            : TokenGenerator.GenerateUniqueLobbyCode(new HashSet<string>(_codeToConnectionData.Keys));
         var hostDiscoveryToken = IsMatchmakingLobbyType(lobbyType) ? TokenGenerator.GenerateToken(32) : null;
+        lock (_createLobbyLock) {
+            if (_lobbies.TryGetValue(connectionData, out var existingLobby))
+                RemoveLobbyIndexes(existingLobby);
 
-        var lobby = new _Lobby(
-            connectionData,
-            hostToken,
-            lobbyCode,
-            lobbyName,
-            lobbyType,
-            hostLanIp,
-            isPublic,
-            hostDiscoveryToken
-        );
+            var lobbyCode = IsSteamLobby(lobbyType)
+                ? ""
+                : ReserveLobbyCode(connectionData);
 
-        _lobbies[connectionData] = lobby;
-        _tokenToConnectionData[hostToken] = connectionData;
+            var lobby = new _Lobby(
+                connectionData,
+                hostToken,
+                lobbyCode,
+                lobbyName,
+                lobbyType,
+                hostLanIp,
+                isPublic,
+                hostDiscoveryToken
+            );
 
-        if (!string.IsNullOrEmpty(lobbyCode))
-            _codeToConnectionData[lobbyCode] = connectionData;
-
-        return lobby;
+            _lobbies[connectionData] = lobby;
+            _tokenToConnectionData[hostToken] = connectionData;
+            return lobby;
+        }
     }
 
     /// <summary>
@@ -174,6 +176,31 @@ public class LobbyService(LobbyNameService lobbyNameService) {
     /// <summary>Returns <see langword="true"/> if <paramref name="lobbyType"/> is <c>"steam"</c>.</summary>
     private static bool IsSteamLobby(string lobbyType) =>
         lobbyType.Equals("steam", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Reserves a unique lobby code and associates it with the given connection data.
+    /// Retries until a code is successfully inserted into the concurrent store.
+    /// </summary>
+    /// <param name="connectionData">The connection data to associate with the reserved code.</param>
+    /// <returns>The reserved lobby code.</returns>
+    private string ReserveLobbyCode(string connectionData) {
+        while (true) {
+            var code = TokenGenerator.GenerateUniqueLobbyCode(new HashSet<string>(_codeToConnectionData.Keys));
+            if (_codeToConnectionData.TryAdd(code, connectionData))
+                return code;
+        }
+    }
+    
+    /// <summary>
+    /// Removes all index entries associated with a lobby, including its host token
+    /// and lobby code if one was assigned.
+    /// </summary>
+    /// <param name="lobby">The lobby whose indexes should be removed.</param>
+    private void RemoveLobbyIndexes(_Lobby lobby) {
+        _tokenToConnectionData.TryRemove(lobby.HostToken, out _);
+        if (!string.IsNullOrEmpty(lobby.LobbyCode))
+            _codeToConnectionData.TryRemove(lobby.LobbyCode, out _);
+    }
 
     /// <summary>Returns <see langword="true"/> if <paramref name="lobbyType"/> is <c>"matchmaking"</c>.</summary>
     private static bool IsMatchmakingLobbyType(string lobbyType) =>

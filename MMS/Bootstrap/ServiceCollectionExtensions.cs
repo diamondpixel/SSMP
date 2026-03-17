@@ -174,7 +174,7 @@ internal static class ServiceCollectionExtensions {
         options.AddPolicy(
             policyName,
             context => RateLimitPartition.GetFixedWindowLimiter(
-                partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                partitionKey: GetRateLimitPartitionKey(context),
                 factory: _ => new FixedWindowRateLimiterOptions {
                     PermitLimit = permitLimit,
                     Window = TimeSpan.FromSeconds(windowSeconds),
@@ -182,5 +182,21 @@ internal static class ServiceCollectionExtensions {
                 }
             )
         );
+    }
+
+    /// <summary>
+    /// Determines the rate limit partition key for an HTTP request.
+    /// Uses the first IP address from the <c>X-Forwarded-For</c> header when present,
+    /// falling back to <see cref="ConnectionInfo.RemoteIpAddress"/>, then <see cref="ConnectionInfo.Id"/>.
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
+    /// <returns>A string key identifying the client for rate limiting purposes.</returns>
+    private static string GetRateLimitPartitionKey(HttpContext context) {
+        var forwardedFor = context.Request.Headers["X-Forwarded-For"].ToString();
+        if (!string.IsNullOrWhiteSpace(forwardedFor))
+            return forwardedFor.Split(',')[0].Trim();
+
+        return context.Connection.RemoteIpAddress?.ToString()
+               ?? context.Connection.Id;
     }
 }

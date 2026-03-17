@@ -190,8 +190,10 @@ internal static class MmsResponseParser {
         }
 
         var start = idx + relative;
-        slice = span[start..];
-        idx = start + 1;
+        var nextRelative = span[(start + ConnectionDataKey.Length)..].IndexOf(ConnectionDataKey, StringComparison.Ordinal);
+        var end = nextRelative == -1 ? span.Length : start + ConnectionDataKey.Length + nextRelative;
+        slice = span[start..end];
+        idx = end;
         return true;
     }
 

@@ -1169,7 +1169,7 @@ internal class ConnectInterface {
     /// Looks up lobby via MMS and connects to the host.
     /// </summary>
     private void OnLobbyConnectButtonPressed() {
-        if (ShowBlockedMatchmakingIfNeeded()) {
+        if (IsMatchmakingBlocked()) {
             return;
         }
 
@@ -1260,7 +1260,7 @@ internal class ConnectInterface {
     /// Shows the lobby configuration panel.
     /// </summary>
     private void OnHostLobbyButtonPressed() {
-        if (ShowBlockedMatchmakingIfNeeded()) {
+        if (IsMatchmakingBlocked()) {
             return;
         }
 
@@ -1423,7 +1423,7 @@ internal class ConnectInterface {
     /// Fetches and displays public lobbies from the MMS.
     /// </summary>
     private void OnBrowseMatchmakingLobbiesPressed() {
-        if (ShowBlockedMatchmakingIfNeeded()) {
+        if (IsMatchmakingBlocked()) {
             return;
         }
 
@@ -1845,9 +1845,7 @@ internal class ConnectInterface {
     /// </summary>
     private void RefreshMatchmakingStatusFeedback() {
         if (_activeTab != Tab.Matchmaking) {
-            if (_isCheckingMatchmakingVersion || _isMatchmakingVersionBlocked) {
-                _feedbackText.SetActive(false);
-            }
+            _feedbackText.SetActive(false);
             return;
         }
 
@@ -1876,9 +1874,9 @@ internal class ConnectInterface {
     }
 
     /// <summary>
-    /// Shows the matchmaking block UI if matchmaking is already disabled for this client version.
+    /// Returns whether matchmaking is blocked for this client version.
     /// </summary>
-    private bool ShowBlockedMatchmakingIfNeeded() {
+    private bool IsMatchmakingBlocked() {
         return _isMatchmakingVersionBlocked;
     }
 

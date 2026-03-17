@@ -1,5 +1,7 @@
 using System;
 using System.Buffers;
+using System.Globalization;
+using System.Text;
 using SSMP.Networking.Matchmaking.Protocol;
 using SSMP.Networking.Matchmaking.Utilities;
 
@@ -24,23 +26,32 @@ internal static class MmsJsonParser {
     /// <param name="key">The key to find.</param>
     /// <returns>The extracted value or <c>null</c>.</returns>
     public static string? ExtractValue(ReadOnlySpan<char> json, string key) {
-        // Build "key": search token on the stack
-        Span<char> searchKey = stackalloc char[key.Length + 3];
+        Span<char> searchKey = stackalloc char[key.Length + 2];
         searchKey[0] = '"';
         key.AsSpan().CopyTo(searchKey[1..]);
         searchKey[key.Length + 1] = '"';
-        searchKey[key.Length + 2] = ':';
 
-        var idx = json.IndexOf(searchKey, StringComparison.Ordinal);
-        if (idx == -1) return null;
+        var searchStart = 0;
+        while (searchStart < json.Length) {
+            var relative = json[searchStart..].IndexOf(searchKey, StringComparison.Ordinal);
+            if (relative == -1) return null;
 
-        var valueStart = idx + searchKey.Length;
-        while (valueStart < json.Length && char.IsWhiteSpace(json[valueStart])) valueStart++;
-        if (valueStart >= json.Length) return null;
+            var keyEnd = searchStart + relative + searchKey.Length;
+            var valueStart = MmsUtilities.SkipWhitespace(json, keyEnd);
+            if (valueStart >= json.Length || json[valueStart] != ':') {
+                searchStart = searchStart + relative + 1;
+                continue;
+            }
 
-        return json[valueStart] == '"'
-            ? ExtractStringValue(json, valueStart)
-            : ExtractNumericValue(json, valueStart);
+            valueStart = MmsUtilities.SkipWhitespace(json, valueStart + 1);
+            if (valueStart >= json.Length) return null;
+
+            return json[valueStart] == '"'
+                ? ExtractStringValue(json, valueStart)
+                : ExtractNumericValue(json, valueStart);
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -61,12 +72,14 @@ internal static class MmsJsonParser {
         PublicLobbyType lobbyType,
         string? hostLanIp
     ) {
+        var escapedGameVersion = MmsUtilities.EscapeJsonString(gameVersion);
+        var escapedHostLanIp = hostLanIp == null ? null : MmsUtilities.EscapeJsonString(hostLanIp);
         var lobbyTypeValue = lobbyType == PublicLobbyType.Matchmaking ? "matchmaking" : "steam";
         var estimatedLength =
             96 +
-            gameVersion.Length +
+            (escapedGameVersion.Length * 6) +
             lobbyTypeValue.Length +
-            (hostLanIp?.Length ?? 0) +
+            ((escapedHostLanIp?.Length ?? 0) * 6) +
             (hostLanIp != null ? 16 : 0) +
             (lobbyType == PublicLobbyType.Matchmaking ? 24 : 0);
 
@@ -85,7 +98,7 @@ internal static class MmsJsonParser {
         Write(span, ref written, ",\"");
         Write(span, ref written, MmsFields.GameVersionRequest);
         Write(span, ref written, "\":\"");
-        Write(span, ref written, gameVersion);
+        Write(span, ref written, escapedGameVersion);
         Write(span, ref written, "\",\"");
         Write(span, ref written, MmsFields.LobbyTypeRequest);
         Write(span, ref written, "\":\"");
@@ -96,7 +109,7 @@ internal static class MmsJsonParser {
             Write(span, ref written, ",\"");
             Write(span, ref written, MmsFields.HostLanIpRequest);
             Write(span, ref written, "\":\"");
-            Write(span, ref written, hostLanIp);
+            Write(span, ref written, escapedHostLanIp!);
             Write(span, ref written, ":");
             Write(span, ref written, port);
             Write(span, ref written, "\"");
@@ -123,8 +136,53 @@ internal static class MmsJsonParser {
     /// Returns <c>null</c> if the closing quote is missing.
     /// </summary>
     private static string? ExtractStringValue(ReadOnlySpan<char> json, int openQuoteIndex) {
-        var valueEnd = json[(openQuoteIndex + 1)..].IndexOf('"');
-        return valueEnd == -1 ? null : json.Slice(openQuoteIndex + 1, valueEnd).ToString();
+        var segmentStart = openQuoteIndex + 1;
+        StringBuilder? builder = null;
+
+        for (var i = segmentStart; i < json.Length; i++) {
+            if (json[i] == '\\') {
+                if (i + 1 >= json.Length) return null;
+
+                builder ??= new StringBuilder(json.Slice(segmentStart, i - segmentStart).ToString());
+                var escape = json[++i];
+                switch (escape) {
+                    case '"': builder.Append('"'); break;
+                    case '\\': builder.Append('\\'); break;
+                    case '/': builder.Append('/'); break;
+                    case 'b': builder.Append('\b'); break;
+                    case 'f': builder.Append('\f'); break;
+                    case 'n': builder.Append('\n'); break;
+                    case 'r': builder.Append('\r'); break;
+                    case 't': builder.Append('\t'); break;
+                    case 'u':
+                        if (i + 4 >= json.Length) return null;
+
+                        var hex = json.Slice(i + 1, 4);
+                        if (!ushort.TryParse(hex, NumberStyles.HexNumber, null, out var codePoint))
+                            return null;
+
+                        builder.Append((char) codePoint);
+                        i += 4;
+                        break;
+                    default:
+                        builder.Append(escape);
+                        break;
+                }
+
+                segmentStart = i + 1;
+                continue;
+            }
+
+            if (json[i] != '"') continue;
+
+            if (builder == null)
+                return json.Slice(openQuoteIndex + 1, i - openQuoteIndex - 1).ToString();
+
+            builder.Append(json.Slice(segmentStart, i - segmentStart));
+            return builder.ToString();
+        }
+
+        return null;
     }
 
     /// <summary>

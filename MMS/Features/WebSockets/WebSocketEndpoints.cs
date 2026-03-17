@@ -66,7 +66,9 @@ internal static class WebSocketEndpoints {
 
         await DrainHostWebSocketAsync(webSocket);
 
-        lobby.HostWebSocket = null;
+        if (ReferenceEquals(lobby.HostWebSocket, webSocket))
+            lobby.HostWebSocket = null;
+
         ProgramState.Logger.LogInformation(
             "[WS] Host disconnected from lobby {LobbyIdentifier}",
             GetLobbyIdentifier(lobby)

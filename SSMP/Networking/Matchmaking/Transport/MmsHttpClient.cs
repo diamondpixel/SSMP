@@ -37,11 +37,14 @@ internal sealed class MmsHttpClient {
     /// Performs a GET request to the specified URL.
     /// </summary>
     public async Task<(bool success, string? body)> GetAsync(string url) {
+        ClearError();
         try {
             using var response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             var body = await response.Content.ReadAsStringAsync();
             LastStatusCode = response.StatusCode;
             InspectErrorBody(response.StatusCode, body);
+            if (response.IsSuccessStatusCode)
+                LastError = MatchmakingError.None;
             return (response.IsSuccessStatusCode, body);
         } catch (Exception ex) when (IsTransient(ex)) {
             LastError = MatchmakingError.NetworkFailure;
@@ -54,12 +57,15 @@ internal sealed class MmsHttpClient {
     /// Performs a POST request with a JSON body to the specified URL.
     /// </summary>
     public async Task<(bool success, string? body)> PostJsonAsync(string url, string json) {
+        ClearError();
         try {
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
             using var response = await Http.PostAsync(url, content);
             var body = await response.Content.ReadAsStringAsync();
             LastStatusCode = response.StatusCode;
             InspectErrorBody(response.StatusCode, body);
+            if (response.IsSuccessStatusCode)
+                LastError = MatchmakingError.None;
             return (response.IsSuccessStatusCode, body);
         } catch (Exception ex) when (IsTransient(ex)) {
             LastError = MatchmakingError.NetworkFailure;
@@ -70,17 +76,20 @@ internal sealed class MmsHttpClient {
 
     /// <summary>Performs a DELETE request and updates error state on failure.</summary>
     public async Task DeleteAsync(string url) {
+        ClearError();
         try {
             using var response = await Http.DeleteAsync(url);
             LastStatusCode = response.StatusCode;
             InspectErrorBody(response.StatusCode, await response.Content.ReadAsStringAsync());
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode) {
+                LastError = MatchmakingError.None;
                 return;
+            }
 
             throw new HttpRequestException(
                 $"DELETE {url} failed with status code {(int) response.StatusCode} ({response.StatusCode})."
             );
-        } catch (Exception ex) when (IsTransient(ex)) {
+        } catch (Exception ex) when (IsTransient(ex) && !(ex is HttpRequestException && LastStatusCode.HasValue)) {
             LastError = MatchmakingError.NetworkFailure;
             LastStatusCode = null;
             throw;

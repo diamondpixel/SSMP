@@ -120,9 +120,9 @@ internal sealed class MmsHostSessionService {
     /// <param name="count">New connected-player count.</param>
     public void SetConnectedPlayers(int count) {
         var normalized = System.Math.Max(0, count);
-        if (_connectedPlayers == normalized) return;
+        var previous = Interlocked.Exchange(ref _connectedPlayers, normalized);
+        if (previous == normalized) return;
 
-        _connectedPlayers = normalized;
         if (_hostToken != null) SendHeartbeat(state: null);
     }
 
@@ -245,12 +245,11 @@ internal sealed class MmsHostSessionService {
     }
 
     /// <summary>
-    /// Cancels and disposes the active UDP discovery refresh task, if any.
+    /// Cancels the active UDP discovery refresh task, if any.
     /// Safe to call when no refresh is running.
     /// </summary>
     public void StopHostDiscoveryRefresh() {
         _hostDiscoveryRefreshCts?.Cancel();
-        _hostDiscoveryRefreshCts?.Dispose();
         _hostDiscoveryRefreshCts = null;
     }
 
@@ -262,9 +261,9 @@ internal sealed class MmsHostSessionService {
     /// <param name="gameVersion">Game version string for compatibility filtering.</param>
     /// <returns>A JSON string ready to POST to the MMS lobby endpoint.</returns>
     private static string BuildSteamLobbyJson(string steamLobbyId, bool isPublic, string gameVersion) =>
-        $"{{\"{MmsFields.ConnectionDataRequest}\":\"{steamLobbyId}\"," +
+        $"{{\"{MmsFields.ConnectionDataRequest}\":\"{MmsUtilities.EscapeJsonString(steamLobbyId)}\"," +
         $"\"{MmsFields.IsPublicRequest}\":{MmsUtilities.BoolToJson(isPublic)}," +
-        $"\"{MmsFields.GameVersionRequest}\":\"{gameVersion}\"," +
+        $"\"{MmsFields.GameVersionRequest}\":\"{MmsUtilities.EscapeJsonString(gameVersion)}\"," +
         $"\"{MmsFields.LobbyTypeRequest}\":\"steam\"}}";
 
     /// <summary>

@@ -296,6 +296,8 @@ public sealed class JoinSessionCoordinator(
         // Host port is not yet known so we wait for the next host discovery event.
         if (lobby.ExternalPort == null) return;
 
+        // Matchmaking lobbies store ConnectionData as "IP:Port".
+        // Steam lobbies are filtered out at session creation.
         var hostIp = lobby.ConnectionData.Split(':')[0];
         var startTimeMs = DateTimeOffset.UtcNow
                                         .AddMilliseconds(MatchmakingProtocol.PunchTimingOffsetMs)

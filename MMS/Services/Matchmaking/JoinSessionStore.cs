@@ -104,8 +104,11 @@ public sealed class JoinSessionStore {
     private void RemoveIndexes(JoinSession session) {
         if (_joinIdsByLobby.TryGetValue(session.LobbyConnectionData, out var lobbyJoinIds)) {
             lobbyJoinIds.TryRemove(session.JoinId, out _);
-            if (lobbyJoinIds.IsEmpty)
-                _joinIdsByLobby.TryRemove(session.LobbyConnectionData, out _);
+            if (lobbyJoinIds.IsEmpty &&
+                _joinIdsByLobby.TryRemove(session.LobbyConnectionData, out var removed) &&
+                !ReferenceEquals(removed, lobbyJoinIds)) {
+                _joinIdsByLobby.TryAdd(session.LobbyConnectionData, removed);
+            }
         }
 
         lock (_indexLock) {
