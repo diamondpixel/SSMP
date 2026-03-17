@@ -132,8 +132,17 @@ internal static class WebSocketEndpoints {
 
         await joinService.SendBeginClientMappingAsync(joinId, context.RequestAborted);
 
-        if (!await EnsureHostReachableAsync(context, joinId, session, lobbyService, joinService))
+        if (!await EnsureHostReachableAsync(context, joinId, session, lobbyService, joinService)) {
+            if (webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived) {
+                await webSocket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    "Host unreachable",
+                    context.RequestAborted
+                );
+            }
+
             return;
+        }
 
         await DrainJoinWebSocketAsync(webSocket, joinId, joinService, context.RequestAborted);
     }

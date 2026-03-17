@@ -165,8 +165,7 @@ internal static class MmsJsonParser {
                         i += 4;
                         break;
                     default:
-                        builder.Append(escape);
-                        break;
+                        throw new FormatException($"Invalid JSON escape sequence \\{escape} at index {i}.");
                 }
 
                 segmentStart = i + 1;

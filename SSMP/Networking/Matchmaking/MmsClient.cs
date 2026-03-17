@@ -24,16 +24,14 @@ namespace SSMP.Networking.Matchmaking;
 /// </list>
 /// </summary>
 internal class MmsClient {
-    /// <summary>HTTP client for API requests.</summary>
-    private readonly MmsHttpClient _http;
-
     private readonly MmsHostSessionService _hostSession;
     private readonly MmsLobbyQueryService _queries;
     private readonly MmsJoinCoordinator _joinCoordinator;
+    private MatchmakingError _lastHttpError = MatchmakingError.None;
 
     /// <summary>The last matchmaking error from the most recent operation.</summary>
     public MatchmakingError LastMatchmakingError =>
-        _localError != MatchmakingError.None ? _localError : _http.LastError;
+        _localError != MatchmakingError.None ? _localError : _lastHttpError;
 
     /// <summary>Internal error state for non-HTTP failures.</summary>
     private MatchmakingError _localError = MatchmakingError.None;
@@ -63,15 +61,15 @@ internal class MmsClient {
         MmsLobbyQueryService? queries = null,
         MmsJoinCoordinator? joinCoordinator = null
     ) {
-        _http = http ?? new MmsHttpClient();
+        var http1 = http ?? new MmsHttpClient();
         var normalizedBaseUrl = baseUrl.TrimEnd('/');
         string? discoveryHost = null;
         if (Uri.TryCreate(normalizedBaseUrl, UriKind.Absolute, out var uri))
             discoveryHost = uri.Host;
 
         var webSocket = new MmsWebSocketHandler(MmsUtilities.ToWebSocketUrl(normalizedBaseUrl));
-        _hostSession = hostSession ?? new MmsHostSessionService(normalizedBaseUrl, discoveryHost, _http, webSocket);
-        _queries = queries ?? new MmsLobbyQueryService(normalizedBaseUrl, _http);
+        _hostSession = hostSession ?? new MmsHostSessionService(normalizedBaseUrl, discoveryHost, http1, webSocket);
+        _queries = queries ?? new MmsLobbyQueryService(normalizedBaseUrl, http1);
         _joinCoordinator = joinCoordinator ?? new MmsJoinCoordinator(normalizedBaseUrl, discoveryHost);
     }
 
@@ -93,7 +91,9 @@ internal class MmsClient {
         PublicLobbyType lobbyType = PublicLobbyType.Matchmaking
     ) {
         ClearErrors();
-        return await _hostSession.CreateLobbyAsync(hostPort, isPublic, gameVersion, lobbyType);
+        var result = await _hostSession.CreateLobbyAsync(hostPort, isPublic, gameVersion, lobbyType);
+        _lastHttpError = result.error;
+        return result.result;
     }
 
     /// <summary>
@@ -106,7 +106,9 @@ internal class MmsClient {
         string gameVersion = "unknown"
     ) {
         ClearErrors();
-        return await _hostSession.RegisterSteamLobbyAsync(steamLobbyId, isPublic, gameVersion);
+        var result = await _hostSession.RegisterSteamLobbyAsync(steamLobbyId, isPublic, gameVersion);
+        _lastHttpError = result.error;
+        return result.lobbyCode;
     }
 
     /// <summary>Closes the active lobby and deregisters it from MMS.</summary>
@@ -115,7 +117,9 @@ internal class MmsClient {
     /// <summary>Looks up lobby join details from MMS.</summary>
     public async Task<JoinLobbyResult?> JoinLobbyAsync(string lobbyId, int clientPort) {
         ClearErrors();
-        return await _queries.JoinLobbyAsync(lobbyId, clientPort);
+        var result = await _queries.JoinLobbyAsync(lobbyId, clientPort);
+        _lastHttpError = result.error;
+        return result.result;
     }
 
     /// <summary>
@@ -136,7 +140,9 @@ internal class MmsClient {
     /// </summary>
     public async Task<List<PublicLobbyInfo>?> GetPublicLobbiesAsync(PublicLobbyType? lobbyType = null) {
         ClearErrors();
-        return await _queries.GetPublicLobbiesAsync(lobbyType);
+        var result = await _queries.GetPublicLobbiesAsync(lobbyType);
+        _lastHttpError = result.error;
+        return result.lobbies;
     }
 
     /// <summary>
@@ -186,6 +192,6 @@ internal class MmsClient {
     /// </summary>
     private void ClearErrors() {
         _localError = MatchmakingError.None;
-        _http.ClearError();
+        _lastHttpError = MatchmakingError.None;
     }
 }

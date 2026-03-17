@@ -40,14 +40,16 @@ internal sealed class MmsLobbyQueryService {
     /// and join ID needed for the subsequent WebSocket rendezvous, or <c>null</c>
     /// if the request failed or the response could not be parsed.
     /// </returns>
-    public async Task<JoinLobbyResult?> JoinLobbyAsync(string lobbyId, int clientPort) {
-        var (success, response) = await _http.PostJsonAsync(
+    public async Task<(JoinLobbyResult? result, MatchmakingError error)>
+        JoinLobbyAsync(string lobbyId, int clientPort) {
+        var response = await _http.PostJsonAsync(
             $"{_baseUrl}{MmsRoutes.LobbyJoin(lobbyId)}",
             BuildJoinRequestJson(clientPort)
         );
-        if (!success || response == null) return null;
+        if (!response.Success || response.Body == null)
+            return (null, response.Error);
 
-        return ParseAndLogJoinResult(lobbyId, response);
+        return (ParseAndLogJoinResult(lobbyId, response.Body), MatchmakingError.None);
     }
 
     /// <summary>
@@ -63,10 +65,14 @@ internal sealed class MmsLobbyQueryService {
     /// A list of <see cref="PublicLobbyInfo"/> entries, or <c>null</c> if the
     /// request failed or the response could not be parsed.
     /// </returns>
-    public async Task<List<PublicLobbyInfo>?> GetPublicLobbiesAsync(PublicLobbyType? lobbyType = null) {
+    public async Task<(List<PublicLobbyInfo>? lobbies, MatchmakingError error)> GetPublicLobbiesAsync(
+        PublicLobbyType? lobbyType = null
+    ) {
         var url = BuildPublicLobbiesUrl(lobbyType);
-        var (success, response) = await _http.GetAsync(url);
-        return !success || response == null ? null : MmsResponseParser.ParsePublicLobbies(response);
+        var response = await _http.GetAsync(url);
+        return !response.Success || response.Body == null
+            ? (null, response.Error)
+            : (MmsResponseParser.ParsePublicLobbies(response.Body), MatchmakingError.None);
     }
 
     /// <summary>
@@ -95,11 +101,11 @@ internal sealed class MmsLobbyQueryService {
     /// </list>
     /// </returns>
     public async Task<(bool? isCompatible, MatchmakingError error)> ProbeMatchmakingCompatibilityAsync() {
-        var (success, response) = await _http.GetAsync($"{_baseUrl}{MmsRoutes.Root}");
-        if (!success || response == null)
-            return (null, MatchmakingError.None);
+        var response = await _http.GetAsync($"{_baseUrl}{MmsRoutes.Root}");
+        if (!response.Success || response.Body == null)
+            return (null, response.Error);
 
-        if (!TryParseServerVersion(response, out var serverVersion))
+        if (!TryParseServerVersion(response.Body, out var serverVersion))
             return (null, MatchmakingError.NetworkFailure);
 
         return CheckVersionCompatibility(serverVersion);

@@ -21,77 +21,66 @@ internal sealed class MmsHttpClient {
         AppDomain.CurrentDomain.ProcessExit += (_, _) => Http.Dispose();
     }
 
-    /// <summary>Latest matchmaking error from the most recent HTTP call.</summary>
-    public MatchmakingError LastError { get; private set; } = MatchmakingError.None;
-
-    /// <summary>Latest HTTP status code observed from the most recent request, when available.</summary>
-    public HttpStatusCode? LastStatusCode { get; private set; }
-
-    /// <summary>Resets the last error state.</summary>
-    public void ClearError() {
-        LastError = MatchmakingError.None;
-        LastStatusCode = null;
-    }
-
     /// <summary>
     /// Performs a GET request to the specified URL.
     /// </summary>
-    public async Task<(bool success, string? body)> GetAsync(string url) {
-        ClearError();
+    public async Task<MmsHttpResponse> GetAsync(string url) {
         try {
             using var response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             var body = await response.Content.ReadAsStringAsync();
-            LastStatusCode = response.StatusCode;
-            InspectErrorBody(response.StatusCode, body);
-            if (response.IsSuccessStatusCode)
-                LastError = MatchmakingError.None;
-            return (response.IsSuccessStatusCode, body);
+            return new MmsHttpResponse(
+                response.IsSuccessStatusCode,
+                body,
+                InspectErrorBody(response.StatusCode, body)
+            );
         } catch (Exception ex) when (IsTransient(ex)) {
-            LastError = MatchmakingError.NetworkFailure;
-            LastStatusCode = null;
-            return (false, null);
+            return new MmsHttpResponse(false, null, MatchmakingError.NetworkFailure);
         }
     }
 
     /// <summary>
     /// Performs a POST request with a JSON body to the specified URL.
     /// </summary>
-    public async Task<(bool success, string? body)> PostJsonAsync(string url, string json) {
-        ClearError();
+    public async Task<MmsHttpResponse> PostJsonAsync(string url, string json) {
         try {
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
             using var response = await Http.PostAsync(url, content);
             var body = await response.Content.ReadAsStringAsync();
-            LastStatusCode = response.StatusCode;
-            InspectErrorBody(response.StatusCode, body);
-            if (response.IsSuccessStatusCode)
-                LastError = MatchmakingError.None;
-            return (response.IsSuccessStatusCode, body);
+            return new MmsHttpResponse(
+                response.IsSuccessStatusCode,
+                body,
+                InspectErrorBody(response.StatusCode, body)
+            );
         } catch (Exception ex) when (IsTransient(ex)) {
-            LastError = MatchmakingError.NetworkFailure;
-            LastStatusCode = null;
-            return (false, null);
+            return new MmsHttpResponse(false, null, MatchmakingError.NetworkFailure);
         }
     }
 
-    /// <summary>Performs a DELETE request and updates error state on failure.</summary>
-    public async Task DeleteAsync(string url) {
-        ClearError();
+    /// <summary>
+    /// Performs a DELETE request.
+    /// </summary>
+    /// <remarks>
+    /// Returns per-call HTTP metadata and matchmaking error classification.
+    /// Throws <see cref="HttpRequestException"/> when the server returns a non-success HTTP status,
+    /// and rethrows transient transport exceptions after classifying them as
+    /// <see cref="MatchmakingError.NetworkFailure"/>.
+    /// </remarks>
+    public async Task<MmsHttpResponse> DeleteAsync(string url) {
         try {
             using var response = await Http.DeleteAsync(url);
-            LastStatusCode = response.StatusCode;
-            InspectErrorBody(response.StatusCode, await response.Content.ReadAsStringAsync());
-            if (response.IsSuccessStatusCode) {
-                LastError = MatchmakingError.None;
-                return;
-            }
+            var body = await response.Content.ReadAsStringAsync();
+            var result = new MmsHttpResponse(
+                response.IsSuccessStatusCode,
+                body,
+                InspectErrorBody(response.StatusCode, body)
+            );
+            if (response.IsSuccessStatusCode)
+                return result;
 
             throw new HttpRequestException(
                 $"DELETE {url} failed with status code {(int) response.StatusCode} ({response.StatusCode})."
             );
-        } catch (Exception ex) when (IsTransient(ex) && !(ex is HttpRequestException && LastStatusCode.HasValue)) {
-            LastError = MatchmakingError.NetworkFailure;
-            LastStatusCode = null;
+        } catch (Exception ex) when (IsTransient(ex) && ex is not HttpRequestException) {
             throw;
         }
     }
@@ -101,11 +90,11 @@ internal sealed class MmsHttpClient {
     /// </summary>
     /// <param name="status">The HTTP status code.</param>
     /// <param name="body">The response body.</param>
-    private void InspectErrorBody(HttpStatusCode status, string? body) {
-        if ((int) status < 400 || body == null) return;
+    private static MatchmakingError InspectErrorBody(HttpStatusCode status, string? body) {
+        if ((int) status < 400 || body == null) return MatchmakingError.None;
 
         var errorCode = MmsJsonParser.ExtractValue(body.AsSpan(), MmsFields.ErrorCode);
-        LastError = errorCode == MmsProtocol.UpdateRequiredErrorCode
+        return errorCode == MmsProtocol.UpdateRequiredErrorCode
             ? MatchmakingError.UpdateRequired
             : MatchmakingError.NetworkFailure;
     }
@@ -137,3 +126,9 @@ internal sealed class MmsHttpClient {
         return client;
     }
 }
+
+internal readonly record struct MmsHttpResponse(
+    bool Success,
+    string? Body,
+    MatchmakingError Error
+);

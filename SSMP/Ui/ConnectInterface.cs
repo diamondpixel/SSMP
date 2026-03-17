@@ -338,7 +338,8 @@ internal class ConnectInterface {
     /// <summary>
     /// Large blocking message shown when the client must update before using matchmaking.
     /// </summary>
-    private const string MatchmakingUpdateRequiredText = "Please update to the latest version in order to use matchmaking!";
+    private const string MatchmakingUpdateRequiredText =
+        "Please update to the latest version in order to use matchmaking!";
 
     /// <summary>
     /// Temporary message shown while the client verifies matchmaking compatibility.
@@ -493,6 +494,11 @@ internal class ConnectInterface {
     /// Coroutine handle for hiding feedback text after a delay.
     /// </summary>
     private Coroutine? _feedbackHideCoroutine;
+
+    /// <summary>
+    /// Whether the current bottom feedback message is being driven by matchmaking status UI.
+    /// </summary>
+    private bool _isMatchmakingFeedbackActive;
 
     /// <summary>
     /// Whether MMS has reported that this client is too old for matchmaking.
@@ -1138,10 +1144,12 @@ internal class ConnectInterface {
         _directIpTab.SetTabActive(tab == Tab.DirectIp);
 
         // Show only the active tab's content
-        _matchmakingGroup.SetActive(tab == Tab.Matchmaking &&
-                                    _isMatchmakingReady &&
-                                    !_isMatchmakingVersionBlocked &&
-                                    !_isCheckingMatchmakingVersion);
+        _matchmakingGroup.SetActive(
+            tab == Tab.Matchmaking &&
+            _isMatchmakingReady &&
+            !_isMatchmakingVersionBlocked &&
+            !_isCheckingMatchmakingVersion
+        );
         _steamGroup?.SetActive(tab == Tab.Steam);
         _directIpGroup.SetActive(tab == Tab.DirectIp);
         RefreshMatchmakingStatusFeedback();
@@ -1217,7 +1225,6 @@ internal class ConnectInterface {
         var connectionData = lobbyInfo.ConnectionData;
         var lobbyType = lobbyInfo.LobbyType;
         var lanConnectionData = lobbyInfo.LanConnectionData;
-        var clientDiscoveryToken = lobbyInfo.ClientDiscoveryToken;
         var joinId = lobbyInfo.JoinId;
 
         // Handle connection based on lobby type
@@ -1225,7 +1232,7 @@ internal class ConnectInterface {
             CleanupHolePunchSocket(holePunchSocket);
             ConnectToSteamLobby(connectionData, username);
         } else {
-            if (string.IsNullOrEmpty(joinId) || string.IsNullOrEmpty(clientDiscoveryToken)) {
+            if (string.IsNullOrEmpty(joinId)) {
                 CleanupHolePunchSocket(holePunchSocket);
                 ShowFeedback(Color.red, "Lobby not found, offline, or join failed");
                 yield break;
@@ -1251,7 +1258,9 @@ internal class ConnectInterface {
                 yield break;
             }
 
-            ConnectToMatchmakingLobby($"{joinStart.HostIp}:{joinStart.HostPort}", lanConnectionData, username, holePunchSocket);
+            ConnectToMatchmakingLobby(
+                $"{joinStart.HostIp}:{joinStart.HostPort}", lanConnectionData, username, holePunchSocket
+            );
         }
     }
 
@@ -1789,6 +1798,7 @@ internal class ConnectInterface {
     /// <param name="color">The color of the feedback text.</param>
     /// <param name="message">The message to display.</param>
     private void ShowFeedback(Color color, string message) {
+        _isMatchmakingFeedbackActive = false;
         _feedbackHideCoroutine = ConnectInterfaceHelpers.SetFeedbackText(
             _feedbackText,
             color,
@@ -1845,32 +1855,33 @@ internal class ConnectInterface {
     /// </summary>
     private void RefreshMatchmakingStatusFeedback() {
         if (_activeTab != Tab.Matchmaking) {
-            _feedbackText.SetActive(false);
+            if (_isMatchmakingFeedbackActive) {
+                _feedbackText.SetActive(false);
+                _isMatchmakingFeedbackActive = false;
+            }
+
             return;
         }
 
         if (_isCheckingMatchmakingVersion) {
-            _feedbackText.SetText(MatchmakingCheckingText);
-            _feedbackText.SetColor(Color.yellow);
-            _feedbackText.SetActive(true);
+            SetMatchmakingStatusFeedback(MatchmakingCheckingText, Color.yellow);
             return;
         }
 
         if (_isMatchmakingVersionBlocked) {
-            _feedbackText.SetText(MatchmakingUpdateRequiredText);
-            _feedbackText.SetColor(Color.red);
-            _feedbackText.SetActive(true);
+            SetMatchmakingStatusFeedback(MatchmakingUpdateRequiredText, Color.red);
             return;
         }
 
         if (!_isMatchmakingReady) {
-            _feedbackText.SetText(MatchmakingUnavailableText);
-            _feedbackText.SetColor(Color.red);
-            _feedbackText.SetActive(true);
+            SetMatchmakingStatusFeedback(MatchmakingUnavailableText, Color.red);
             return;
         }
 
-        _feedbackText.SetActive(false);
+        if (_isMatchmakingFeedbackActive) {
+            _feedbackText.SetActive(false);
+            _isMatchmakingFeedbackActive = false;
+        }
     }
 
     /// <summary>
@@ -1878,6 +1889,16 @@ internal class ConnectInterface {
     /// </summary>
     private bool IsMatchmakingBlocked() {
         return _isMatchmakingVersionBlocked;
+    }
+
+    /// <summary>
+    /// Displays matchmaking-owned status feedback without clobbering feedback from other tabs.
+    /// </summary>
+    private void SetMatchmakingStatusFeedback(string message, Color color) {
+        _isMatchmakingFeedbackActive = true;
+        _feedbackText.SetText(message);
+        _feedbackText.SetColor(color);
+        _feedbackText.SetActive(true);
     }
 
     /// <summary>

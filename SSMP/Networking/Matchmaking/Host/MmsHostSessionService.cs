@@ -137,27 +137,34 @@ internal sealed class MmsHostSessionService {
     /// A tuple of <c>(lobbyCode, lobbyName, hostDiscoveryToken)</c> on success,
     /// or <c>(null, null, null)</c> if the request failed or the response was invalid.
     /// </returns>
-    public async Task<(string? lobbyCode, string? lobbyName, string? hostDiscoveryToken)> CreateLobbyAsync(
-        int hostPort,
-        bool isPublic,
-        string gameVersion,
-        PublicLobbyType lobbyType
-    ) {
+    public async
+        Task<((string? lobbyCode, string? lobbyName, string? hostDiscoveryToken) result, MatchmakingError error)>
+        CreateLobbyAsync(
+            int hostPort,
+            bool isPublic,
+            string gameVersion,
+            PublicLobbyType lobbyType
+        ) {
         var (buffer, length) = MmsJsonParser.FormatCreateLobbyJson(
             hostPort, isPublic, gameVersion, lobbyType, MmsUtilities.GetLocalIpAddress()
         );
         try {
-            var (success, response) = await _http.PostJsonAsync(
+            var response = await _http.PostJsonAsync(
                 $"{_baseUrl}{MmsRoutes.Lobby}",
                 new string(buffer, 0, length)
             );
-            if (!success || response == null) return (null, null, null);
+            if (!response.Success || response.Body == null)
+                return ((null, null, null), response.Error);
 
             return TryActivateLobby(
-                response, "CreateLobby", out var lobbyName, out var lobbyCode, out var hostDiscoveryToken
+                response.Body,
+                "CreateLobby",
+                out var lobbyName,
+                out var lobbyCode,
+                out var hostDiscoveryToken
             )
-                ? (lobbyCode, lobbyName, hostDiscoveryToken)
-                : (null, null, null);
+                ? ((lobbyCode, lobbyName, hostDiscoveryToken), MatchmakingError.None)
+                : ((null, null, null), MatchmakingError.NetworkFailure);
         } finally {
             MmsJsonParser.ReturnBuffer(buffer);
         }
@@ -173,18 +180,23 @@ internal sealed class MmsHostSessionService {
     /// The MMS lobby code on success, or <c>null</c> if the request failed or the
     /// response was invalid.
     /// </returns>
-    public async Task<string?> RegisterSteamLobbyAsync(string steamLobbyId, bool isPublic, string gameVersion) {
-        var (success, response) = await _http.PostJsonAsync(
+    public async Task<(string? lobbyCode, MatchmakingError error)> RegisterSteamLobbyAsync(
+        string steamLobbyId,
+        bool isPublic,
+        string gameVersion
+    ) {
+        var response = await _http.PostJsonAsync(
             $"{_baseUrl}{MmsRoutes.Lobby}",
             BuildSteamLobbyJson(steamLobbyId, isPublic, gameVersion)
         );
-        if (!success || response == null) return null;
+        if (!response.Success || response.Body == null)
+            return (null, response.Error);
 
-        if (!TryActivateLobby(response, "RegisterSteamLobby", out _, out var lobbyCode, out _))
-            return null;
+        if (!TryActivateLobby(response.Body, "RegisterSteamLobby", out _, out var lobbyCode, out _))
+            return (null, MatchmakingError.NetworkFailure);
 
         Logger.Info($"MmsHostSessionService: registered Steam lobby {steamLobbyId} as MMS lobby {lobbyCode}");
-        return lobbyCode;
+        return (lobbyCode, MatchmakingError.None);
     }
 
     /// <summary>
@@ -318,12 +330,12 @@ internal sealed class MmsHostSessionService {
                 out lobbyCode,
                 out hostDiscoveryToken
             )) {
-            Logger.Error($"MmsHostSessionService: invalid {operation} response: {response}");
+            Logger.Error($"MmsHostSessionService: invalid {operation} response (length={response.Length})");
             return false;
         }
 
         ActivateLobby(lobbyId!, hostToken!);
-        Logger.Info($"MmsHostSessionService: {operation} succeeded for lobby {lobbyCode}, token {hostDiscoveryToken}");
+        Logger.Info($"MmsHostSessionService: {operation} succeeded for lobby {lobbyCode}");
         return true;
     }
 
@@ -352,10 +364,11 @@ internal sealed class MmsHostSessionService {
     /// </summary>
     /// <param name="state">Unused timer state; always <c>null</c>.</param>
     private void SendHeartbeat(object? state) {
-        if (_hostToken == null) return;
+        var token = _hostToken;
+        if (token == null) return;
 
         var heartbeatTask = _http.PostJsonAsync(
-            $"{_baseUrl}{MmsRoutes.LobbyHeartbeat(_hostToken)}",
+            $"{_baseUrl}{MmsRoutes.LobbyHeartbeat(token)}",
             BuildHeartbeatJson(_connectedPlayers)
         );
         heartbeatTask.ContinueWith(
@@ -366,7 +379,7 @@ internal sealed class MmsHostSessionService {
                     return;
                 }
 
-                if (task.Result.success) {
+                if (task.Result.Success) {
                     Interlocked.Exchange(ref _heartbeatFailureCount, 0);
                     return;
                 }

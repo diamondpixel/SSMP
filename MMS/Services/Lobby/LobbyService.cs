@@ -41,8 +41,11 @@ public class LobbyService(LobbyNameService lobbyNameService) {
         var hostToken = TokenGenerator.GenerateToken(32);
         var hostDiscoveryToken = IsMatchmakingLobbyType(lobbyType) ? TokenGenerator.GenerateToken(32) : null;
         lock (_createLobbyLock) {
-            if (_lobbies.TryGetValue(connectionData, out var existingLobby))
+            if (_lobbies.TryGetValue(connectionData, out var existingLobby)) {
                 RemoveLobbyIndexes(existingLobby);
+                if (!string.IsNullOrEmpty(existingLobby.LobbyName))
+                    lobbyNameService.FreeLobbyName(existingLobby.LobbyName);
+            }
 
             var lobbyCode = IsSteamLobby(lobbyType)
                 ? ""
@@ -149,10 +152,7 @@ public class LobbyService(LobbyNameService lobbyNameService) {
     /// <returns>The number of lobbies removed.</returns>
     public int CleanupDeadLobbies(Action<_Lobby>? onRemoving = null) {
         var dead = _lobbies.Values.Where(l => l.IsDead).ToList();
-        foreach (var lobby in dead)
-            RemoveLobby(lobby.ConnectionData, onRemoving);
-
-        return dead.Count;
+        return dead.Count(lobby => RemoveLobby(lobby.ConnectionData, onRemoving));
     }
 
     /// <summary>
@@ -190,7 +190,7 @@ public class LobbyService(LobbyNameService lobbyNameService) {
                 return code;
         }
     }
-    
+
     /// <summary>
     /// Removes all index entries associated with a lobby, including its host token
     /// and lobby code if one was assigned.
