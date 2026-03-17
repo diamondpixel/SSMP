@@ -25,8 +25,7 @@ internal sealed class MmsHostSessionService {
     /// </summary>
     private readonly string? _discoveryHost;
 
-    /// <summary>HTTP client used to communicate with the MMS REST API.</summary>
-    private readonly MmsHttpClient _http;
+    private readonly object _sessionLock = new();
 
     /// <summary>WebSocket handler that receives real-time MMS server events.</summary>
     private readonly MmsWebSocketHandler _webSocket;
@@ -69,17 +68,14 @@ internal sealed class MmsHostSessionService {
     /// Hostname of the MMS UDP discovery endpoint, or <c>null</c> to disable
     /// NAT hole-punch discovery.
     /// </param>
-    /// <param name="http">HTTP client for MMS REST calls.</param>
     /// <param name="webSocket">WebSocket handler for real-time MMS events.</param>
     public MmsHostSessionService(
         string baseUrl,
         string? discoveryHost,
-        MmsHttpClient http,
         MmsWebSocketHandler webSocket
     ) {
         _baseUrl = baseUrl;
         _discoveryHost = discoveryHost;
-        _http = http;
         _webSocket = webSocket;
     }
 
@@ -132,7 +128,7 @@ internal sealed class MmsHostSessionService {
     /// <param name="hostPort">UDP port this host is listening on.</param>
     /// <param name="isPublic">Whether the lobby should appear in public listings.</param>
     /// <param name="gameVersion">Game version string used for matchmaking compatibility checks.</param>
-    /// <param name="lobbyType">Lobby sub-type (e.g. casual, ranked).</param>
+    /// <param name="lobbyType">Lobby subtype (e.g. casual, ranked).</param>
     /// <returns>
     /// A tuple of <c>(lobbyCode, lobbyName, hostDiscoveryToken)</c> on success,
     /// or <c>(null, null, null)</c> if the request failed or the response was invalid.
@@ -149,7 +145,7 @@ internal sealed class MmsHostSessionService {
             hostPort, isPublic, gameVersion, lobbyType, MmsUtilities.GetLocalIpAddress()
         );
         try {
-            var response = await _http.PostJsonAsync(
+            var response = await MmsHttpClient.PostJsonAsync(
                 $"{_baseUrl}{MmsRoutes.Lobby}",
                 new string(buffer, 0, length)
             );
@@ -185,7 +181,7 @@ internal sealed class MmsHostSessionService {
         bool isPublic,
         string gameVersion
     ) {
-        var response = await _http.PostJsonAsync(
+        var response = await MmsHttpClient.PostJsonAsync(
             $"{_baseUrl}{MmsRoutes.Lobby}",
             BuildSteamLobbyJson(steamLobbyId, isPublic, gameVersion)
         );
@@ -205,13 +201,17 @@ internal sealed class MmsHostSessionService {
     /// Does nothing if no lobby is currently active.
     /// </summary>
     public void CloseLobby() {
-        if (_hostToken == null) return;
+        (string token, string? lobbyId)? snapshot;
+        lock (_sessionLock) {
+            if (_hostToken == null) return;
+            snapshot = SnapshotAndClearSessionUnsafe();
+        }
 
         StopHeartbeat();
         StopHostDiscoveryRefresh();
         _webSocket.Stop();
 
-        var (tokenSnapshot, lobbyIdSnapshot) = SnapshotAndClearSession();
+        var (tokenSnapshot, lobbyIdSnapshot) = snapshot.Value;
         _ = SafeDeleteLobbyAsync(tokenSnapshot, lobbyIdSnapshot);
     }
 
@@ -284,8 +284,11 @@ internal sealed class MmsHostSessionService {
     /// <param name="lobbyId">MMS lobby identifier.</param>
     /// <param name="hostToken">Bearer token for authenticating subsequent MMS requests.</param>
     private void ActivateLobby(string lobbyId, string hostToken) {
-        _hostToken = hostToken;
-        _currentLobbyId = lobbyId;
+        lock (_sessionLock) {
+            _hostToken = hostToken;
+            _currentLobbyId = lobbyId;
+        }
+
         StartHeartbeat();
     }
 
@@ -298,7 +301,7 @@ internal sealed class MmsHostSessionService {
     /// A tuple of <c>(hostToken, lobbyId)</c> holding the values that were active
     /// at the moment of the snapshot.
     /// </returns>
-    private (string token, string? lobbyId) SnapshotAndClearSession() {
+    private (string token, string? lobbyId) SnapshotAndClearSessionUnsafe() {
         var snapshot = (_hostToken!, _currentLobbyId);
         _hostToken = null;
         _currentLobbyId = null;
@@ -364,10 +367,14 @@ internal sealed class MmsHostSessionService {
     /// </summary>
     /// <param name="state">Unused timer state; always <c>null</c>.</param>
     private void SendHeartbeat(object? state) {
-        var token = _hostToken;
+        string? token;
+        lock (_sessionLock) {
+            token = _hostToken;
+        }
+
         if (token == null) return;
 
-        var heartbeatTask = _http.PostJsonAsync(
+        var heartbeatTask = MmsHttpClient.PostJsonAsync(
             $"{_baseUrl}{MmsRoutes.LobbyHeartbeat(token)}",
             BuildHeartbeatJson(_connectedPlayers)
         );
@@ -441,11 +448,12 @@ internal sealed class MmsHostSessionService {
     /// <param name="hostToken">Bearer token identifying the lobby to delete.</param>
     /// <param name="lobbyId">Lobby ID used only for logging.</param>
     private async Task SafeDeleteLobbyAsync(string hostToken, string? lobbyId) {
-        try {
-            await _http.DeleteAsync($"{_baseUrl}{MmsRoutes.LobbyDelete(hostToken)}");
+        var response = await MmsHttpClient.DeleteAsync($"{_baseUrl}{MmsRoutes.LobbyDelete(hostToken)}");
+        if (response.Success) {
             Logger.Info($"MmsHostSessionService: closed lobby {lobbyId}");
-        } catch (Exception ex) {
-            Logger.Warn($"MmsHostSessionService: CloseLobby DELETE failed: {ex.Message}");
+            return;
         }
+
+        Logger.Warn($"MmsHostSessionService: CloseLobby DELETE failed for lobby {lobbyId}");
     }
 }

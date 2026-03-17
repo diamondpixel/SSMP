@@ -13,7 +13,7 @@ namespace SSMP.Networking.Matchmaking.Transport;
 /// Owns a single shared <see cref="HttpClient"/> instance for connection-pool reuse
 /// and surfaces typed success/error results to callers.
 /// </summary>
-internal sealed class MmsHttpClient {
+internal static class MmsHttpClient {
     /// <summary>Shared HTTP client instance for connection pooling.</summary>
     private static readonly HttpClient Http = CreateHttpClient();
 
@@ -24,7 +24,7 @@ internal sealed class MmsHttpClient {
     /// <summary>
     /// Performs a GET request to the specified URL.
     /// </summary>
-    public async Task<MmsHttpResponse> GetAsync(string url) {
+    public static async Task<MmsHttpResponse> GetAsync(string url) {
         try {
             using var response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
             var body = await response.Content.ReadAsStringAsync();
@@ -41,7 +41,7 @@ internal sealed class MmsHttpClient {
     /// <summary>
     /// Performs a POST request with a JSON body to the specified URL.
     /// </summary>
-    public async Task<MmsHttpResponse> PostJsonAsync(string url, string json) {
+    public static async Task<MmsHttpResponse> PostJsonAsync(string url, string json) {
         try {
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
             using var response = await Http.PostAsync(url, content);
@@ -60,28 +60,21 @@ internal sealed class MmsHttpClient {
     /// Performs a DELETE request.
     /// </summary>
     /// <remarks>
-    /// Returns per-call HTTP metadata and matchmaking error classification.
-    /// Throws <see cref="HttpRequestException"/> when the server returns a non-success HTTP status,
-    /// and rethrows transient transport exceptions after classifying them as
-    /// <see cref="MatchmakingError.NetworkFailure"/>.
+    /// Returns per-call HTTP metadata and matchmaking error classification for both
+    /// successful and failed requests. Transport failures are reported as
+    /// <see cref="MatchmakingError.NetworkFailure"/> without throwing.
     /// </remarks>
-    public async Task<MmsHttpResponse> DeleteAsync(string url) {
+    public static async Task<MmsHttpResponse> DeleteAsync(string url) {
         try {
             using var response = await Http.DeleteAsync(url);
             var body = await response.Content.ReadAsStringAsync();
-            var result = new MmsHttpResponse(
+            return new MmsHttpResponse(
                 response.IsSuccessStatusCode,
                 body,
                 InspectErrorBody(response.StatusCode, body)
             );
-            if (response.IsSuccessStatusCode)
-                return result;
-
-            throw new HttpRequestException(
-                $"DELETE {url} failed with status code {(int) response.StatusCode} ({response.StatusCode})."
-            );
-        } catch (Exception ex) when (IsTransient(ex) && ex is not HttpRequestException) {
-            throw;
+        } catch (Exception ex) when (IsTransient(ex)) {
+            return new MmsHttpResponse(false, null, MatchmakingError.NetworkFailure);
         }
     }
 

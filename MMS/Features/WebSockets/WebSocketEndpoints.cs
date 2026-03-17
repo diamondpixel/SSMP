@@ -57,6 +57,10 @@ internal static class WebSocketEndpoints {
         }
 
         using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        var previousSocket = lobby.HostWebSocket;
+        if (previousSocket != null && !ReferenceEquals(previousSocket, webSocket))
+            await CloseReplacedHostSocketAsync(previousSocket, GetLobbyIdentifier(lobby), context.RequestAborted);
+
         lobby.HostWebSocket = webSocket;
 
         ProgramState.Logger.LogInformation(
@@ -64,15 +68,17 @@ internal static class WebSocketEndpoints {
             GetLobbyIdentifier(lobby)
         );
 
-        await DrainHostWebSocketAsync(webSocket);
+        try {
+            await DrainHostWebSocketAsync(webSocket, GetLobbyIdentifier(lobby));
+        } finally {
+            if (ReferenceEquals(lobby.HostWebSocket, webSocket))
+                lobby.HostWebSocket = null;
 
-        if (ReferenceEquals(lobby.HostWebSocket, webSocket))
-            lobby.HostWebSocket = null;
-
-        ProgramState.Logger.LogInformation(
-            "[WS] Host disconnected from lobby {LobbyIdentifier}",
-            GetLobbyIdentifier(lobby)
-        );
+            ProgramState.Logger.LogInformation(
+                "[WS] Host disconnected from lobby {LobbyIdentifier}",
+                GetLobbyIdentifier(lobby)
+            );
+        }
     }
 
     /// <summary>
@@ -80,7 +86,8 @@ internal static class WebSocketEndpoints {
     /// The host WebSocket is receive-only; all meaningful communication is server-to-host push.
     /// </summary>
     /// <param name="webSocket">The accepted host WebSocket.</param>
-    private static async Task DrainHostWebSocketAsync(WebSocket webSocket) {
+    /// <param name="lobbyIdentifier">The lobby identifier, used for diagnostic logging on unexpected disconnects.</param>
+    private static async Task DrainHostWebSocketAsync(WebSocket webSocket, string lobbyIdentifier) {
         var buffer = new byte[1024];
         try {
             while (webSocket.State == WebSocketState.Open) {
@@ -88,10 +95,48 @@ internal static class WebSocketEndpoints {
                 if (result.MessageType == WebSocketMessageType.Close)
                     break;
             }
-        } catch (WebSocketException) {
+        } catch (WebSocketException ex) {
+            ProgramState.Logger.LogDebug(
+                ex, "[WS] Host socket closed unexpectedly for lobby {LobbyIdentifier}", lobbyIdentifier
+            );
             // Host disconnected without a proper close handshake.
         } catch (Exception ex) when (ex.InnerException is SocketException) {
+            ProgramState.Logger.LogDebug(ex, "[WS] Host socket reset for lobby {LobbyIdentifier}", lobbyIdentifier);
             // Connection was forcibly reset during shutdown or game exit.
+        }
+    }
+
+    /// <summary>
+    /// Attempts a graceful close of a host WebSocket that has been superseded by a newer connection,
+    /// falling back to an abort if the socket is not in a closeable state or if the close fails.
+    /// </summary>
+    /// <param name="previousSocket">The WebSocket to close and dispose.</param>
+    /// <param name="lobbyIdentifier">The lobby identifier, used for diagnostic logging on failure.</param>
+    /// <param name="cancellationToken">A token to cancel the close handshake.</param>
+    private static async Task CloseReplacedHostSocketAsync(
+        WebSocket previousSocket,
+        string lobbyIdentifier,
+        CancellationToken cancellationToken
+    ) {
+        try {
+            if (previousSocket.State is WebSocketState.Open or WebSocketState.CloseReceived) {
+                await previousSocket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    "Replaced by newer host connection",
+                    cancellationToken
+                );
+            } else {
+                previousSocket.Abort();
+            }
+        } catch (Exception ex) {
+            ProgramState.Logger.LogDebug(
+                ex,
+                "[WS] Failed to close replaced host socket for lobby {LobbyIdentifier}",
+                lobbyIdentifier
+            );
+            previousSocket.Abort();
+        } finally {
+            previousSocket.Dispose();
         }
     }
 
@@ -214,7 +259,7 @@ internal static class WebSocketEndpoints {
 
     /// <summary>
     /// Reads and discards incoming frames on the join WebSocket until the client disconnects
-    /// or the request is cancelled. Fails the session as <c>client_disconnected</c> on exit
+    /// or the request is canceled. Fails the session as <c>client_disconnected</c> on exit
     /// if the session is still active.
     /// </summary>
     /// <param name="webSocket">The accepted join WebSocket.</param>

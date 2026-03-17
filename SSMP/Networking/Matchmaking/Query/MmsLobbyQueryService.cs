@@ -16,17 +16,12 @@ internal sealed class MmsLobbyQueryService {
     /// <summary>Base HTTP URL of the MMS server (e.g. <c>https://mms.example.com</c>).</summary>
     private readonly string _baseUrl;
 
-    /// <summary>HTTP client used to communicate with the MMS REST API.</summary>
-    private readonly MmsHttpClient _http;
-
     /// <summary>
     /// Initializes a new <see cref="MmsLobbyQueryService"/>.
     /// </summary>
     /// <param name="baseUrl">Base HTTP URL of the MMS server.</param>
-    /// <param name="http">HTTP client for MMS REST calls.</param>
-    public MmsLobbyQueryService(string baseUrl, MmsHttpClient http) {
+    public MmsLobbyQueryService(string baseUrl) {
         _baseUrl = baseUrl;
-        _http = http;
     }
 
     /// <summary>
@@ -42,7 +37,7 @@ internal sealed class MmsLobbyQueryService {
     /// </returns>
     public async Task<(JoinLobbyResult? result, MatchmakingError error)>
         JoinLobbyAsync(string lobbyId, int clientPort) {
-        var response = await _http.PostJsonAsync(
+        var response = await MmsHttpClient.PostJsonAsync(
             $"{_baseUrl}{MmsRoutes.LobbyJoin(lobbyId)}",
             BuildJoinRequestJson(clientPort)
         );
@@ -69,7 +64,7 @@ internal sealed class MmsLobbyQueryService {
         PublicLobbyType? lobbyType = null
     ) {
         var url = BuildPublicLobbiesUrl(lobbyType);
-        var response = await _http.GetAsync(url);
+        var response = await MmsHttpClient.GetAsync(url);
         return !response.Success || response.Body == null
             ? (null, response.Error)
             : (MmsResponseParser.ParsePublicLobbies(response.Body), MatchmakingError.None);
@@ -101,7 +96,7 @@ internal sealed class MmsLobbyQueryService {
     /// </list>
     /// </returns>
     public async Task<(bool? isCompatible, MatchmakingError error)> ProbeMatchmakingCompatibilityAsync() {
-        var response = await _http.GetAsync($"{_baseUrl}{MmsRoutes.Root}");
+        var response = await MmsHttpClient.GetAsync($"{_baseUrl}{MmsRoutes.Root}");
         if (!response.Success || response.Body == null)
             return (null, response.Error);
 

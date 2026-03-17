@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using MMS.Bootstrap;
 using MMS.Services.Matchmaking;
 using MMS.Services.Utility;
 using _Lobby = MMS.Models.Lobby.Lobby;
@@ -38,6 +39,11 @@ public class LobbyService(LobbyNameService lobbyNameService) {
         string? hostLanIp = null,
         bool isPublic = true
     ) {
+        if (!IsMatchmakingLobbyType(lobbyType) && !IsSteamLobby(lobbyType))
+            throw new ArgumentOutOfRangeException(
+                nameof(lobbyType), lobbyType, "Lobby type must be 'matchmaking' or 'steam'."
+            );
+
         var hostToken = TokenGenerator.GenerateToken(32);
         var hostDiscoveryToken = IsMatchmakingLobbyType(lobbyType) ? TokenGenerator.GenerateToken(32) : null;
         lock (_createLobbyLock) {
@@ -123,6 +129,9 @@ public class LobbyService(LobbyNameService lobbyNameService) {
     /// <param name="connectedPlayers">Current number of remote players connected to the host.</param>
     /// <returns><see langword="true"/> if the lobby was found and updated; <see langword="false"/> otherwise.</returns>
     public bool Heartbeat(string token, int connectedPlayers) {
+        if (connectedPlayers < 0)
+            return false;
+
         var lobby = GetLobbyByToken(token);
         if (lobby == null) return false;
 
@@ -164,12 +173,16 @@ public class LobbyService(LobbyNameService lobbyNameService) {
     private bool RemoveLobby(string connectionData, Action<_Lobby>? onRemoving = null) {
         if (!_lobbies.TryRemove(connectionData, out var lobby)) return false;
 
-        onRemoving?.Invoke(lobby);
+        try {
+            onRemoving?.Invoke(lobby);
+        } catch (Exception ex) {
+            ProgramState.Logger.LogWarning(ex, "Lobby removal callback failed for {ConnectionData}", connectionData);
+        } finally {
+            _tokenToConnectionData.TryRemove(lobby.HostToken, out _);
+            _codeToConnectionData.TryRemove(lobby.LobbyCode, out _);
+            lobbyNameService.FreeLobbyName(lobby.LobbyName);
+        }
 
-        _tokenToConnectionData.TryRemove(lobby.HostToken, out _);
-        _codeToConnectionData.TryRemove(lobby.LobbyCode, out _);
-
-        lobbyNameService.FreeLobbyName(lobby.LobbyName);
         return true;
     }
 

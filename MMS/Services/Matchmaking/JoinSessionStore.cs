@@ -61,14 +61,21 @@ public sealed class JoinSessionStore {
 
     /// <summary>Inserts or replaces the metadata associated with a discovery token.</summary>
     public void UpsertDiscoveryToken(string token, DiscoveryTokenMetadata metadata) =>
-        _discoveryMetadata[token] = metadata;
+        _discoveryMetadata[token] = CloneMetadata(metadata);
 
     /// <summary>Returns <see langword="true"/> if the discovery token is currently registered.</summary>
     public bool ContainsDiscoveryToken(string token) => _discoveryMetadata.ContainsKey(token);
 
     /// <summary>Attempts to retrieve the metadata for a discovery token.</summary>
-    public bool TryGetDiscoveryMetadata(string token, out DiscoveryTokenMetadata? metadata) =>
-        _discoveryMetadata.TryGetValue(token, out metadata);
+    public bool TryGetDiscoveryMetadata(string token, out DiscoveryTokenMetadata? metadata) {
+        if (!_discoveryMetadata.TryGetValue(token, out var stored)) {
+            metadata = null;
+            return false;
+        }
+
+        metadata = CloneMetadata(stored);
+        return true;
+    }
 
     /// <summary>
     /// Returns the discovered port for a token, or <see langword="null"/> if the token
@@ -80,6 +87,19 @@ public sealed class JoinSessionStore {
     /// <summary>Removes a discovery token and its metadata.</summary>
     public void RemoveDiscoveryToken(string token) =>
         _discoveryMetadata.TryRemove(token, out _);
+
+    /// <summary>Updates only the discovered port for an existing discovery token.</summary>
+    public bool TrySetDiscoveredPort(string token, int port) {
+        while (_discoveryMetadata.TryGetValue(token, out var metadata)) {
+            var updated = CloneMetadata(metadata);
+            updated.DiscoveredPort = port;
+
+            if (_discoveryMetadata.TryUpdate(token, updated, metadata))
+                return true;
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Returns tokens created before <paramref name="cutoffUtc"/>.
@@ -109,4 +129,11 @@ public sealed class JoinSessionStore {
             _expiryIndex.Remove((session.ExpiresAtUtc, session.JoinId));
         }
     }
+
+    private static DiscoveryTokenMetadata CloneMetadata(DiscoveryTokenMetadata metadata) =>
+        new() {
+            JoinId = metadata.JoinId,
+            HostConnectionData = metadata.HostConnectionData,
+            DiscoveredPort = metadata.DiscoveredPort
+        };
 }

@@ -7,7 +7,6 @@ using SSMP.Networking.Matchmaking.Host;
 using SSMP.Networking.Matchmaking.Join;
 using SSMP.Networking.Matchmaking.Protocol;
 using SSMP.Networking.Matchmaking.Query;
-using SSMP.Networking.Matchmaking.Transport;
 using SSMP.Networking.Matchmaking.Utilities;
 
 namespace SSMP.Networking.Matchmaking;
@@ -56,20 +55,22 @@ internal class MmsClient {
 
     public MmsClient(
         string baseUrl,
-        MmsHttpClient? http = null,
         MmsHostSessionService? hostSession = null,
         MmsLobbyQueryService? queries = null,
         MmsJoinCoordinator? joinCoordinator = null
     ) {
-        var http1 = http ?? new MmsHttpClient();
         var normalizedBaseUrl = baseUrl.TrimEnd('/');
         string? discoveryHost = null;
         if (Uri.TryCreate(normalizedBaseUrl, UriKind.Absolute, out var uri))
             discoveryHost = uri.Host;
 
-        var webSocket = new MmsWebSocketHandler(MmsUtilities.ToWebSocketUrl(normalizedBaseUrl));
-        _hostSession = hostSession ?? new MmsHostSessionService(normalizedBaseUrl, discoveryHost, http1, webSocket);
-        _queries = queries ?? new MmsLobbyQueryService(normalizedBaseUrl, http1);
+        _hostSession = hostSession ??
+                       new MmsHostSessionService(
+                           normalizedBaseUrl,
+                           discoveryHost,
+                           new MmsWebSocketHandler(MmsUtilities.ToWebSocketUrl(normalizedBaseUrl))
+                       );
+        _queries = queries ?? new MmsLobbyQueryService(normalizedBaseUrl);
         _joinCoordinator = joinCoordinator ?? new MmsJoinCoordinator(normalizedBaseUrl, discoveryHost);
     }
 

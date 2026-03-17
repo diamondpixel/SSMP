@@ -1209,6 +1209,15 @@ internal class ConnectInterface {
         var task = MmsClient.JoinLobbyAsync(lobbyId, clientPort);
         yield return new WaitUntil(() => task.IsCompleted);
 
+        if (!task.IsCompletedSuccessfully) {
+            CleanupHolePunchSocket(holePunchSocket);
+            Logger.Error(
+                $"ConnectInterface: JoinLobbyAsync failed: {task.Exception?.GetBaseException().Message ?? "cancelled"}"
+            );
+            ShowFeedback(Color.red, "Lobby not found, offline, or join failed");
+            yield break;
+        }
+
         var lobbyInfo = task.Result;
         if (lobbyInfo == null) {
             CleanupHolePunchSocket(holePunchSocket);
@@ -1244,6 +1253,15 @@ internal class ConnectInterface {
             );
 
             yield return new WaitUntil(() => joinTask.IsCompleted);
+
+            if (!joinTask.IsCompletedSuccessfully) {
+                CleanupHolePunchSocket(holePunchSocket);
+                Logger.Error(
+                    $"ConnectInterface: CoordinateMatchmakingJoinAsync failed: {joinTask.Exception?.GetBaseException().Message ?? "cancelled"}"
+                );
+                ShowFeedback(Color.red, "Lobby not found, offline, or join failed");
+                yield break;
+            }
 
             var joinStart = joinTask.Result;
             if (joinStart == null) {
@@ -1895,6 +1913,11 @@ internal class ConnectInterface {
     /// Displays matchmaking-owned status feedback without clobbering feedback from other tabs.
     /// </summary>
     private void SetMatchmakingStatusFeedback(string message, Color color) {
+        if (_feedbackHideCoroutine != null) {
+            MonoBehaviourUtil.Instance.StopCoroutine(_feedbackHideCoroutine);
+            _feedbackHideCoroutine = null;
+        }
+
         _isMatchmakingFeedbackActive = true;
         _feedbackText.SetText(message);
         _feedbackText.SetColor(color);

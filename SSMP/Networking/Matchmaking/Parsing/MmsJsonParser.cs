@@ -77,9 +77,9 @@ internal static class MmsJsonParser {
         var lobbyTypeValue = lobbyType == PublicLobbyType.Matchmaking ? "matchmaking" : "steam";
         var estimatedLength =
             96 +
-            (escapedGameVersion.Length * 6) +
+            escapedGameVersion.Length +
             lobbyTypeValue.Length +
-            ((escapedHostLanIp?.Length ?? 0) * 6) +
+            (escapedHostLanIp?.Length ?? 0) +
             (hostLanIp != null ? 16 : 0) +
             (lobbyType == PublicLobbyType.Matchmaking ? 24 : 0);
 
@@ -142,8 +142,8 @@ internal static class MmsJsonParser {
         for (var i = segmentStart; i < json.Length; i++) {
             if (json[i] == '\\') {
                 if (i + 1 >= json.Length) return null;
-
-                builder ??= new StringBuilder(json.Slice(segmentStart, i - segmentStart).ToString());
+                if (builder == null) builder = new StringBuilder(json.Slice(segmentStart, i - segmentStart).ToString());
+                else builder.Append(json.Slice(segmentStart, i - segmentStart));
                 var escape = json[++i];
                 switch (escape) {
                     case '"': builder.Append('"'); break;

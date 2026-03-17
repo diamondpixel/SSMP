@@ -91,7 +91,8 @@ public sealed class JoinSessionCoordinator(
         if (!store.TryGetDiscoveryMetadata(token, out var metadata) || metadata == null)
             return;
 
-        metadata.DiscoveredPort = port;
+        if (!store.TrySetDiscoveredPort(token, port))
+            return;
 
         if (metadata.HostConnectionData != null) {
             await HandleHostPortDiscoveredAsync(metadata.HostConnectionData, port, cancellationToken);
